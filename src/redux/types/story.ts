@@ -1,0 +1,36 @@
+export type Story = {
+    id: string,
+    title: string,
+    description: string,
+    dateCreated: string,
+    authorId: string
+}
+
+export type allStoriesResponse = Story[]
+
+export type createStoryData = {
+    title: string
+    description: string
+}
+
+export type Chapter = {
+    id: string,
+    title: string,
+    content: string,
+    dateCreated: string,
+    storyId: string,
+    order: number
+}
+
+export type Message = {
+    message: string
+}
+
+export type specificStoryResponse = {
+    id: string,
+    title: string,
+    description: string,
+    dateCreated: string,
+    authorId: string
+    chapters: Chapter[]
+}
