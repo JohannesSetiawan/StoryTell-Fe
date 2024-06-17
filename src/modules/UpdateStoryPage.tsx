@@ -24,7 +24,7 @@ export function UpdateStoryPage() {
       if (res) {
         if ("data" in res) {
           toast.success("Update story success!");
-          navigate(`/read/${storyId}`);
+          navigate(`/read-story/${storyId}`);
         } else if ("data" in res.error) {
           const errorData = res.error.data as { message: string };
           toast.error(errorData.message);

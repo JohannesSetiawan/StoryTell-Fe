@@ -48,7 +48,7 @@ const router = createBrowserRouter([
         element: <CreateStoryPage />,
       },
       {
-        path: "/read/:storyId",
+        path: "/read-story/:storyId",
         element: <ReadStoryPage />,
       },
       {
