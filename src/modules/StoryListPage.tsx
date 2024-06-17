@@ -28,7 +28,7 @@ export function StoryListPage() {
                   <a href={`/read-story/${story.id}`} className="block dark:text-indigo-300" key={story.id}>
                     <div className="w-full flex flex-col  justify-center bg-gray-200 dark:bg-gray-600 border-2 border-gray-400 dark:border-gray-500 p-4 rounded-lg shadow-md mb-4">
                       <p>Title: {story.title}</p>
-                      <p>Author: {story.authorId}</p>
+                      <p>Author: {story.author.username}</p>
                     </div>
                   </a>
                 ))

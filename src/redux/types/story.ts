@@ -6,7 +6,13 @@ export type Story = {
     authorId: string
 }
 
-export type allStoriesResponse = Story[]
+
+export type Author = {
+    username: string
+}
+
+export type StoryWithAuthorName = Story & {author: Author}
+export type allStoriesResponse = StoryWithAuthorName[]
 
 export type createStoryData = {
     title: string
