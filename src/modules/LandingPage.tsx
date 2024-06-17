@@ -3,19 +3,19 @@ export function LandingPage() {
     <div>
       <div className="mt-8 mb-4">
         <div className="flex justify-center">
-          <div className="text-6xl font-bold">Gladi</div>
+          <div className="text-6xl font-bold">StoryTell</div>
         </div>
       </div>
 
       <div className="mt-8 mb-4">
         <div className="flex justify-center">
           <div className="text-3xl font-bold">
-            Practice your Public Speaking!
+            Read to your heart content!
           </div>
         </div>
       </div>
 
-      <div className="py-10">
+      {/* <div className="py-10">
         <div className="container mx-auto w-4/5">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-800 text-center mb-12 dark:text-gray-200">
             Features
@@ -67,7 +67,7 @@ export function LandingPage() {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }
