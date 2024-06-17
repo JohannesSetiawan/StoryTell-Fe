@@ -47,19 +47,20 @@ export function ReadStoryPage() {
                 <div className="p-4 max-w-3xl mx-auto">
                 <h1 className="text-3xl font-bold mb-4">{story.title}</h1>
                 <p className="text-lg mb-6 whitespace-pre-line">{story.description}</p>
-                <button
-                    onClick={handleUpdateStory}
-                    className="rounded-lg flex flex-row items-center gap-2 justify-center bg-blue-500 text-white hover:bg-blue-600 dark:bg-gray-500 hover:dark:bg-gray-600 duration-200 transition-all ease-in-out px-4 py-2"
-                    >
-                    Update Story
-                </button>
-                <h1 className="text-3xl font-bold mb-4"></h1>
-                <button
-                    onClick={handleDeleteStory}
-                    className="rounded-lg flex flex-row items-center gap-2 justify-center bg-blue-500 text-white hover:bg-blue-600 dark:bg-gray-500 hover:dark:bg-gray-600 duration-200 transition-all ease-in-out px-4 py-2"
-                    >
-                    Delete Story
-                </button>
+                <div className="flex flex-row items-center gap-4">
+                  <button
+                      onClick={handleUpdateStory}
+                      className="rounded-lg flex flex-row items-center gap-2 justify-center bg-green-500 text-white hover:bg-green-600 dark:bg-green-500 hover:dark:bg-green-600 duration-200 transition-all ease-in-out px-4 py-2"
+                      >
+                      Update Story
+                  </button>
+                  <button
+                      onClick={handleDeleteStory}
+                      className="rounded-lg flex flex-row items-center gap-2 justify-center bg-red-500 text-white hover:bg-red-600 dark:bg-red-500 hover:dark:bg-red-600 duration-200 transition-all ease-in-out px-4 py-2"
+                      >
+                      Delete Story
+                  </button>
+                </div>
                 <h1 className="text-3xl font-bold mb-4"></h1>
                 <h2 className="text-2xl font-semibold mb-3">Chapters</h2>
                 <button
@@ -113,9 +114,21 @@ export function ReadStoryPage() {
             </div>
         );
     } else {
-        <div className="p-4 max-w-3xl mx-auto">
-            <p>Loading ...</p>
+      return (
+        <div>
+        <div className="flex flex-wrap gap-3 w-full py-10">
+          <div className="flex flex-wrap gap-3 w-full py-5">
+            
+          </div>
+
+          <div className="flex flex-wrap gap-3 w-full py-5 px-4">
+            <div className="w-full">
+              <p> Loading ... </p>
+            </div>
+          </div>
         </div>
+      </div>
+    )
     }
     
 };

@@ -21,7 +21,7 @@ export const chapterApi = baseApi.injectEndpoints({
         }),
         invalidatesTags: ['Chapter', 'Story'],
       }),
-      updateStory: builder.mutation<Chapter, {updateData: CreateChapterData, chapterId: string}>({
+      updateChapter: builder.mutation<Chapter, {updateData: CreateChapterData, chapterId: string}>({
         query: ({updateData, chapterId}) => ({
           url: CHAPTER_API + `/${chapterId}`,
           method: "PUT",
@@ -29,20 +29,20 @@ export const chapterApi = baseApi.injectEndpoints({
         }),
         invalidatesTags: (result) => [{ type: 'Chapter', id: result?.id }, 'Chapter'],
       }),
-      deleteStory: builder.mutation<Message, string>({
+      deleteChapter: builder.mutation<Message, string>({
         query: (chapterId) => ({
           url: CHAPTER_API + `/${chapterId}`,
           method: "DELETE",
         }),
-        invalidatesTags: ['Chapter'],
+        invalidatesTags: ['Chapter', 'Story'],
       }),
     }),
   });
   
 export const {
     useCreateChapterMutation,
-    useDeleteStoryMutation,
+    useDeleteChapterMutation,
     useGetSpecificChapterQuery,
-    useUpdateStoryMutation
+    useUpdateChapterMutation
 } = chapterApi;
   

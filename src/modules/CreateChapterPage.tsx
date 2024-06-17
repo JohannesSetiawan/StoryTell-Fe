@@ -8,13 +8,12 @@ import { useGetSpecificStoryQuery } from "../redux/api/storyApi";
 export function CreateChapterPage() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [order, setOrder] = useState(1);
   const {storyId} = useParams()
   const [isLoading, setIsLoading] = useState(false);
 
   const [createChapter] = useCreateChapterMutation();
   const {data} = useGetSpecificStoryQuery(storyId? storyId : "undefined")
-  const order = (data?.chapters[data?.chapters.length - 1] ? data?.chapters[data?.chapters.length - 1].order : 0) + 1
-
   const navigate = useNavigate();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -30,7 +29,7 @@ export function CreateChapterPage() {
       if (res) {
         if ("data" in res) {
           toast.success("Create chapter success!");
-          navigate(`/read/${storyId}`);
+          navigate(`/read-story/${storyId}`);
         } else if ("data" in res.error) {
           const errorData = res.error.data as { message: string };
           toast.error(errorData.message);
@@ -46,6 +45,10 @@ export function CreateChapterPage() {
     setTitle(event.target.value);
   };
 
+  const handleOrderChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setOrder(Number(event.target.value));
+  };
+
   const handleContentChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setContent(event.target.value);
   };
@@ -56,6 +59,24 @@ export function CreateChapterPage() {
         <div className="dark:bg-[#343434] bg-white p-8 rounded-lg shadow-md">
           <h2 className="text-3xl font-bold mb-4">Create New Chapter</h2>
           <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+              <label
+                htmlFor="ChapterNumber"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-200"
+              >
+                Chapter Number
+              </label>
+              <input
+                type="text"
+                id="title"
+                name="title"
+                className="mt-1 p-2 border rounded-md w-full"
+                placeholder="Enter the chapter's order"
+                value={order}
+                onChange={handleOrderChange}
+                required
+              />
+            </div>
             <div className="mb-4">
               <label
                 htmlFor="Title"
@@ -85,7 +106,7 @@ export function CreateChapterPage() {
                 id="content"
                 name="content"
                 className="mt-1 p-2 border rounded-md w-full"
-                placeholder="Enter the story's content"
+                placeholder="Enter the chapter's content"
                 value={content}
                 onChange={handleContentChange}
                 required

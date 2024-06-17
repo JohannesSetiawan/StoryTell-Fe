@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "../components/common";
-import { useUpdateStoryMutation } from "../redux/api/storyApi";
+import { useUpdateStoryMutation, useGetSpecificStoryQuery } from "../redux/api/storyApi";
 
 export function UpdateStoryPage() {
   const {storyId} = useParams()
@@ -10,6 +10,12 @@ export function UpdateStoryPage() {
   const [description, setDescription] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [updateStory] = useUpdateStoryMutation();
+  const {data: story} = useGetSpecificStoryQuery(storyId ? storyId : "undefined")
+
+  useEffect(()=>{
+    setDescription(story?.description ? story.description : "")
+    setTitle(story?.title ? story.title : "")
+  }, [story])
 
   const navigate = useNavigate();
 

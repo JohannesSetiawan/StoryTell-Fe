@@ -10,7 +10,9 @@ import {
   CreateStoryPage,
   ReadStoryPage,
   UpdateStoryPage,
-  CreateChapterPage
+  CreateChapterPage,
+  ReadChapterPage,
+  UpdateChapterPage
 } from "./modules";
 import { Navbar } from "./components";
 
@@ -58,6 +60,14 @@ const router = createBrowserRouter([
       {
         path: "/create-chapter/:storyId",
         element: <CreateChapterPage />,
+      },
+      {
+        path: "/read-chapter/:chapterId",
+        element: <ReadChapterPage />,
+      },
+      {
+        path: "/update-chapter/:chapterId",
+        element: <UpdateChapterPage />,
       },
     ],
   },
