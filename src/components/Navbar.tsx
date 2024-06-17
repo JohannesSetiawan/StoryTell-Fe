@@ -33,7 +33,7 @@ export function Navbar() {
   if (!user_token) {
     return (
       <div className="flex w-full justify-between gap-4 px-4 py-2 md:px-8">
-        <div className="text-xl font-bold">Welcome to Gladi!</div>
+        <div className="text-xl font-bold">Welcome to Storytell!</div>
         <div className="flex flex-row gap-6 items-center">
           <ToggleTheme />
           <button
