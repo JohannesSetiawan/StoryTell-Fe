@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "../components/common";
-import { useUpdateStoryMutation, useGetSpecificStoryQuery } from "../redux/api/storyApi";
+import { useUpdateStoryMutation } from "../redux/api/storyApi";
 
 export function UpdateStoryPage() {
   const {storyId} = useParams()
