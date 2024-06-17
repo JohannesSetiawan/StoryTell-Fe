@@ -7,6 +7,7 @@ import { Button } from "../components/common";
 export function RegisterPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [secretCode, setSecretCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const [register] = useRegisterMutation();
@@ -20,19 +21,26 @@ export function RegisterPage() {
       username: username,
       password: password,
     };
-    await register({ ...data }).then((res) => {
-      if (res) {
-        if ("data" in res) {
-          toast.success("Register success!");
-          navigate("/");
-        } else if ("data" in res.error) {
-          const errorData = res.error.data as { message: string };
-          toast.error(errorData.message);
-        } else {
-          toast.error("Unknown error!");
+    if(secretCode === password){
+      await register({ ...data }).then((res) => {
+        if (res) {
+          if ("data" in res) {
+            toast.success("Register success!");
+            navigate("/");
+          } else if ("data" in res.error) {
+            const errorData = res.error.data as { message: string };
+            toast.error(errorData.message);
+          } else {
+            toast.error("Unknown error!");
+          }
         }
-      }
-    });
+      });
+    }
+    else {
+      toast.error("Wrong secret code!!! Try again :)")
+    }
+
+    
     setIsLoading(false);
   };
 
@@ -42,6 +50,10 @@ export function RegisterPage() {
 
   const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(event.target.value);
+  };
+
+  const handleSecretChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSecretCode(event.target.value);
   };
 
   return (
@@ -82,6 +94,23 @@ export function RegisterPage() {
               placeholder="Enter your password"
               value={password}
               onChange={handlePasswordChange}
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label
+              htmlFor="secret"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-200"
+            >
+              Secret Code
+            </label>
+            <input
+              id="secret"
+              name="secret"
+              className="mt-1 p-2 border rounded-md w-full"
+              placeholder="Enter the secret code"
+              value={secretCode}
+              onChange={handleSecretChange}
               required
             />
           </div>

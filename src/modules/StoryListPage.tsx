@@ -51,13 +51,6 @@ export function StoryListPage() {
           <h2 className="text-3xl md:text-5xl text-center w-full font-bold">
             All Stories
           </h2>
-          <div className="flex flex-wrap gap-3 w-full py-5">
-            {/* <button className="rounded-lg flex flex-row items-center gap-2 justify-center bg-blue-500 text-white hover:bg-blue-600 dark:bg-gray-500 hover:dark:bg-gray-600 px-4 py-2 w-1/5 duration-200 transition-all ease-in-out">
-              <a href="/capture" className="text-white">
-                Create Recording
-              </a>
-            </button> */}
-          </div>
 
           <div className="flex flex-wrap gap-3 w-full py-5 px-4">
             <div className="w-full">
