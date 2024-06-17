@@ -104,7 +104,7 @@ export function ReadStoryPage() {
                 story.chapters?.map((chapter) => (
                   <a href={`/read-chapter/${chapter.id}`} className="block dark:text-indigo-300" key={chapter.id}>
                     <div className="w-full flex flex-col  justify-center bg-gray-200 dark:bg-gray-600 border-2 border-gray-400 dark:border-gray-500 p-4 rounded-lg shadow-md mb-4">
-                      <p>{chapter.order}. {chapter.title}</p>
+                      <p>Chapter {chapter.order}. {chapter.title}</p>
                     </div>
                   </a>
                 ))
