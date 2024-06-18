@@ -6,7 +6,7 @@ import { useCreateChapterMutation } from "../redux/api/chapterApi";
 import { useGetSpecificStoryQuery } from "../redux/api/storyApi";
 
 export function CreateChapterPage() {
-  const [title, setTitle] = useState("");
+  const [title, setTitle] = useState(" ");
   const [content, setContent] = useState("");
   const [order, setOrder] = useState(1);
   const {storyId} = useParams()
@@ -92,7 +92,6 @@ export function CreateChapterPage() {
                 placeholder="Enter the chapter's title"
                 value={title}
                 onChange={handleTitleChange}
-                required
               />
             </div>
             <div className="mb-4">
