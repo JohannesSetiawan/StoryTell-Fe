@@ -10,7 +10,7 @@ export function LandingPage() {
       <div className="mt-8 mb-4">
         <div className="flex justify-center">
           <div className="text-3xl font-bold">
-            Read to your heart content!
+            Create and read to your heart content!
           </div>
         </div>
       </div>

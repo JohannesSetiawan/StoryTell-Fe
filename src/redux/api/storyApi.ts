@@ -1,7 +1,7 @@
 import { baseApi } from "./baseApi";
 import { Message, Story, allStoriesResponse, createStoryData, specificStoryResponse } from "../types/story";
 
-const STORY_API = "https://story-tell-be.vercel.app/story";
+const STORY_API = import.meta.env.VITE_API_URL + "story";
 
 export const storyApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({

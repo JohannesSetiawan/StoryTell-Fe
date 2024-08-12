@@ -7,6 +7,7 @@ import { useCreateStoryMutation } from "../redux/api/storyApi";
 export function CreateStoryPage() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [isPrivate, setIsPrivate] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const [CreateStory] = useCreateStoryMutation();
@@ -19,6 +20,7 @@ export function CreateStoryPage() {
     const data = {
       title: title,
       description: description,
+      isprivate: isPrivate,
     };
     await CreateStory({ ...data }).then((res) => {
       if (res) {
@@ -42,6 +44,10 @@ export function CreateStoryPage() {
 
   const handleDescriptionChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setDescription(event.target.value);
+  };
+
+  const handleIsPrivateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setIsPrivate(event.target.checked);
   };
 
   return (
@@ -82,6 +88,21 @@ export function CreateStoryPage() {
               value={description}
               onChange={handleDescriptionChange}
               required
+            />
+          </div>
+          <div className="flex mb-4">
+            <label
+              htmlFor="isPrivate"
+              className="mr-2 p-2 text-sm font-medium text-gray-700 dark:text-gray-200"
+            >
+              Private Story ?
+            </label>
+            <input
+              id="isPrivate"
+              name="isPrivate"
+              type="checkbox"
+              checked={isPrivate}
+              onChange={handleIsPrivateChange}
             />
           </div>
           <Button type="submit" loading={isLoading}>

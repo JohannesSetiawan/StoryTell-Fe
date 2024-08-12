@@ -6,8 +6,9 @@ import toast from "react-hot-toast";
 export function ReadStoryPage() {
     const {storyId} = useParams()
     const userId = useAppSelector((state: RootState) => state.user).user?.userId;
-    const {data: story} = useGetSpecificStoryQuery(storyId ? storyId: "undefined")
+    const {data: story, error} = useGetSpecificStoryQuery(storyId ? storyId: "undefined")
     const [deleteStory] = useDeleteStoryMutation()
+
     
 
     const navigate = useNavigate()
@@ -42,6 +43,7 @@ export function ReadStoryPage() {
     };
 
     if (story && storyId){
+    
         if (story.authorId === userId){
             return (
                 <div className="p-4 max-w-3xl mx-auto">
@@ -120,21 +122,46 @@ export function ReadStoryPage() {
             </div>
         );
     } else {
+      if (error){
+        return (
+          <div>
+            <div className="flex flex-wrap gap-3 w-full py-10">
+              <div className="flex flex-wrap gap-3 w-full py-5 font-bold">
+                
+              </div>
+  
+              <div className="flex flex-wrap gap-3 w-full py-5 px-4">
+                <div className="w-full">
+                  <p className='font-bold'> You don't have permission to access this page! </p>
+                </div>
+              </div>
+
+              <button
+                    onClick={handleBack}
+                    className="rounded-lg flex flex-row items-center gap-2 justify-center bg-blue-500 text-white hover:bg-blue-600 dark:bg-gray-500 hover:dark:bg-gray-600 duration-200 transition-all ease-in-out px-4 py-2"
+                    >
+                    Back
+              </button>
+            </div>
+          </div>
+        )
+      }
+      console.log("masuk")
       return (
         <div>
-        <div className="flex flex-wrap gap-3 w-full py-10">
-          <div className="flex flex-wrap gap-3 w-full py-5">
-            
-          </div>
+          <div className="flex flex-wrap gap-3 w-full py-10">
+            <div className="flex flex-wrap gap-3 w-full py-5">
+              
+            </div>
 
-          <div className="flex flex-wrap gap-3 w-full py-5 px-4">
-            <div className="w-full">
-              <p> Loading ... </p>
+            <div className="flex flex-wrap gap-3 w-full py-5 px-4">
+              <div className="w-full">
+                <p> Loading ... </p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    )
+      )
     }
     
 };

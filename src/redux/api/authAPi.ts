@@ -7,7 +7,7 @@ import {
   UserInfoResponse,
 } from "../types/auth";
 
-const AUTH_API = "https://story-tell-be.vercel.app/user";
+const AUTH_API = import.meta.env.VITE_API_URL + "user";
 
 export const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({

@@ -3,7 +3,8 @@ export type Story = {
     title: string,
     description: string,
     dateCreated: string,
-    authorId: string
+    authorId: string,
+    isprivate: boolean
 }
 
 
@@ -38,5 +39,6 @@ export type specificStoryResponse = {
     description: string,
     dateCreated: string,
     authorId: string
+    isprivate: boolean
     chapters: Chapter[]
 }

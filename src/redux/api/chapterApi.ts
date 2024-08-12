@@ -2,7 +2,7 @@ import { CreateChapterData } from "../types/chapter";
 import { Chapter, Message } from "../types/story";
 import { baseApi } from "./baseApi";
 
-const CHAPTER_API = "https://story-tell-be.vercel.app/chapter";
+const CHAPTER_API = import.meta.env.VITE_API_URL + "chapter";
 
 export const chapterApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({

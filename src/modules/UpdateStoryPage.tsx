@@ -8,6 +8,7 @@ export function UpdateStoryPage() {
   const {storyId} = useParams()
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [isPrivate, setIsPrivate] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [updateStory] = useUpdateStoryMutation();
   const {data: story} = useGetSpecificStoryQuery(storyId ? storyId : "undefined")
@@ -15,6 +16,7 @@ export function UpdateStoryPage() {
   useEffect(()=>{
     setDescription(story?.description ? story.description : "")
     setTitle(story?.title ? story.title : "")
+    setIsPrivate(story?.isprivate ? story.isprivate : false)
   }, [story])
 
   const navigate = useNavigate();
@@ -25,6 +27,7 @@ export function UpdateStoryPage() {
     const data = {
       title: title,
       description: description,
+      isprivate: isPrivate
     };
     await updateStory({ updateData: data, storyId: storyId? storyId : "undefined"}).then((res) => {
       if (res) {
@@ -50,6 +53,10 @@ export function UpdateStoryPage() {
     setDescription(event.target.value);
   };
 
+  const handleIsPrivateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setIsPrivate(event.target.checked);
+  };
+
   return (
     <div className="flex justify-center items-center h-screen">
       <div className="dark:bg-[#343434] bg-white p-8 rounded-lg shadow-md">
@@ -70,7 +77,6 @@ export function UpdateStoryPage() {
               placeholder="Enter the story's title"
               value={title}
               onChange={handleTitleChange}
-              required
             />
           </div>
           <div className="mb-4">
@@ -87,6 +93,22 @@ export function UpdateStoryPage() {
               placeholder="Enter the story's description"
               value={description}
               onChange={handleDescriptionChange}
+              required
+            />
+          </div>
+          <div className="flex mb-4">
+            <label
+              htmlFor="isPrivate"
+              className="mr-2 p-2 text-sm font-medium text-gray-700 dark:text-gray-200"
+            >
+              Private Story ?
+            </label>
+            <input
+              id="isPrivate"
+              name="isPrivate"
+              type="checkbox"
+              checked={isPrivate}
+              onChange={handleIsPrivateChange}
               required
             />
           </div>
