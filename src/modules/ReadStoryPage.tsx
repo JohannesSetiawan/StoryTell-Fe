@@ -2,6 +2,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useGetSpecificStoryQuery, useDeleteStoryMutation } from '../redux/api/storyApi';
 import { RootState, useAppSelector } from "../redux/store";
 import toast from "react-hot-toast";
+import ReactMarkdown from 'react-markdown';
 
 export function ReadStoryPage() {
     const {storyId} = useParams()
@@ -48,7 +49,9 @@ export function ReadStoryPage() {
             return (
                 <div className="p-4 max-w-3xl mx-auto">
                 <h1 className="text-3xl font-bold mb-4">{story.title}</h1>
-                <p className="text-lg mb-6 whitespace-pre-line">{story.description}</p>
+                <div className="text-lg mb-6 whitespace-pre-line">
+                    <ReactMarkdown>{story.description}</ReactMarkdown>
+                </div>
                 <div className="flex flex-row items-center gap-4">
                   <button
                       onClick={handleUpdateStory}

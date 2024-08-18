@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../components/common";
 import { useCreateStoryMutation } from "../redux/api/storyApi";
+import ReactMarkdown from 'react-markdown';
 
 export function CreateStoryPage() {
   const [title, setTitle] = useState("");
@@ -104,6 +105,19 @@ export function CreateStoryPage() {
               checked={isPrivate}
               onChange={handleIsPrivateChange}
             />
+          </div>
+          <div className="flex mb-4">
+            <label
+              htmlFor="isPrivate"
+              className="mr-2 p-2 text-sm font-medium text-gray-700 dark:text-gray-200"
+            >
+              Preview Description
+            </label>
+          </div>
+          <div className="flex mb-4 border p-4">
+            <div className="text-lg mb-6 whitespace-pre-line">
+                    <ReactMarkdown>{description}</ReactMarkdown>
+            </div>
           </div>
           <Button type="submit" loading={isLoading}>
             Create Story

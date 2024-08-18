@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "../components/common";
 import { useUpdateChapterMutation, useGetSpecificChapterQuery } from "../redux/api/chapterApi";
+import ReactMarkdown from 'react-markdown';
 
 export function UpdateChapterPage() {
   const {chapterId} = useParams()
@@ -116,6 +117,19 @@ export function UpdateChapterPage() {
                     onChange={handleContentChange}
                     required
                 />
+                </div>
+                <div className="flex mb-4">
+                <label
+                  htmlFor="isPrivate"
+                  className="mr-2 p-2 text-sm font-medium text-gray-700 dark:text-gray-200"
+                >
+                  Preview Content
+                </label>
+                </div>
+                <div className="flex mb-4 border p-4 overflow-auto max-h-60">
+                  <div className="text-lg mb-6 whitespace-pre-line">
+                          <ReactMarkdown>{content}</ReactMarkdown>
+                  </div>
                 </div>
                 <Button type="submit" loading={isLoading}>
                 Update Chapter

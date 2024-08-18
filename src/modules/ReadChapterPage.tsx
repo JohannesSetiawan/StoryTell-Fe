@@ -4,6 +4,8 @@ import { useGetSpecificChapterQuery, useDeleteChapterMutation } from '../redux/a
 import { RootState, useAppSelector } from "../redux/store";
 import toast from "react-hot-toast";
 import { Chapter } from '../redux/types/story';
+import ReactMarkdown from 'react-markdown';
+
 
 export function ReadChapterPage() {
     const {chapterId} = useParams()
@@ -70,7 +72,9 @@ export function ReadChapterPage() {
                 <div className="p-4 max-w-3xl mx-auto">
                 <h1 className="text-3xl font-bold mb-4">Chapter {chapter.order}</h1>
                 <h1 className="text-3xl font-bold mb-4">{chapter.title}</h1>
-                <p className="text-lg mb-6 whitespace-pre-line">{chapter.content}</p>
+                <div className="text-lg mb-6 whitespace-pre-line">
+                    <ReactMarkdown>{chapter.content}</ReactMarkdown>
+                </div>
                 <div className="flex flex-row items-center gap-4">
                     <button
                         onClick={handleUpdateChapter}
