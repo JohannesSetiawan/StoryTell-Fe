@@ -109,7 +109,6 @@ export function UpdateStoryPage() {
               type="checkbox"
               checked={isPrivate}
               onChange={handleIsPrivateChange}
-              required
             />
           </div>
           <Button type="submit" loading={isLoading}>
