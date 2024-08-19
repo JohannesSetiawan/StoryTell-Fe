@@ -112,7 +112,7 @@ export function CreateChapterPage() {
                 required
               />
             </div>
-            <div className="flex mb-4">
+            {/* <div className="flex mb-4">
             <label
               htmlFor="isPrivate"
               className="mr-2 p-2 text-sm font-medium text-gray-700 dark:text-gray-200"
@@ -124,7 +124,7 @@ export function CreateChapterPage() {
               <div className="text-lg mb-6 whitespace-pre-line">
                       <ReactMarkdown>{content}</ReactMarkdown>
               </div>
-            </div>
+            </div> */}
             <Button type="submit" loading={isLoading}>
               Create Chapter
             </Button>

@@ -118,22 +118,26 @@ export function UpdateChapterPage() {
                     required
                 />
                 </div>
-                <div className="flex mb-4">
-                <label
-                  htmlFor="isPrivate"
-                  className="mr-2 p-2 text-sm font-medium text-gray-700 dark:text-gray-200"
-                >
-                  Preview Content
-                </label>
-                </div>
-                <div className="flex mb-4 border p-4 overflow-auto max-h-60">
-                  <div className="text-lg mb-6 whitespace-pre-line">
-                          <ReactMarkdown>{content}</ReactMarkdown>
+                {/* <div className="max-w-3/4">
+                  <div className="flex mb-4">
+                  <label
+                    htmlFor="isPrivate"
+                    className="mr-2 p-2 text-sm font-medium text-gray-700 dark:text-gray-200"
+                  >
+                    Preview Content
+                  </label>
                   </div>
-                </div>
+                  <div className="flex mb-4 border p-4 overflow-auto max-h-60">
+                    <div className="mb-4 whitespace-pre-line">
+                            <ReactMarkdown>{content}</ReactMarkdown>
+                    </div>
+                  </div>
+                </div> */}
+                
                 <Button type="submit" loading={isLoading}>
                 Update Chapter
                 </Button>
+                
             </form>
             </div>
         </div>
