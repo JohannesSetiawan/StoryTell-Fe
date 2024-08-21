@@ -101,7 +101,9 @@ export function ReadStoryPage() {
         return (
             <div className="p-4 max-w-3xl mx-auto">
               <h1 className="text-3xl font-bold mb-4">{story.title}</h1>
-              <p className="text-lg mb-6 whitespace-pre-line">{story.description}</p>
+              <div className="text-lg mb-6 whitespace-pre-line">
+                    <ReactMarkdown>{story.description}</ReactMarkdown>
+              </div>
               <h2 className="text-2xl font-semibold mb-3">Chapters</h2>
               <div className="flex flex-wrap gap-3 w-full py-5 px-4">
                 <div className="w-full h-80 overflow-y-auto">
