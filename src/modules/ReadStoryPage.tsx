@@ -3,6 +3,7 @@ import { useGetSpecificStoryQuery, useDeleteStoryMutation } from '../redux/api/s
 import { RootState, useAppSelector } from "../redux/store";
 import toast from "react-hot-toast";
 import ReactMarkdown from 'react-markdown';
+import { CommentsList } from './comment/Comment';
 
 export function ReadStoryPage() {
     const {storyId} = useParams()
@@ -76,7 +77,7 @@ export function ReadStoryPage() {
                 </button>
                 <h1 className="text-3xl font-bold mb-4"></h1>
                 <div className="flex flex-wrap gap-3 w-full py-5 px-4">
-                  <div className="w-full h-80 overflow-y-auto">
+                  <div className="w-full h-60 overflow-y-auto">
                     {
                       story.chapters?.map((chapter) => (
                         <a href={`/read-chapter/${chapter.id}`} className="block dark:text-indigo-300" key={chapter.id}>
@@ -88,7 +89,8 @@ export function ReadStoryPage() {
                     }
                   </div>
                 </div>
-                <h1 className="text-3xl font-bold mb-4"></h1>
+                <h2 className="text-2xl font-semibold mb-3">Comments</h2>
+                <CommentsList story={story}></CommentsList>
                 <button
                     onClick={handleBack}
                     className="rounded-lg flex flex-row items-center gap-2 justify-center bg-blue-500 text-white hover:bg-blue-600 dark:bg-gray-500 hover:dark:bg-gray-600 duration-200 transition-all ease-in-out px-4 py-2"
@@ -118,6 +120,7 @@ export function ReadStoryPage() {
                   }
                 </div>
               </div>
+              <CommentsList story={story}></CommentsList>
               <button
                     onClick={handleBack}
                     className="rounded-lg flex flex-row items-center gap-2 justify-center bg-blue-500 text-white hover:bg-blue-600 dark:bg-gray-500 hover:dark:bg-gray-600 duration-200 transition-all ease-in-out px-4 py-2"

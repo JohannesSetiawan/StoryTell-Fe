@@ -4,7 +4,8 @@ import { RootState } from '../store'
 export const baseApi = createApi({
   tagTypes: [
     'Story',
-    'Chapter'
+    'Chapter',
+    'Comment'
   ],
   baseQuery: fetchBaseQuery({
     prepareHeaders: (headers, { getState }) => {

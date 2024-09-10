@@ -1,3 +1,5 @@
+import { AllCommentResponse } from "./comment"
+
 export type Story = {
     id: string,
     title: string,
@@ -41,4 +43,5 @@ export type specificStoryResponse = {
     authorId: string
     isprivate: boolean
     chapters: Chapter[]
+    storyComments: AllCommentResponse
 }
