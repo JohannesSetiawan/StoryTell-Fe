@@ -1,4 +1,4 @@
-import { useCreateCommentMutation, useDeleteCommentMutation } from "../../redux/api/commentApi";
+import { useCreateCommentMutation, useDeleteCommentMutation, useUpdateCommentMutation } from "../../redux/api/commentApi";
 import { AllCommentResponse, CommentWithAuthorName } from "../../redux/types/comment";
 import { specificStoryResponse } from "../../redux/types/story";
 import { useState } from "react";
@@ -19,19 +19,33 @@ interface AddComment {
     storyId: string
 }
 
+interface UpdateComment {
+  content: string
+  commentId: string
+  storyId: string
+  parentId: string
+}
+
 const Comment: React.FC<Comments> = ({ comment, allComments }) => {
     const replies = allComments.filter(reply => reply.parentId === comment.id);
     const [openCommentAdder, setOpenCommentAdder] = useState(false);
+    const [openCommentUpdater, setOpenCommentUpdater] = useState(false);
     const userId = useAppSelector((state: RootState) => state.user).user?.userId;
     const [deleteComment] = useDeleteCommentMutation()
-    const storyId = comment.parentId
+    const storyId = comment.storyId
     
-    const toggleAddComment = () => {
+    const handleAddComment = () => {
         setOpenCommentAdder(!openCommentAdder);
+        setOpenCommentUpdater(false)
     };
 
+    const handleUpdateComment = () => {
+      setOpenCommentUpdater(!openCommentUpdater)
+      setOpenCommentAdder(false)
+    }
+
     const handleDeleteComment = async () => {
-        console.log(storyId, comment.id)
+        console.log(storyId + " id komen:" + comment.id)
         await deleteComment({storyId, commentId: comment.id}).then((res) => {
             if (res) {
               if ("data" in res) {
@@ -44,6 +58,7 @@ const Comment: React.FC<Comments> = ({ comment, allComments }) => {
               }
             }
         })
+        window.location.reload();
     }
   
     return (
@@ -53,13 +68,13 @@ const Comment: React.FC<Comments> = ({ comment, allComments }) => {
         <div className="flex flex-row items-center gap-4">
             <button
                 className="rounded-lg flex flex-row bg-blue-500 text-white hover:bg-blue-600 dark:bg-gray-500 hover:dark:bg-gray-600 duration-200 transition-all ease-in-out px-4 py-2"
-                onClick={toggleAddComment}
+                onClick={handleAddComment}
             > Reply </button>
             {
                 comment.authorId === userId && (
                     <button
                         className="rounded-lg flex flex-row bg-green-500 text-white hover:bg-green-600 dark:bg-green-500 hover:dark:bg-green-600 duration-200 transition-all ease-in-out px-4 py-2"
-                        
+                        onClick={handleUpdateComment}
                     > Update </button>
                 )
             }
@@ -74,6 +89,13 @@ const Comment: React.FC<Comments> = ({ comment, allComments }) => {
         </div>
         
         {openCommentAdder && <AddComment parentId={comment.id} storyId={comment.storyId}/>}
+
+        {openCommentUpdater && <UpdateComment 
+                                commentId={comment.id} 
+                                storyId={comment.storyId}
+                                content={comment.content}
+                                parentId={comment.parentId} />}
+
         {replies.length > 0 && (
           <div className="ml-6 mt-2">
             {replies.map(reply => (
@@ -113,7 +135,6 @@ const AddComment: React.FC<AddComment> = (parent) => {
     };
   
     const handleSubmit = async () => {
-      console.log(newComment + " " + parentId)
       const data = {content: newComment, parentId: parentId}
       setNewComment("");
       await createCommment({ data, storyId: storyId? storyId : "undefined"}).then((res) => {
@@ -128,13 +149,57 @@ const AddComment: React.FC<AddComment> = (parent) => {
           }
         }
       });
+      window.location.reload();
     };
     
     return (
       <>
-        <textarea onChange={handleChange} value={newComment} />
+        <textarea 
+          className="border-2 border-black-400 dark:border-gray-500 p-4 rounded-lg" 
+          onChange={handleChange} value={newComment} />
         <button onClick={handleSubmit}>Submit</button>
       </>
     );
+};
+
+const UpdateComment: React.FC<UpdateComment> = (comment) => {
+  const [ updateComment ] = useUpdateCommentMutation()
+  const [newComment, setNewComment] = useState(comment.content);
+  const commentId = comment.commentId
+  const parentId = comment.parentId
+  const storyId = comment.storyId
+  const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const { value } = event.target;
+    if (value) setNewComment(value);
+  };
+
+  const handleSubmit = async () => {
+    const data = {content: newComment, parentId: parentId}
+    
+    await updateComment({ data, storyId: storyId? storyId : "undefined", commentId}).then((res) => {
+      if (res) {
+        if ("data" in res) {
+          toast.success("Update comment success!");
+        } else if ("data" in res.error) {
+          const errorData = res.error.data as { message: string };
+          toast.error(errorData.message);
+        } else {
+          toast.error("Unknown error!");
+        }
+      }
+    });
+    
+    setNewComment("");
+    window.location.reload();
+  };
+  
+  return (
+    <>
+      <textarea 
+        className="border-2 border-black-400 dark:border-gray-500 p-4 rounded-lg" 
+        onChange={handleChange} value={newComment} />
+      <button onClick={handleSubmit}>Submit</button>
+    </>
+  );
 };
   
