@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
-import { Button } from "../components/common";
-import { useCreateChapterMutation } from "../redux/api/chapterApi";
-import { useGetSpecificStoryQuery } from "../redux/api/storyApi";
-import ReactMarkdown from 'react-markdown';
+import { Button } from "../../components/common";
+import { useCreateChapterMutation } from "../../redux/api/chapterApi";
+import { useGetSpecificStoryQuery } from "../../redux/api/storyApi";
+// import ReactMarkdown from 'react-markdown';
 
 export function CreateChapterPage() {
   const [title, setTitle] = useState(" ");

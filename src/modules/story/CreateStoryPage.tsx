@@ -1,24 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import toast from "react-hot-toast";
-import { useNavigate, useParams } from "react-router-dom";
-import { Button } from "../components/common";
-import { useUpdateStoryMutation, useGetSpecificStoryQuery } from "../redux/api/storyApi";
-import ReactMarkdown from 'react-markdown';
+import { useNavigate } from "react-router-dom";
+import { Button } from "../../components/common";
+import { useCreateStoryMutation } from "../../redux/api/storyApi";
+// import ReactMarkdown from 'react-markdown';
 
-export function UpdateStoryPage() {
-  const {storyId} = useParams()
+export function CreateStoryPage() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [isPrivate, setIsPrivate] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [updateStory] = useUpdateStoryMutation();
-  const {data: story} = useGetSpecificStoryQuery(storyId ? storyId : "undefined")
 
-  useEffect(()=>{
-    setDescription(story?.description ? story.description : "")
-    setTitle(story?.title ? story.title : "")
-    setIsPrivate(story?.isprivate ? story.isprivate : false)
-  }, [story])
+  const [CreateStory] = useCreateStoryMutation();
 
   const navigate = useNavigate();
 
@@ -28,13 +21,13 @@ export function UpdateStoryPage() {
     const data = {
       title: title,
       description: description,
-      isprivate: isPrivate
+      isprivate: isPrivate,
     };
-    await updateStory({ updateData: data, storyId: storyId? storyId : "undefined"}).then((res) => {
+    await CreateStory({ ...data }).then((res) => {
       if (res) {
         if ("data" in res) {
-          toast.success("Update story success!");
-          navigate(`/read-story/${storyId}`);
+          toast.success("Create story success!");
+          navigate("/your-story");
         } else if ("data" in res.error) {
           const errorData = res.error.data as { message: string };
           toast.error(errorData.message);
@@ -61,7 +54,7 @@ export function UpdateStoryPage() {
   return (
     <div className="flex justify-center items-center h-screen">
       <div className="dark:bg-[#343434] bg-white p-8 rounded-lg shadow-md">
-        <h2 className="text-3xl font-bold mb-4">Update Story</h2>
+        <h2 className="text-3xl font-bold mb-4">Create New Story</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label
@@ -78,6 +71,7 @@ export function UpdateStoryPage() {
               placeholder="Enter the story's title"
               value={title}
               onChange={handleTitleChange}
+              required
             />
           </div>
           <div className="mb-4">
@@ -126,7 +120,7 @@ export function UpdateStoryPage() {
             </div>
           </div> */}
           <Button type="submit" loading={isLoading}>
-            Update Story
+            Create Story
           </Button>
         </form>
       </div>

@@ -1,9 +1,9 @@
 import { useNavigate, useParams } from 'react-router-dom';
-import { useGetSpecificStoryQuery, useDeleteStoryMutation } from '../redux/api/storyApi';
-import { RootState, useAppSelector } from "../redux/store";
+import { useGetSpecificStoryQuery, useDeleteStoryMutation } from '../../redux/api/storyApi';
+import { RootState, useAppSelector } from "../../redux/store";
 import toast from "react-hot-toast";
 import ReactMarkdown from 'react-markdown';
-import { CommentsList } from './comment/Comment';
+import { CommentsList } from '../comment/Comment';
 
 export function ReadStoryPage() {
     const {storyId} = useParams()

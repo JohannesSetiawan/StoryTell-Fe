@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
-import { Button } from "../components/common";
-import { useUpdateChapterMutation, useGetSpecificChapterQuery } from "../redux/api/chapterApi";
-import ReactMarkdown from 'react-markdown';
+import { Button } from "../../components/common";
+import { useUpdateChapterMutation, useGetSpecificChapterQuery } from "../../redux/api/chapterApi";
+// import ReactMarkdown from 'react-markdown';
 
 export function UpdateChapterPage() {
   const {chapterId} = useParams()

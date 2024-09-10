@@ -1,9 +1,9 @@
 import { useNavigate, useParams } from 'react-router-dom';
-import { useGetSpecificStoryQuery } from '../redux/api/storyApi';
-import { useGetSpecificChapterQuery, useDeleteChapterMutation } from '../redux/api/chapterApi';
-import { RootState, useAppSelector } from "../redux/store";
+import { useGetSpecificStoryQuery } from '../../redux/api/storyApi';
+import { useGetSpecificChapterQuery, useDeleteChapterMutation } from '../../redux/api/chapterApi';
+import { RootState, useAppSelector } from "../../redux/store";
 import toast from "react-hot-toast";
-import { Chapter } from '../redux/types/story';
+import { Chapter } from '../../redux/types/story';
 import ReactMarkdown from 'react-markdown';
 
 
