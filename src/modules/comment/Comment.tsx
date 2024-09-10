@@ -111,11 +111,6 @@ const Comment: React.FC<Comments> = ({ comment, allComments }) => {
 export const CommentsList: React.FC<Story> = ({ story }) => {
     const allComments = story.storyComments || [];
     const storyId = story.id
-    const [openCommentAdder, setOpenCommentAdder] = useState(false);
-
-    const handleAddComment = () => {
-      setOpenCommentAdder(!openCommentAdder);
-    };
 
     const topLevelComments = allComments.filter(comment => !comment.parentId);
 
