@@ -15,7 +15,7 @@ interface Comments {
 }
 
 interface AddComment {
-    parentId: string
+    parentId?: string
     storyId: string
 }
 
@@ -110,17 +110,31 @@ const Comment: React.FC<Comments> = ({ comment, allComments }) => {
   
 export const CommentsList: React.FC<Story> = ({ story }) => {
     const allComments = story.storyComments || [];
+    const storyId = story.id
+    const [openCommentAdder, setOpenCommentAdder] = useState(false);
+
+    const handleAddComment = () => {
+      setOpenCommentAdder(!openCommentAdder);
+    };
 
     const topLevelComments = allComments.filter(comment => !comment.parentId);
 
     return (
+      <div>
+        <div className="w-full flex flex-col justify-center bg-white-200 dark:bg-gray-600 p-4 rounded-lg">
+          <AddComment parentId={undefined} storyId={storyId}/>
+        </div>
+        
         <div className="flex flex-wrap gap-3 w-full py-5 px-4">
         <div className="w-full h-60 overflow-y-auto">
-            {topLevelComments.map(comment => (
+          
+          {topLevelComments.map(comment => (
             <Comment key={comment.id} comment={comment} allComments={allComments} />
-            ))}
+          ))}
         </div>
         </div>
+      </div>
+        
     );
 };
 
@@ -156,8 +170,10 @@ const AddComment: React.FC<AddComment> = (parent) => {
       <>
         <textarea 
           className="border-2 border-black-400 dark:border-gray-500 p-4 rounded-lg" 
+          placeholder="Enter your new comment"
           onChange={handleChange} value={newComment} />
-        <button onClick={handleSubmit}>Submit</button>
+        <button 
+        onClick={handleSubmit}>Submit</button>
       </>
     );
 };
@@ -198,7 +214,7 @@ const UpdateComment: React.FC<UpdateComment> = (comment) => {
       <textarea 
         className="border-2 border-black-400 dark:border-gray-500 p-4 rounded-lg" 
         onChange={handleChange} value={newComment} />
-      <button onClick={handleSubmit}>Submit</button>
+      <button className="" onClick={handleSubmit}>Submit</button>
     </>
   );
 };

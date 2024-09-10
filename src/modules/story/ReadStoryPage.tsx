@@ -120,6 +120,7 @@ export function ReadStoryPage() {
                   }
                 </div>
               </div>
+              <h2 className="text-2xl font-semibold mb-3">Comments</h2>
               <CommentsList story={story}></CommentsList>
               <button
                     onClick={handleBack}
