@@ -12,7 +12,7 @@ export function CreateChapterPage() {
   const [order, setOrder] = useState(1);
   const {storyId} = useParams()
   const [isLoading, setIsLoading] = useState(false);
-
+  const [changeOrder, setChangeOrder] = useState(false)
   const [createChapter] = useCreateChapterMutation();
   const {data} = useGetSpecificStoryQuery(storyId? storyId : "undefined")
   const navigate = useNavigate();
@@ -66,6 +66,12 @@ export function CreateChapterPage() {
                 className="block text-sm font-medium text-gray-700 dark:text-gray-200"
               >
                 Chapter Number
+              </label>
+              <label
+                htmlFor="ChapterNumber"
+                className="block text-sm font-medium text-red-700 dark:text-red-200"
+              >
+                Latest Chapter Number: {data.chapters[data.chapters.length-1].order}
               </label>
               <input
                 type="text"
@@ -137,7 +143,7 @@ export function CreateChapterPage() {
   return (
     <div className="flex justify-center items-center h-screen">
       <div className="dark:bg-[#343434] bg-white p-8 rounded-lg shadow-md">
-        <h2 className="text-3xl font-bold mb-4">Create New Story</h2>
+        <h2 className="text-3xl font-bold mb-4">Create New Chapter</h2>
         <div className="flex flex-wrap gap-3 w-full py-5 px-4">
             <div className="w-full">
               <p> Loading ... </p>
