@@ -12,7 +12,6 @@ export function CreateChapterPage() {
   const [order, setOrder] = useState(1);
   const {storyId} = useParams()
   const [isLoading, setIsLoading] = useState(false);
-  const [changeOrder, setChangeOrder] = useState(false)
   const [createChapter] = useCreateChapterMutation();
   const {data} = useGetSpecificStoryQuery(storyId? storyId : "undefined")
   const navigate = useNavigate();
