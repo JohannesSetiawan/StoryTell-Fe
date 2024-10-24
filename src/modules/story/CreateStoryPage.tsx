@@ -3,7 +3,9 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../../components/common";
 import { useCreateStoryMutation } from "../../redux/api/storyApi";
-// import ReactMarkdown from 'react-markdown';
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css"; // Import Quill styles
+import {QuillToolbar, modules, formats } from "../../utils/quill";
 
 export function CreateStoryPage() {
   const [title, setTitle] = useState("");
@@ -43,8 +45,8 @@ export function CreateStoryPage() {
     setTitle(event.target.value);
   };
 
-  const handleDescriptionChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setDescription(event.target.value);
+  const handleDescriptionChange = (value: string) => {
+    setDescription(value); // Update content with the rich text
   };
 
   const handleIsPrivateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -81,14 +83,15 @@ export function CreateStoryPage() {
             >
               Description
             </label>
-            <textarea
-              id="description"
-              name="description"
-              className="mt-1 p-2 border rounded-md w-full"
-              placeholder="Enter the story's description"
+            <QuillToolbar />
+            <ReactQuill
               value={description}
+              style={{ height: '200px', overflowY: 'auto' }}
               onChange={handleDescriptionChange}
-              required
+              className="bg-white dark:bg-gray-800 border"
+              placeholder="Enter the chapter's content"
+              modules={modules}  // Pass custom modules that include the toolbar
+              formats={formats}
             />
           </div>
           <div className="flex mb-4">
@@ -106,19 +109,7 @@ export function CreateStoryPage() {
               onChange={handleIsPrivateChange}
             />
           </div>
-          {/* <div className="flex mb-4">
-            <label
-              htmlFor="isPrivate"
-              className="mr-2 p-2 text-sm font-medium text-gray-700 dark:text-gray-200"
-            >
-              Preview Description
-            </label>
-          </div>
-          <div className="flex mb-4 border p-4">
-            <div className="text-lg mb-6 whitespace-pre-line">
-                    <ReactMarkdown>{description}</ReactMarkdown>
-            </div>
-          </div> */}
+          
           <Button type="submit" loading={isLoading}>
             Create Story
           </Button>

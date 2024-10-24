@@ -2,8 +2,10 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useGetSpecificStoryQuery, useDeleteStoryMutation } from '../../redux/api/storyApi';
 import { RootState, useAppSelector } from "../../redux/store";
 import toast from "react-hot-toast";
-import ReactMarkdown from 'react-markdown';
 import { CommentsList } from '../comment/Comment';
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.bubble.css";
+
 
 export function ReadStoryPage() {
     const {storyId} = useParams()
@@ -51,7 +53,11 @@ export function ReadStoryPage() {
                 <div className="p-4 max-w-3xl mx-auto">
                 <h1 className="text-3xl font-bold mb-4">{story.title}</h1>
                 <div className="text-lg mb-6 whitespace-pre-line">
-                    <ReactMarkdown>{story.description}</ReactMarkdown>
+                <ReactQuill
+                        value={story.description}
+                        readOnly={true}
+                        theme={"bubble"}
+                />
                 </div>
                 <div className="flex flex-row items-center gap-4">
                   <button
@@ -104,7 +110,11 @@ export function ReadStoryPage() {
             <div className="p-4 max-w-3xl mx-auto">
               <h1 className="text-3xl font-bold mb-4">{story.title}</h1>
               <div className="text-lg mb-6 whitespace-pre-line">
-                    <ReactMarkdown>{story.description}</ReactMarkdown>
+              <ReactQuill
+                        value={story.description}
+                        readOnly={true}
+                        theme={"bubble"}
+                />
               </div>
               <h2 className="text-2xl font-semibold mb-3">Chapters</h2>
               <div className="flex flex-wrap gap-3 w-full py-5 px-4">

@@ -3,7 +3,9 @@ import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "../../components/common";
 import { useUpdateStoryMutation, useGetSpecificStoryQuery } from "../../redux/api/storyApi";
-// import ReactMarkdown from 'react-markdown';
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css"; // Import Quill styles
+import {QuillToolbar, modules, formats } from "../../utils/quill";
 
 export function UpdateStoryPage() {
   const {storyId} = useParams()
@@ -50,8 +52,8 @@ export function UpdateStoryPage() {
     setTitle(event.target.value);
   };
 
-  const handleDescriptionChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setDescription(event.target.value);
+  const handleDescriptionChange = (value: string) => {
+    setDescription(value); // Update content with the rich text
   };
 
   const handleIsPrivateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -87,14 +89,15 @@ export function UpdateStoryPage() {
             >
               Description
             </label>
-            <textarea
-              id="description"
-              name="description"
-              className="mt-1 p-2 border rounded-md w-full"
-              placeholder="Enter the story's description"
+            <QuillToolbar />
+            <ReactQuill
               value={description}
+              style={{ height: '200px', overflowY: 'auto' }}
               onChange={handleDescriptionChange}
-              required
+              className="bg-white dark:bg-gray-800 border"
+              placeholder="Enter the chapter's content"
+              modules={modules}  // Pass custom modules that include the toolbar
+              formats={formats}
             />
           </div>
           <div className="flex mb-4">

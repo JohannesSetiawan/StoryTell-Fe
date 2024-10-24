@@ -4,7 +4,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "../../components/common";
 import { useCreateChapterMutation } from "../../redux/api/chapterApi";
 import { useGetSpecificStoryQuery } from "../../redux/api/storyApi";
-// import ReactMarkdown from 'react-markdown';
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css"; // Import Quill styles
+import {QuillToolbar, modules, formats } from "../../utils/quill";
 
 export function CreateChapterPage() {
   const [title, setTitle] = useState(" ");
@@ -49,14 +51,14 @@ export function CreateChapterPage() {
     setOrder(Number(event.target.value));
   };
 
-  const handleContentChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setContent(event.target.value);
+  const handleContentChange = (value: string) => {
+    setContent(value); // Update content with the rich text
   };
 
   if (data && storyId){
     return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="dark:bg-[#343434] bg-white p-8 rounded-lg shadow-md">
+      <div className="flex justify-center items-center h-screen w-full">
+        <div className="dark:bg-[#343434] bg-white p-8 rounded-lg shadow-md w-full">
           <h2 className="text-3xl font-bold mb-4">Create New Chapter</h2>
           <form onSubmit={handleSubmit}>
           <div className="mb-4">
@@ -107,29 +109,17 @@ export function CreateChapterPage() {
               >
                 Content
               </label>
-              <textarea
-                id="content"
-                name="content"
-                className="mt-1 p-2 border rounded-md w-full"
-                placeholder="Enter the chapter's content"
-                value={content}
-                onChange={handleContentChange}
-                required
-              />
+                <QuillToolbar />
+                  <ReactQuill
+                    value={content}
+                    style={{ height: '200px', overflowY: 'auto' }}
+                    onChange={handleContentChange}
+                    className="bg-white dark:bg-gray-800 border"
+                    placeholder="Enter the chapter's content"
+                    modules={modules}  // Pass custom modules that include the toolbar
+                    formats={formats}
+                  />
             </div>
-            {/* <div className="flex mb-4">
-            <label
-              htmlFor="isPrivate"
-              className="mr-2 p-2 text-sm font-medium text-gray-700 dark:text-gray-200"
-            >
-              Preview Content
-            </label>
-            </div>
-            <div className="flex mb-4 border p-4">
-              <div className="text-lg mb-6 whitespace-pre-line">
-                      <ReactMarkdown>{content}</ReactMarkdown>
-              </div>
-            </div> */}
             <Button type="submit" loading={isLoading}>
               Create Chapter
             </Button>
