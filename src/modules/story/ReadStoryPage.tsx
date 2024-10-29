@@ -1,4 +1,5 @@
 import { useNavigate, useParams } from 'react-router-dom';
+import { SetStateAction, useState } from "react";
 import { useGetSpecificStoryQuery, useDeleteStoryMutation } from '../../redux/api/storyApi';
 import { RootState, useAppSelector } from "../../redux/store";
 import toast from "react-hot-toast";
@@ -13,9 +14,27 @@ export function ReadStoryPage() {
     const {data: story, error} = useGetSpecificStoryQuery(storyId ? storyId: "undefined")
     const [deleteStory] = useDeleteStoryMutation()
 
+    const [searchQuery, setSearchQuery] = useState("");
+
+    const [selectedOption, setSelectedOption] = useState('title')
+
+    const filteredChapter = story?.chapters?.filter(chapter =>{
+      if(selectedOption === "title"){
+        return chapter.title.toLowerCase().includes(searchQuery.toLowerCase())
+      } else if (selectedOption === "number"){
+        return chapter.order >= Number(searchQuery.toLowerCase())
+      } else if (selectedOption === "content"){
+        return chapter.content.toLowerCase().includes(searchQuery.toLowerCase())
+      } else{
+        return chapter.title.toLowerCase().includes(searchQuery.toLowerCase())
+      }
+      
+    });
     
 
     const navigate = useNavigate()
+
+    
 
     const handleBack = () => {
         navigate("/read");
@@ -27,6 +46,14 @@ export function ReadStoryPage() {
 
     const handleUpdateStory = () => {
         navigate(`/update-story/${storyId}`);
+    };
+
+    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      setSearchQuery(event.target.value);
+    };
+
+    const handleChange = (event: { target: { value: SetStateAction<string>; }; }) => {
+      setSelectedOption(event.target.value);
     };
 
     const handleDeleteStory = async () => {
@@ -82,10 +109,29 @@ export function ReadStoryPage() {
                     Create Chapter
                 </button>
                 <h1 className="text-3xl font-bold mb-4"></h1>
+                <div className="flex flex-wrap gap-3 w-full py-5">
+                  <label htmlFor="dropdown">Choose search method:</label>
+                  <select id="dropdown" value={selectedOption} onChange={handleChange}>
+                    <option value="title">Title</option>
+                    <option value="number">Number</option>
+                    <option value="content">Content</option>
+                  </select>
+                </div>
+                <div className="flex flex-wrap gap-3 w-full py-5">
+                  <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={handleSearchChange}
+                      placeholder="Search ..."
+                      className="w-full px-3 py-2 placeholder-gray-400 text-gray-700 bg-gray rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                </div>
+
+
                 <div className="flex flex-wrap gap-3 w-full py-5 px-4">
                   <div className="w-full h-60 overflow-y-auto">
                     {
-                      story.chapters?.map((chapter) => (
+                      filteredChapter?.map((chapter) => (
                         <a href={`/read-chapter/${chapter.id}`} className="block dark:text-indigo-300" key={chapter.id}>
                           <div className="w-full flex flex-col  justify-center bg-gray-200 dark:bg-gray-600 border-2 border-gray-400 dark:border-gray-500 p-4 rounded-lg shadow-md mb-4">
                             <p>Chapter {chapter.order}. {chapter.title}</p>
@@ -117,10 +163,28 @@ export function ReadStoryPage() {
                 />
               </div>
               <h2 className="text-2xl font-semibold mb-3">Chapters</h2>
+              <div className="flex flex-wrap gap-3 w-full py-5">
+                  <label htmlFor="dropdown">Choose search method:</label>
+                  <select id="dropdown" value={selectedOption} onChange={handleChange}>
+                    <option value="title">Title</option>
+                    <option value="number">Number</option>
+                    <option value="content">Content</option>
+                  </select>
+              </div>
+              <div className="flex flex-wrap gap-3 w-full py-5">
+                <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={handleSearchChange}
+                    placeholder="Search ..."
+                    className="w-full px-3 py-2 placeholder-gray-400 text-gray-700 bg-gray rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+              </div>
+
               <div className="flex flex-wrap gap-3 w-full py-5 px-4">
                 <div className="w-full h-80 overflow-y-auto">
                   {
-                    story.chapters?.map((chapter) => (
+                    filteredChapter?.map((chapter) => (
                       <a href={`/read-chapter/${chapter.id}`} className="block dark:text-indigo-300" key={chapter.id}>
                         <div className="w-full flex flex-col  justify-center bg-gray-200 dark:bg-gray-600 border-2 border-gray-400 dark:border-gray-500 p-4 rounded-lg shadow-md mb-4">
                           <p>Chapter {chapter.order}. {chapter.title}</p>
