@@ -72,7 +72,7 @@ export function CreateChapterPage() {
                 htmlFor="ChapterNumber"
                 className="block text-sm font-medium text-red-700 dark:text-red-200"
               >
-                Latest Chapter Number: {data.chapters[data.chapters.length-1].order}
+                Latest Chapter Number: {data.chapters? data.chapters[data.chapters.length-1].order : "None"}
               </label>
               <input
                 type="text"
