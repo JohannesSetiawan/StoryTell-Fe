@@ -72,7 +72,7 @@ export function CreateChapterPage() {
                 htmlFor="ChapterNumber"
                 className="block text-sm font-medium text-red-700 dark:text-red-200"
               >
-                Latest Chapter Number: {data.chapters? data.chapters[data.chapters.length-1].order : "None"}
+                Latest Chapter Number: {data.chapters.length > 0? data.chapters[data.chapters.length-1].order : "No chapter yet."}
               </label>
               <input
                 type="text"
@@ -80,7 +80,7 @@ export function CreateChapterPage() {
                 name="title"
                 className="mt-1 p-2 border rounded-md w-full"
                 placeholder="Enter the chapter's order"
-                value={data.chapters? data.chapters[data.chapters.length-1].order + 1 : 1}
+                value={data.chapters.length > 0? data.chapters[data.chapters.length-1].order + 1 : 1}
                 onChange={handleOrderChange}
                 required
               />
