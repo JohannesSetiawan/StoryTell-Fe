@@ -56,6 +56,7 @@ export function CreateChapterPage() {
   };
 
   if (data && storyId){
+    setOrder(data.chapters.length > 0? data.chapters[data.chapters.length-1].order + 1 : 1)
     return (
       <div className="flex justify-center items-center h-screen w-full">
         <div className="dark:bg-[#343434] bg-white p-8 rounded-lg shadow-md w-full">
@@ -80,7 +81,7 @@ export function CreateChapterPage() {
                 name="title"
                 className="mt-1 p-2 border rounded-md w-full"
                 placeholder="Enter the chapter's order"
-                value={data.chapters.length > 0? data.chapters[data.chapters.length-1].order + 1 : 1}
+                value={order}
                 onChange={handleOrderChange}
                 required
               />
