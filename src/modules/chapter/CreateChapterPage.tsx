@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "../../components/common";
@@ -55,8 +55,13 @@ export function CreateChapterPage() {
     setContent(value); // Update content with the rich text
   };
 
+  useEffect(() => {
+    if(data){
+      setOrder(data.chapters.length > 0? data.chapters[data.chapters.length-1].order + 1 : 1)
+    }
+  }, [data])
+
   if (data && storyId){
-    setOrder(data.chapters.length > 0? data.chapters[data.chapters.length-1].order + 1 : 1)
     return (
       <div className="flex justify-center items-center h-screen w-full">
         <div className="dark:bg-[#343434] bg-white p-8 rounded-lg shadow-md w-full">
