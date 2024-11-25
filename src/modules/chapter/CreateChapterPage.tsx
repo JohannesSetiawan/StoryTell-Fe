@@ -80,7 +80,7 @@ export function CreateChapterPage() {
                 name="title"
                 className="mt-1 p-2 border rounded-md w-full"
                 placeholder="Enter the chapter's order"
-                value={data.chapters[data.chapters.length-1].order + 1}
+                value={data.chapters? data.chapters[data.chapters.length-1].order + 1 : 1}
                 onChange={handleOrderChange}
                 required
               />
