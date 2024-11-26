@@ -29,7 +29,15 @@ export const commentApi = baseApi.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ['Comment'],
+      invalidatesTags: ['Comment', 'Story'],
+    }),
+    createChapterComment: builder.mutation<CommentResponse, {data: CommentRequest, storyId: string, chapterId: string}>({
+      query: ({data, storyId, chapterId}) => ({
+        url: COMMENT_API + `/${storyId}/${chapterId}`,
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ['Comment', 'Chapter'],
     }),
     updateComment: builder.mutation<CommentResponse, {data: CommentRequest, storyId: string, commentId: string}>({
       query: ({data, storyId, commentId}) => ({
@@ -54,5 +62,6 @@ export const {
   useCreateCommentMutation,
   useDeleteCommentMutation,
   useGetSpecificCommentQuery,
-  useUpdateCommentMutation
+  useUpdateCommentMutation,
+  useCreateChapterCommentMutation
 } = commentApi;

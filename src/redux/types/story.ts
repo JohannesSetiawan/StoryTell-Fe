@@ -28,7 +28,8 @@ export type Chapter = {
     content: string,
     dateCreated: string,
     storyId: string,
-    order: number
+    order: number,
+    chapterComments: AllCommentResponse
 }
 
 export type Message = {

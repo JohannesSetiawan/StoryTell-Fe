@@ -6,6 +6,8 @@ import toast from "react-hot-toast";
 import { Chapter } from '../../redux/types/story';
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.bubble.css";
+import { ChapterCommentsList } from '../comment/Comment';
+import { Spacer } from '../../components/common/Spacer';
 
 export function ReadChapterPage() {
     const {chapterId} = useParams()
@@ -70,88 +72,90 @@ export function ReadChapterPage() {
 
             return (
                 <div className="p-4 max-w-3xl mx-auto">
-                <h1 className="text-3xl font-bold mb-4">Chapter {chapter.order}</h1>
-                <h1 className="text-3xl font-bold mb-4">{chapter.title}</h1>
-                <div >
-                    <ReactQuill
-                        value={chapter.content}
-                        readOnly={true}
-                        theme={"bubble"}
-                    />
-                </div>
-                <div className="flex flex-row items-center gap-4">
+                    <h1 className="text-3xl font-bold mb-4">Chapter {chapter.order}</h1>
+                    <h1 className="text-3xl font-bold mb-4">{chapter.title}</h1>
+                    <div >
+                        <ReactQuill
+                            value={chapter.content}
+                            readOnly={true}
+                            theme={"bubble"}
+                        />
+                    </div>
+                    <div className="flex flex-row items-center gap-4">
+                        <button
+                            onClick={handleUpdateChapter}
+                            className="rounded-lg flex flex-row items-center gap-2 justify-center bg-green-500 text-white hover:bg-green-600 dark:bg-gray-500 hover:dark:bg-green-600 duration-200 transition-all ease-in-out px-4 py-2"
+                            >
+                            Update Chapter
+                        </button>
+                        <button
+                            onClick={handleDeleteChapter}
+                            className="rounded-lg flex flex-row items-center gap-2 justify-center bg-red-500 text-white hover:bg-red-600 dark:bg-red-500 hover:dark:bg-red-600 duration-200 transition-all ease-in-out px-4 py-2"
+                            >
+                            Delete Chapter
+                        </button>
+                    </div>
+                    
+                    <h1 className="text-3xl font-bold mb-4"></h1>
+                    <div className="flex flex-row items-center gap-4">
+                        {
+                            prevChap ? 
+                                <button
+                                onClick={() => handlePrevChapter(prevChap)}
+                                className="rounded-lg flex flex-row items-center gap-2 justify-center bg-blue-500 text-white hover:bg-blue-600 dark:bg-gray-500 hover:dark:bg-gray-600 duration-200 transition-all ease-in-out px-4 py-2"
+                                >
+                                    Previous
+                                </button> :  
+                                <button
+                                onClick={() => handlePrevChapter(prevChap)}
+                                disabled={true}
+                                className="rounded-lg flex flex-row items-center gap-2 justify-center bg-blue-800 text-white cursor-not-allowed dark:bg-gray-800 duration-200 transition-all ease-in-out px-4 py-2"
+                                >
+                                    Previous
+                                </button>
+                        }
+                        {
+                            nextChap ? 
+                                <button
+                                onClick={() => handleNextChapter(nextChap)}
+                                className="rounded-lg flex flex-row items-center gap-2 justify-center bg-blue-500 text-white hover:bg-blue-600 dark:bg-gray-500 hover:dark:bg-gray-600 duration-200 transition-all ease-in-out px-4 py-2"
+                                >
+                                    Next
+                                </button> :  
+                                <button
+                                onClick={() => handleNextChapter(nextChap)}
+                                disabled={true}
+                                className="rounded-lg flex flex-row items-center gap-2 justify-center bg-blue-800 text-white cursor-not-allowed dark:bg-gray-800 duration-200 transition-all ease-in-out px-4 py-2"
+                                >
+                                    Next
+                                </button>
+                        }
+                    </div>
+                    <Spacer height={15}/>
+                    <h4 className="text-2xl font-semibold mb-3">Comments</h4>
+                    <ChapterCommentsList chapter={chapter}/>
+                    <h1 className="text-3xl font-bold mb-4"></h1>
                     <button
-                        onClick={handleUpdateChapter}
-                        className="rounded-lg flex flex-row items-center gap-2 justify-center bg-green-500 text-white hover:bg-green-600 dark:bg-gray-500 hover:dark:bg-green-600 duration-200 transition-all ease-in-out px-4 py-2"
+                        onClick={handleBack}
+                        className="rounded-lg flex flex-row items-center gap-2 justify-center bg-blue-500 text-white hover:bg-blue-600 dark:bg-gray-500 hover:dark:bg-gray-600 duration-200 transition-all ease-in-out px-4 py-2"
                         >
-                        Update Chapter
+                        Back to Story Page
                     </button>
-                    <button
-                        onClick={handleDeleteChapter}
-                        className="rounded-lg flex flex-row items-center gap-2 justify-center bg-red-500 text-white hover:bg-red-600 dark:bg-red-500 hover:dark:bg-red-600 duration-200 transition-all ease-in-out px-4 py-2"
-                        >
-                        Delete Chapter
-                    </button>
-                </div>
-                
-                <h1 className="text-3xl font-bold mb-4"></h1>
-                <div className="flex flex-row items-center gap-4">
-                    {
-                        prevChap ? 
-                            <button
-                            onClick={() => handlePrevChapter(prevChap)}
-                            className="rounded-lg flex flex-row items-center gap-2 justify-center bg-blue-500 text-white hover:bg-blue-600 dark:bg-gray-500 hover:dark:bg-gray-600 duration-200 transition-all ease-in-out px-4 py-2"
-                            >
-                                Previous
-                            </button> :  
-                            <button
-                            onClick={() => handlePrevChapter(prevChap)}
-                            disabled={true}
-                            className="rounded-lg flex flex-row items-center gap-2 justify-center bg-blue-800 text-white cursor-not-allowed dark:bg-gray-800 duration-200 transition-all ease-in-out px-4 py-2"
-                            >
-                                Previous
-                            </button>
-                    }
-                    {
-                        nextChap ? 
-                            <button
-                            onClick={() => handleNextChapter(nextChap)}
-                            className="rounded-lg flex flex-row items-center gap-2 justify-center bg-blue-500 text-white hover:bg-blue-600 dark:bg-gray-500 hover:dark:bg-gray-600 duration-200 transition-all ease-in-out px-4 py-2"
-                            >
-                                Next
-                            </button> :  
-                            <button
-                            onClick={() => handleNextChapter(nextChap)}
-                            disabled={true}
-                            className="rounded-lg flex flex-row items-center gap-2 justify-center bg-blue-800 text-white cursor-not-allowed dark:bg-gray-800 duration-200 transition-all ease-in-out px-4 py-2"
-                            >
-                                Next
-                            </button>
-                    }
-                </div>
-                
-                <h1 className="text-3xl font-bold mb-4"></h1>
-                <button
-                    onClick={handleBack}
-                    className="rounded-lg flex flex-row items-center gap-2 justify-center bg-blue-500 text-white hover:bg-blue-600 dark:bg-gray-500 hover:dark:bg-gray-600 duration-200 transition-all ease-in-out px-4 py-2"
-                    >
-                    Back to Story Page
-                </button>
                 </div>
             );
         }
         return (
             <div className="p-4 max-w-3xl mx-auto">
-            <h1 className="text-3xl font-bold mb-4">Chapter {chapter.order}</h1>
-            <h1 className="text-3xl font-bold mb-4">{chapter.title}</h1>
-            <p className="text-lg mb-6 whitespace-pre-line">
-                <ReactQuill
-                        value={chapter.content}
-                        readOnly={true}
-                        theme={"bubble"}
-                />
-            </p>
-            <div className="flex flex-row items-center gap-4">
+                <h1 className="text-3xl font-bold mb-4">Chapter {chapter.order}</h1>
+                <h1 className="text-3xl font-bold mb-4">{chapter.title}</h1>
+                <p className="text-lg mb-6 whitespace-pre-line">
+                    <ReactQuill
+                            value={chapter.content}
+                            readOnly={true}
+                            theme={"bubble"}
+                    />
+                </p>
+                <div className="flex flex-row items-center gap-4">
                     {
                         prevChap ? 
                             <button
@@ -185,7 +189,9 @@ export function ReadChapterPage() {
                             </button>
                     }
                 </div>
-                
+                <Spacer height={15}/>
+                <h4 className="text-2xl font-semibold mb-3">Comments</h4>
+                <ChapterCommentsList chapter={chapter}/>
                 <h1 className="text-3xl font-bold mb-4"></h1>
                 <button
                     onClick={handleBack}
@@ -194,6 +200,7 @@ export function ReadChapterPage() {
                     Back to Story Page
                 </button>
             </div>
+            
         );
     } 
     return (

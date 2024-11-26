@@ -7,6 +7,7 @@ export type CommentResponse = {
     id: string
     authorId: string
     storyId: string
+    chapterId: string
     dateCreated: string
     content: string
     parentId: string
