@@ -5,7 +5,8 @@ export const baseApi = createApi({
   tagTypes: [
     'Story',
     'Chapter',
-    'Comment'
+    'Comment',
+    'Rating'
   ],
   baseQuery: fetchBaseQuery({
     prepareHeaders: (headers, { getState }) => {
