@@ -93,8 +93,10 @@ export function ReadStoryPage() {
                 />
                 </div>
                 <Spacer height={10}/>
-                <p className="text-1xl font-bold mb-4">Rating: {String(rating._avg.rate)}/10</p>
-                <p className="text-1xl mb-4">{String(rating._count.rate)} voters</p>
+                {!story.isprivate && <div> 
+                    <p className="text-1xl font-bold mb-4">Rating: {String(rating._avg.rate)}/10</p>
+                    <p className="text-1xl mb-4">{String(rating._count.rate)} voters</p>
+                  </div>}
               <Spacer height={10}/>
                 <div className="flex flex-row items-center gap-4">
                   <button
