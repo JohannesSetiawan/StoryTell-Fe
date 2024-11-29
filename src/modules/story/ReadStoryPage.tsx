@@ -17,8 +17,8 @@ export function ReadStoryPage() {
     const {storyId} = useParams()
     const userId = useAppSelector((state: RootState) => state.user).user?.userId;
     const {data: story, error} = useGetSpecificStoryQuery(storyId ? storyId: "undefined")
-    const {data: rating, error: ratingError} = useGetRatingsForSpecificStoryQuery(storyId ? storyId: "undefined")
-    const {data: userRating, error: userRatingError} = useGetSpecificUserRatingForStoryQuery(storyId ? storyId: "undefined")
+    const {data: rating} = useGetRatingsForSpecificStoryQuery(storyId ? storyId: "undefined")
+    const {data: userRating} = useGetSpecificUserRatingForStoryQuery(storyId ? storyId: "undefined")
     const [deleteStory] = useDeleteStoryMutation()
 
     const [searchQuery, setSearchQuery] = useState("");
