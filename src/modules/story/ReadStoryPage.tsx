@@ -20,6 +20,7 @@ export function ReadStoryPage() {
     const {data: rating} = useGetRatingsForSpecificStoryQuery(storyId ? storyId: "undefined")
     const {data: userRating} = useGetSpecificUserRatingForStoryQuery(storyId ? storyId: "undefined")
     const [deleteStory] = useDeleteStoryMutation()
+    const [openComments, setOpenComments] = useState(false)
 
     const [searchQuery, setSearchQuery] = useState("");
 
@@ -62,6 +63,10 @@ export function ReadStoryPage() {
     const handleChange = (event: { target: { value: SetStateAction<string>; }; }) => {
       setSelectedOption(event.target.value);
     };
+
+    const handleShowComment = () => {
+      setOpenComments(!openComments)
+    }
 
     const handleDeleteStory = async () => {
         await deleteStory(storyId ? storyId: "undefined").then((res) => {
@@ -153,8 +158,21 @@ export function ReadStoryPage() {
                     }
                   </div>
                 </div>
-                <h2 className="text-2xl font-semibold mb-3">Comments</h2>
-                <CommentsList story={story}></CommentsList>
+                {story.isprivate && <div> 
+                  <button
+                    onClick={handleShowComment}
+                    className="rounded-lg flex flex-row items-center gap-2 justify-center bg-blue-500 text-white hover:bg-blue-600 dark:bg-gray-500 hover:dark:bg-gray-600 duration-200 transition-all ease-in-out px-4 py-2"
+                    >
+                    Show Comments
+                  </button>
+                  </div>
+                }
+                {(!story.isprivate || openComments) && <div> 
+                  <h2 className="text-2xl font-semibold mb-3">Comments</h2>
+                  <CommentsList story={story}></CommentsList>
+                  </div>}
+                {/* <h2 className="text-2xl font-semibold mb-3">Comments</h2>
+                <CommentsList story={story}></CommentsList> */}
                 <button
                     onClick={handleBack}
                     className="rounded-lg flex flex-row items-center gap-2 justify-center bg-blue-500 text-white hover:bg-blue-600 dark:bg-gray-500 hover:dark:bg-gray-600 duration-200 transition-all ease-in-out px-4 py-2"
