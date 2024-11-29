@@ -6,12 +6,19 @@ import toast from "react-hot-toast";
 import { CommentsList } from '../comment/Comment';
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.bubble.css";
+import { useGetRatingsForSpecificStoryQuery, useGetSpecificUserRatingForStoryQuery } from '../../redux/api/ratingApi';
+import { Spacer } from '../../components/common/Spacer';
+import RatingModal from '../rating/RatingModal';
+import useToggle from '../../components/hooks/useToggle'
 
 
 export function ReadStoryPage() {
+    const { on, toggler } = useToggle();
     const {storyId} = useParams()
     const userId = useAppSelector((state: RootState) => state.user).user?.userId;
     const {data: story, error} = useGetSpecificStoryQuery(storyId ? storyId: "undefined")
+    const {data: rating, error: ratingError} = useGetRatingsForSpecificStoryQuery(storyId ? storyId: "undefined")
+    const {data: userRating, error: userRatingError} = useGetSpecificUserRatingForStoryQuery(storyId ? storyId: "undefined")
     const [deleteStory] = useDeleteStoryMutation()
 
     const [searchQuery, setSearchQuery] = useState("");
@@ -73,8 +80,7 @@ export function ReadStoryPage() {
         navigate(`/your-story`);
     };
 
-    if (story && storyId){
-    
+    if (story && storyId && rating && userRating){
         if (story.authorId === userId){
             return (
                 <div className="p-4 max-w-3xl mx-auto">
@@ -86,6 +92,10 @@ export function ReadStoryPage() {
                         theme={"bubble"}
                 />
                 </div>
+                <Spacer height={10}/>
+                <p className="text-1xl font-bold mb-4">Rating: {String(rating._avg.rate)}/10</p>
+                <p className="text-1xl mb-4">{String(rating._count.rate)} voters</p>
+              <Spacer height={10}/>
                 <div className="flex flex-row items-center gap-4">
                   <button
                       onClick={handleUpdateStory}
@@ -162,6 +172,15 @@ export function ReadStoryPage() {
                         theme={"bubble"}
                 />
               </div>
+              <Spacer height={10}/>
+              <p className="text-1xl font-bold mb-4">Rating: {String(rating._avg.rate)}/10</p>
+                <p className="text-1xl mb-4">{String(rating._count.rate)} voters</p>
+                <p className="text-1xl mb-4">Your Rating: {userRating.rate ? String(userRating.rate) : userRating.message }</p>
+                <button 
+                className="rounded-lg flex flex-row items-center gap-2 justify-center bg-blue-500 text-white hover:bg-blue-600 dark:bg-gray-500 hover:dark:bg-gray-600 duration-200 transition-all ease-in-out px-4 py-2"
+                onClick={() => toggler()}>Rate</button>
+                {on && <RatingModal toggler={toggler} userId={userId} storyId={storyId} prevRating={userRating.id} />}
+              <Spacer height={10}/>
               <h2 className="text-2xl font-semibold mb-3">Chapters</h2>
               <div className="flex flex-wrap gap-3 w-full py-5">
                   <label htmlFor="dropdown">Choose search method:</label>

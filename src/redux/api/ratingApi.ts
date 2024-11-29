@@ -1,4 +1,4 @@
-import { RatingRequest, SpecificRatingResponse, StoryRatingResponse } from "../types/ratings";
+import { RatingRequest, SpecificRatingResponse, SpecificUserRatingResponse, StoryRatingResponse } from "../types/ratings";
 import { baseApi } from "./baseApi";
 
 const RATING_API = import.meta.env.VITE_API_URL + "rating";
@@ -12,7 +12,7 @@ export const ratingApi = baseApi.injectEndpoints({
       }),
       providesTags: (result) => [{ type: 'Rating', id: result?.storyId }],
     }),
-    getSpecificUserRatingForStory: builder.query<SpecificRatingResponse, string>({
+    getSpecificUserRatingForStory: builder.query<SpecificUserRatingResponse, string>({
       query: (storyId) => ({
         url: RATING_API + `/${storyId}`,
         method: "GET",

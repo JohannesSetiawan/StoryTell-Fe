@@ -21,3 +21,11 @@ export type SpecificRatingResponse = {
     "storyId": string,
     "rate": number
 }
+
+export type SpecificUserRatingResponse = {
+    "id"?: string,
+    "authorId"?: string,
+    "storyId"?: string,
+    "rate"?: number,
+    "message"?:string
+}
