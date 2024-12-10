@@ -4,8 +4,13 @@ import { useCreateRatingMutation, useUpdateRatingMutation } from "../../redux/ap
 import toast from "react-hot-toast";
 import { Button } from "../../components/common";
 
+interface RatingModalProps {
+    prevRating: string,
+    storyId: string,
+    toggler: () => void,
+}
 
-export default function RatingModal(props: any) {
+export default function RatingModal(props: RatingModalProps) {
 
     const [rate, setRate] = useState(5)
     const [isLoading, setIsLoading] = useState(false);

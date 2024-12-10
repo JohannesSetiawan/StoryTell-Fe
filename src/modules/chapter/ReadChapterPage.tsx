@@ -8,6 +8,7 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.bubble.css";
 import { ChapterCommentsList } from '../comment/Comment';
 import { Spacer } from '../../components/common/Spacer';
+import { useState } from 'react';
 
 export function ReadChapterPage() {
     const {chapterId} = useParams()
@@ -15,7 +16,11 @@ export function ReadChapterPage() {
     const {data: chapter} = useGetSpecificChapterQuery(chapterId ? chapterId: "undefined")
     const {data: story} = useGetSpecificStoryQuery(chapter?.storyId ? chapter?.storyId: "undefined")
     const [deleteChapter] = useDeleteChapterMutation()
+    const [openComments, setOpenComments] = useState(false)
     
+    const handleShowComment = () => {
+        setOpenComments(!openComments)
+    }
 
     const navigate = useNavigate()
 
@@ -71,7 +76,7 @@ export function ReadChapterPage() {
         if (story.authorId === userId){
 
             return (
-                <div className="p-4 max-w-3xl mx-auto">
+                <div className="p-4 max-w-3xl mx-auto" style={{ width: '80%', margin: '0 auto' }}>
                     <h1 className="text-3xl font-bold mb-4">Chapter {chapter.order}</h1>
                     <h1 className="text-3xl font-bold mb-4">{chapter.title}</h1>
                     <div >
@@ -130,22 +135,33 @@ export function ReadChapterPage() {
                                     Next
                                 </button>
                         }
-                    </div>
-                    <Spacer height={15}/>
-                    <h4 className="text-2xl font-semibold mb-3">Comments</h4>
-                    <ChapterCommentsList chapter={chapter}/>
-                    <h1 className="text-3xl font-bold mb-4"></h1>
-                    <button
+                        <button
                         onClick={handleBack}
                         className="rounded-lg flex flex-row items-center gap-2 justify-center bg-blue-500 text-white hover:bg-blue-600 dark:bg-gray-500 hover:dark:bg-gray-600 duration-200 transition-all ease-in-out px-4 py-2"
                         >
                         Back to Story Page
                     </button>
+                    </div>
+                    <Spacer height={15}/>
+                    {story.isprivate && <div> 
+                        <button
+                            onClick={handleShowComment}
+                            className="rounded-lg flex flex-row items-center gap-2 justify-center bg-blue-500 text-white hover:bg-blue-600 dark:bg-gray-500 hover:dark:bg-gray-600 duration-200 transition-all ease-in-out px-4 py-2"
+                            >
+                            {openComments ? "Hide Comments" : "Show Comments"}
+                        </button>
+                    </div>
+                    }
+                    {(!story.isprivate || openComments) && <div> 
+                        <h4 className="text-2xl font-semibold mb-3">Comments</h4>
+                        <ChapterCommentsList chapter={chapter}/>
+                    </div>}
+                    <h1 className="text-3xl font-bold mb-4"></h1>
                 </div>
             );
         }
         return (
-            <div className="p-4 max-w-3xl mx-auto">
+            <div className="p-4 max-w-3xl mx-auto" style={{ width: '80%', margin: '0 auto' }}>
                 <h1 className="text-3xl font-bold mb-4">Chapter {chapter.order}</h1>
                 <h1 className="text-3xl font-bold mb-4">{chapter.title}</h1>
                 <p className="text-lg mb-6 whitespace-pre-line">
@@ -188,17 +204,18 @@ export function ReadChapterPage() {
                                 Next
                             </button>
                     }
+                    <button
+                        onClick={handleBack}
+                        className="rounded-lg flex flex-row items-center gap-2 justify-center bg-blue-500 text-white hover:bg-blue-600 dark:bg-gray-500 hover:dark:bg-gray-600 duration-200 transition-all ease-in-out px-4 py-2"
+                        >
+                        Back to Story Page
+                    </button>
                 </div>
                 <Spacer height={15}/>
                 <h4 className="text-2xl font-semibold mb-3">Comments</h4>
                 <ChapterCommentsList chapter={chapter}/>
                 <h1 className="text-3xl font-bold mb-4"></h1>
-                <button
-                    onClick={handleBack}
-                    className="rounded-lg flex flex-row items-center gap-2 justify-center bg-blue-500 text-white hover:bg-blue-600 dark:bg-gray-500 hover:dark:bg-gray-600 duration-200 transition-all ease-in-out px-4 py-2"
-                    >
-                    Back to Story Page
-                </button>
+
             </div>
             
         );

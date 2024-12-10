@@ -45,14 +45,14 @@ export const commentApi = baseApi.injectEndpoints({
         method: "PUT",
         body: data,
       }),
-      invalidatesTags: (result) => [{ type: 'Comment', id: result?.id }, 'Comment'],
+      invalidatesTags: (result) => [{ type: 'Comment', id: result?.id }, 'Story', "Chapter"],
     }),
     deleteComment: builder.mutation<Message, {storyId: string, commentId: string}>({
       query: ({storyId, commentId}) => ({
         url: COMMENT_API + `/${storyId}/${commentId}`,
         method: "DELETE",
       }),
-      invalidatesTags: ['Comment'],
+      invalidatesTags: ['Comment', 'Story', 'Chapter'],
     }),
   }),
 });

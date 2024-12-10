@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from 'react-router-dom';
-import { SetStateAction, useState } from "react";
+import { SetStateAction, useEffect, useState } from "react";
 import { useGetSpecificStoryQuery, useDeleteStoryMutation } from '../../redux/api/storyApi';
 import { RootState, useAppSelector } from "../../redux/store";
 import toast from "react-hot-toast";
@@ -26,7 +26,7 @@ export function ReadStoryPage() {
 
     const [selectedOption, setSelectedOption] = useState('title')
 
-    const filteredChapter = story?.chapters?.filter(chapter =>{
+    const filteredChapter = story?.chapters?.filter(chapter => {
       if(selectedOption === "title"){
         return chapter.title.toLowerCase().includes(searchQuery.toLowerCase())
       } else if (selectedOption === "number"){
@@ -36,8 +36,7 @@ export function ReadStoryPage() {
       } else{
         return chapter.title.toLowerCase().includes(searchQuery.toLowerCase())
       }
-      
-    });
+    }).sort((a, b) => b.order - a.order);
     
 
     const navigate = useNavigate()
@@ -88,7 +87,7 @@ export function ReadStoryPage() {
     if (story && storyId && rating && userRating){
         if (story.authorId === userId){
             return (
-                <div className="p-4 max-w-3xl mx-auto">
+                <div className="p-4 max-w-3xl mx-auto" style={{ width: '80%', margin: '0 auto' }}>
                 <h1 className="text-3xl font-bold mb-4">{story.title}</h1>
                 <div className="text-lg mb-6 whitespace-pre-line">
                 <ReactQuill
@@ -163,7 +162,7 @@ export function ReadStoryPage() {
                     onClick={handleShowComment}
                     className="rounded-lg flex flex-row items-center gap-2 justify-center bg-blue-500 text-white hover:bg-blue-600 dark:bg-gray-500 hover:dark:bg-gray-600 duration-200 transition-all ease-in-out px-4 py-2"
                     >
-                    Show Comments
+                    {openComments ? "Hide Comments" : "Show Comments"}
                   </button>
                   </div>
                 }
@@ -171,8 +170,7 @@ export function ReadStoryPage() {
                   <h2 className="text-2xl font-semibold mb-3">Comments</h2>
                   <CommentsList story={story}></CommentsList>
                   </div>}
-                {/* <h2 className="text-2xl font-semibold mb-3">Comments</h2>
-                <CommentsList story={story}></CommentsList> */}
+                <Spacer height={10}/>
                 <button
                     onClick={handleBack}
                     className="rounded-lg flex flex-row items-center gap-2 justify-center bg-blue-500 text-white hover:bg-blue-600 dark:bg-gray-500 hover:dark:bg-gray-600 duration-200 transition-all ease-in-out px-4 py-2"
@@ -183,7 +181,7 @@ export function ReadStoryPage() {
             );
         }
         return (
-            <div className="p-4 max-w-3xl mx-auto">
+            <div className="p-4 max-w-3xl mx-auto" style={{ width: '80%', margin: '0 auto' }}>
               <h1 className="text-3xl font-bold mb-4">{story.title}</h1>
               <div className="text-lg mb-6 whitespace-pre-line">
               <ReactQuill
@@ -199,7 +197,7 @@ export function ReadStoryPage() {
                 <button 
                 className="rounded-lg flex flex-row items-center gap-2 justify-center bg-blue-500 text-white hover:bg-blue-600 dark:bg-gray-500 hover:dark:bg-gray-600 duration-200 transition-all ease-in-out px-4 py-2"
                 onClick={() => toggler()}>Rate</button>
-                {on && <RatingModal toggler={toggler} userId={userId} storyId={storyId} prevRating={userRating.id} />}
+                {on && <RatingModal toggler={toggler} storyId={storyId} prevRating={userRating.id? userRating.id : "undefined"} />}
               <Spacer height={10}/>
               <h2 className="text-2xl font-semibold mb-3">Chapters</h2>
               <div className="flex flex-wrap gap-3 w-full py-5">
