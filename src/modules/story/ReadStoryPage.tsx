@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from 'react-router-dom';
-import { SetStateAction, useEffect, useState } from "react";
+import { SetStateAction, useState } from "react";
 import { useGetSpecificStoryQuery, useDeleteStoryMutation } from '../../redux/api/storyApi';
 import { RootState, useAppSelector } from "../../redux/store";
 import toast from "react-hot-toast";
