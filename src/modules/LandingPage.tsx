@@ -37,7 +37,7 @@ export function LandingPage() {
                         {historyData.findIndex((items) => (items.id == history.id)) + 1}
                       </div>
                       <h3 className="mt-4 text-xl font-semibold text-gray-800 dark:text-gray-200 text-center">
-                        {history.story.title}
+                        {history.story.title.length > 50 ? history.story.title.substring(0,50) + "..." : history.story.title}
                       </h3>
                       <p className="text-gray-600 mt-2 text-center dark:text-gray-400">
                         {dateToString(history.date)}
@@ -96,6 +96,14 @@ export function LandingPage() {
           <div className="flex justify-center">
             <div className="text-3xl font-bold">
               Create and read story to your heart content!
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-8 mb-4">
+          <div className="flex justify-center">
+            <div className="text-2xl font-bold">
+              Please Login or Register to enjoy Storytell.
             </div>
           </div>
         </div>

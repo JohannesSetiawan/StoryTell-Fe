@@ -87,7 +87,8 @@ export function ReadStoryPage() {
         navigate(`/your-story`);
     };
 
-    if (story && storyId && rating && userRating && history){
+    if (story && storyId && rating && userRating){
+      if(history){
         if (story.authorId === userId){
             return (
                 <div className="p-4 max-w-3xl mx-auto" style={{ width: '80%', margin: '0 auto' }}>
@@ -212,6 +213,17 @@ export function ReadStoryPage() {
                 onClick={() => toggler()}>Rate</button>
                 {on && <RatingModal toggler={toggler} storyId={storyId} prevRating={userRating.id? userRating.id : "undefined"} />}
               <Spacer height={10}/>
+              <Spacer height={10}/>
+                <p className="text-1xl mb-4">Last read: {dateToString(history.date)}</p>
+                <span>Last chapter read: </span> 
+                {
+                  history.chapterId ? (
+                    <a className="text-1xl mb-4" href={`/read-chapter/${history.chapterId}`}>Chapter {history.chapter?.order}. {history.chapter?.title}</a>
+                  ) : (
+                    <a className="text-1xl mb-4">None</a>
+                  )
+                }
+              <Spacer height={10}/>
               <h2 className="text-2xl font-semibold mb-3">Chapters</h2>
               <div className="flex flex-wrap gap-3 w-full py-5">
                   <label htmlFor="dropdown">Choose search method:</label>
@@ -254,6 +266,10 @@ export function ReadStoryPage() {
               </button>
             </div>
         );
+      } else {
+        window.location.reload()
+      }
+        
     } else {
       if (error){
         return (

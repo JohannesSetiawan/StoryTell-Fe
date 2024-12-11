@@ -30,18 +30,16 @@ export function Navbar() {
     navigate("/read");
   };
 
+  const handleHome = () => {
+    navigate("/");
+  };
+
   if (!user_token) {
     return (
       <div className="flex w-full justify-between gap-4 px-4 py-2 md:px-8">
         <div className="text-xl font-bold">Welcome to Storytell!</div>
         <div className="flex flex-row gap-6 items-center">
           <ToggleTheme />
-          <button
-            onClick={handleRead}
-            className="font-bold transition-all duration-200 ease-in-out hover:text-blue-300"
-          >
-            Read
-          </button>
           <button
             onClick={handleRegister}
             className="font-bold transition-all duration-200 ease-in-out hover:text-blue-300"
@@ -63,6 +61,12 @@ export function Navbar() {
         <div className="text-xl font-bold">Welcome Back!</div>
         <div className="flex flex-row gap-6 items-center">
           <ToggleTheme />
+          <button
+            onClick={handleHome}
+            className="font-bold transition-all duration-200 ease-in-out hover:text-blue-300"
+          >
+            Home
+          </button>
           <button
             onClick={handleRead}
             className="font-bold transition-all duration-200 ease-in-out hover:text-blue-300"
