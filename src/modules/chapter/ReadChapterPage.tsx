@@ -89,13 +89,13 @@ export function ReadChapterPage() {
                     <div className="flex flex-row items-center gap-4">
                         <button
                             onClick={handleUpdateChapter}
-                            className="rounded-lg flex flex-row items-center gap-2 justify-center bg-green-500 text-white hover:bg-green-600 dark:bg-gray-500 hover:dark:bg-green-600 duration-200 transition-all ease-in-out px-4 py-2"
+                            className="rounded-lg flex flex-row items-center gap-2 justify-center bg-green-400 text-white hover:bg-green-600 dark:bg-green-600 hover:dark:bg-green-800 duration-200 transition-all ease-in-out px-4 py-2"
                             >
                             Update Chapter
                         </button>
                         <button
                             onClick={handleDeleteChapter}
-                            className="rounded-lg flex flex-row items-center gap-2 justify-center bg-red-500 text-white hover:bg-red-600 dark:bg-red-500 hover:dark:bg-red-600 duration-200 transition-all ease-in-out px-4 py-2"
+                            className="rounded-lg flex flex-row items-center gap-2 justify-center bg-red-400 text-white hover:bg-red-600 dark:bg-red-600 hover:dark:bg-red-800 duration-200 transition-all ease-in-out px-4 py-2"
                             >
                             Delete Chapter
                         </button>

@@ -52,7 +52,7 @@ export function CreateChapterPage() {
   };
 
   const handleContentChange = (value: string) => {
-    setContent(value); // Update content with the rich text
+    setContent(value);
   };
 
   useEffect(() => {
