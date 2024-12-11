@@ -10,6 +10,8 @@ import { useGetRatingsForSpecificStoryQuery, useGetSpecificUserRatingForStoryQue
 import { Spacer } from '../../components/common/Spacer';
 import RatingModal from '../rating/RatingModal';
 import useToggle from '../../components/hooks/useToggle'
+import { useGetHistoryForSpecificStoryQuery } from '../../redux/api/historyApi';
+import { dateToString } from '../../utils/utils';
 
 
 export function ReadStoryPage() {
@@ -19,6 +21,7 @@ export function ReadStoryPage() {
     const {data: story, error} = useGetSpecificStoryQuery(storyId ? storyId: "undefined")
     const {data: rating} = useGetRatingsForSpecificStoryQuery(storyId ? storyId: "undefined")
     const {data: userRating} = useGetSpecificUserRatingForStoryQuery(storyId ? storyId: "undefined")
+    const {data: history} = useGetHistoryForSpecificStoryQuery(storyId ? storyId: "undefined")
     const [deleteStory] = useDeleteStoryMutation()
     const [openComments, setOpenComments] = useState(false)
 
@@ -84,99 +87,109 @@ export function ReadStoryPage() {
         navigate(`/your-story`);
     };
 
-    if (story && storyId && rating && userRating){
+    if (story && storyId && rating && userRating && history){
         if (story.authorId === userId){
             return (
                 <div className="p-4 max-w-3xl mx-auto" style={{ width: '80%', margin: '0 auto' }}>
-                <h1 className="text-3xl font-bold mb-4">{story.title}</h1>
-                <div className="text-lg mb-6 whitespace-pre-line">
-                <ReactQuill
-                        value={story.description}
-                        readOnly={true}
-                        theme={"bubble"}
-                />
-                </div>
-                <Spacer height={10}/>
-                {!story.isprivate && <div> 
-                    <p className="text-1xl font-bold mb-4">Rating: {String(rating._avg.rate)}/10</p>
-                    <p className="text-1xl mb-4">{String(rating._count.rate)} voters</p>
-                  </div>}
-              <Spacer height={10}/>
-                <div className="flex flex-row items-center gap-4">
-                  <button
-                      onClick={handleUpdateStory}
-                      className="rounded-lg flex flex-row items-center gap-2 justify-center bg-green-500 text-white hover:bg-green-600 dark:bg-green-500 hover:dark:bg-green-600 duration-200 transition-all ease-in-out px-4 py-2"
-                      >
-                      Update Story
-                  </button>
-                  <button
-                      onClick={handleDeleteStory}
-                      className="rounded-lg flex flex-row items-center gap-2 justify-center bg-red-500 text-white hover:bg-red-600 dark:bg-red-500 hover:dark:bg-red-600 duration-200 transition-all ease-in-out px-4 py-2"
-                      >
-                      Delete Story
-                  </button>
-                </div>
-                <h1 className="text-3xl font-bold mb-4"></h1>
-                <h2 className="text-2xl font-semibold mb-3">Chapters</h2>
-                <button
-                    onClick={handleCreateChapter}
-                    className="rounded-lg flex flex-row items-center gap-2 justify-center bg-blue-500 text-white hover:bg-blue-600 dark:bg-gray-500 hover:dark:bg-gray-600 duration-200 transition-all ease-in-out px-4 py-2"
-                    >
-                    Create Chapter
-                </button>
-                <h1 className="text-3xl font-bold mb-4"></h1>
-                <div className="flex flex-wrap gap-3 w-full py-5">
-                  <label htmlFor="dropdown">Choose search method:</label>
-                  <select id="dropdown" value={selectedOption} onChange={handleChange}>
-                    <option value="title">Title</option>
-                    <option value="number">Number</option>
-                    <option value="content">Content</option>
-                  </select>
-                </div>
-                <div className="flex flex-wrap gap-3 w-full py-5">
-                  <input
-                      type="text"
-                      value={searchQuery}
-                      onChange={handleSearchChange}
-                      placeholder="Search ..."
-                      className="w-full px-3 py-2 placeholder-gray-400 text-gray-700 bg-gray rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  <h1 className="text-3xl font-bold mb-4">{story.title}</h1>
+                  <div className="text-lg mb-6 whitespace-pre-line">
+                    <ReactQuill
+                            value={story.description}
+                            readOnly={true}
+                            theme={"bubble"}
                     />
-                </div>
-
-
-                <div className="flex flex-wrap gap-3 w-full py-5 px-4">
-                  <div className="w-full h-60 overflow-y-auto">
+                  </div>
+                  <Spacer height={10}/>
+                  {!story.isprivate && <div> 
+                      <p className="text-1xl font-bold mb-4">Rating: {String(rating._avg.rate)}/10</p>
+                      <p className="text-1xl mb-4">{String(rating._count.rate)} voters</p>
+                    </div>}
+                  <Spacer height={10}/>
+                    <p className="text-1xl mb-4">Last read: {dateToString(history.date)}</p>
+                    <span>Last chapter read: </span> 
                     {
-                      filteredChapter?.map((chapter) => (
-                        <a href={`/read-chapter/${chapter.id}`} className="block dark:text-indigo-300" key={chapter.id}>
-                          <div className="w-full flex flex-col  justify-center bg-gray-200 dark:bg-gray-600 border-2 border-gray-400 dark:border-gray-500 p-4 rounded-lg shadow-md mb-4">
-                            <p>Chapter {chapter.order}. {chapter.title}</p>
-                          </div>
-                        </a>
-                      ))
+                      history.chapterId ? (
+                        <a className="text-1xl mb-4" href={`/read-chapter/${history.chapterId}`}>Chapter {history.chapter?.order}. {history.chapter?.title}</a>
+                      ) : (
+                        <a className="text-1xl mb-4">None</a>
+                      )
                     }
+                  <Spacer height={10}/>
+                  <div className="flex flex-row items-center gap-4">
+                    <button
+                        onClick={handleUpdateStory}
+                        className="rounded-lg flex flex-row items-center gap-2 justify-center bg-green-500 text-white hover:bg-green-600 dark:bg-green-500 hover:dark:bg-green-600 duration-200 transition-all ease-in-out px-4 py-2"
+                        >
+                        Update Story
+                    </button>
+                    <button
+                        onClick={handleDeleteStory}
+                        className="rounded-lg flex flex-row items-center gap-2 justify-center bg-red-500 text-white hover:bg-red-600 dark:bg-red-500 hover:dark:bg-red-600 duration-200 transition-all ease-in-out px-4 py-2"
+                        >
+                        Delete Story
+                    </button>
                   </div>
-                </div>
-                {story.isprivate && <div> 
+                  <h1 className="text-3xl font-bold mb-4"></h1>
+                  <h2 className="text-2xl font-semibold mb-3">Chapters</h2>
                   <button
-                    onClick={handleShowComment}
-                    className="rounded-lg flex flex-row items-center gap-2 justify-center bg-blue-500 text-white hover:bg-blue-600 dark:bg-gray-500 hover:dark:bg-gray-600 duration-200 transition-all ease-in-out px-4 py-2"
-                    >
-                    {openComments ? "Hide Comments" : "Show Comments"}
+                      onClick={handleCreateChapter}
+                      className="rounded-lg flex flex-row items-center gap-2 justify-center bg-blue-500 text-white hover:bg-blue-600 dark:bg-gray-500 hover:dark:bg-gray-600 duration-200 transition-all ease-in-out px-4 py-2"
+                      >
+                      Create Chapter
                   </button>
+                  <h1 className="text-3xl font-bold mb-4"></h1>
+                  <div className="flex flex-wrap gap-3 w-full py-5">
+                    <label htmlFor="dropdown">Choose search method:</label>
+                    <select id="dropdown" value={selectedOption} onChange={handleChange}>
+                      <option value="title">Title</option>
+                      <option value="number">Number</option>
+                      <option value="content">Content</option>
+                    </select>
                   </div>
-                }
-                {(!story.isprivate || openComments) && <div> 
-                  <h2 className="text-2xl font-semibold mb-3">Comments</h2>
-                  <CommentsList story={story}></CommentsList>
-                  </div>}
-                <Spacer height={10}/>
-                <button
-                    onClick={handleBack}
-                    className="rounded-lg flex flex-row items-center gap-2 justify-center bg-blue-500 text-white hover:bg-blue-600 dark:bg-gray-500 hover:dark:bg-gray-600 duration-200 transition-all ease-in-out px-4 py-2"
-                    >
-                    Back
-                </button>
+                  <div className="flex flex-wrap gap-3 w-full py-5">
+                    <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={handleSearchChange}
+                        placeholder="Search ..."
+                        className="w-full px-3 py-2 placeholder-gray-400 text-gray-700 bg-gray rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                  </div>
+
+
+                  <div className="flex flex-wrap gap-3 w-full py-5 px-4">
+                    <div className="w-full h-60 overflow-y-auto">
+                      {
+                        filteredChapter?.map((chapter) => (
+                          <a href={`/read-chapter/${chapter.id}`} className="block dark:text-indigo-300" key={chapter.id}>
+                            <div className="w-full flex flex-col  justify-center bg-gray-200 dark:bg-gray-600 border-2 border-gray-400 dark:border-gray-500 p-4 rounded-lg shadow-md mb-4">
+                              <p>Chapter {chapter.order}. {chapter.title}</p>
+                            </div>
+                          </a>
+                        ))
+                      }
+                    </div>
+                  </div>
+                  {story.isprivate && <div> 
+                    <button
+                      onClick={handleShowComment}
+                      className="rounded-lg flex flex-row items-center gap-2 justify-center bg-blue-500 text-white hover:bg-blue-600 dark:bg-gray-500 hover:dark:bg-gray-600 duration-200 transition-all ease-in-out px-4 py-2"
+                      >
+                      {openComments ? "Hide Comments" : "Show Comments"}
+                    </button>
+                    </div>
+                  }
+                  {(!story.isprivate || openComments) && <div> 
+                    <h2 className="text-2xl font-semibold mb-3">Comments</h2>
+                    <CommentsList story={story}></CommentsList>
+                    </div>}
+                  <Spacer height={10}/>
+                  <button
+                      onClick={handleBack}
+                      className="rounded-lg flex flex-row items-center gap-2 justify-center bg-blue-500 text-white hover:bg-blue-600 dark:bg-gray-500 hover:dark:bg-gray-600 duration-200 transition-all ease-in-out px-4 py-2"
+                      >
+                      Back
+                  </button>
                 </div>
             );
         }

@@ -4,7 +4,7 @@ import { Chapter, specificStoryResponse } from "../../redux/types/story";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { RootState, useAppSelector } from "../../redux/store";
-import { dateToString } from "./commentUtils";
+import { commentDateToString } from "../../utils/utils";
 import { Spacer } from "../../components/common/Spacer";
 
 interface Story {
@@ -76,7 +76,7 @@ const Comment: React.FC<Comments> = ({ comment, allComments }) => {
     return (
       <div className="w-full flex flex-col justify-center bg-white-200 dark:bg-gray-600 p-4 rounded-lg mb-4">
         <p className="font-semibold">{comment.author.username}</p>
-        <p>{dateToString(comment.dateCreated)}</p>
+        <p>{commentDateToString(comment.dateCreated)}</p>
         <Spacer height={10}/>
         <p>{comment.content}</p>
         <Spacer height={10}/>
