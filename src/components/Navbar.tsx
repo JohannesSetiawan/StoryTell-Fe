@@ -57,7 +57,7 @@ export function Navbar() {
     );
   } else {
     return (
-      <div className="flex w-full justify-between gap-4 px-4 py-2 md:px-8">
+      <div className="flex w-full justify-between gap-4 px-4 py-2 md:px-8 bg-sky-200 dark:bg-sky-800">
         <div className="text-xl font-bold">Welcome Back!</div>
         <div className="flex flex-row gap-6 items-center">
           <ToggleTheme />
