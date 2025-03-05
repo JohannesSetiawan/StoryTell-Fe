@@ -63,7 +63,7 @@ export function RegisterPage() {
               type="text"
               id="username"
               name="username"
-              className="mt-1 p-2 border rounded-md w-full"
+              className="mt-1 p-2 border rounded-md w-full bg-white dark:bg-gray-800 text-black dark:text-white"
               placeholder="Enter your username"
               value={username}
               onChange={handleUsernameChange}
@@ -81,7 +81,7 @@ export function RegisterPage() {
               type="password"
               id="password"
               name="password"
-              className="mt-1 p-2 border rounded-md w-full"
+              className="mt-1 p-2 border rounded-md w-full bg-white dark:bg-gray-800 text-black dark:text-white"
               placeholder="Enter your password"
               value={password}
               onChange={handlePasswordChange}

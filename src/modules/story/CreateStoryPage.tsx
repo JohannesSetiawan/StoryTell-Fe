@@ -58,7 +58,7 @@ export function CreateStoryPage() {
       <div className="dark:bg-[#343434] bg-white p-8 rounded-lg shadow-md">
         <h2 className="text-3xl font-bold mb-4">Create New Story</h2>
         <form onSubmit={handleSubmit}>
-          <div className="mb-4">
+            <div className="mb-4">
             <label
               htmlFor="Title"
               className="block text-sm font-medium text-gray-700 dark:text-gray-200"
@@ -69,13 +69,13 @@ export function CreateStoryPage() {
               type="text"
               id="title"
               name="title"
-              className="mt-1 p-2 border rounded-md w-full"
+              className="mt-1 p-2 border rounded-md w-full bg-white dark:bg-gray-800 text-black dark:text-white"
               placeholder="Enter the story's title"
               value={title}
               onChange={handleTitleChange}
               required
             />
-          </div>
+            </div>
           <div className="mb-4">
             <label
               htmlFor="description"
@@ -114,6 +114,14 @@ export function CreateStoryPage() {
             Create Story
           </Button>
         </form>
+        <div className="py-5">
+              <button
+                onClick={() => navigate(-1)}
+                className="text-white bg-yellow-700 hover:bg-yellow-800 focus:ring-4 justify-center focus:ring-yellow-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 dark:bg-yellow-600 dark:hover:bg-yellow-700 dark:focus:ring-yellow-800 inline-flex items-center w-full"
+              >
+                Back
+              </button>
+            </div>
       </div>
     </div>
   );

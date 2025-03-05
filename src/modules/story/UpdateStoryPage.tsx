@@ -76,7 +76,7 @@ export function UpdateStoryPage() {
               type="text"
               id="title"
               name="title"
-              className="mt-1 p-2 border rounded-md w-full"
+              className="mt-1 p-2 border rounded-md w-full bg-white dark:bg-gray-800 text-black dark:text-white"
               placeholder="Enter the story's title"
               value={title}
               onChange={handleTitleChange}
@@ -119,6 +119,14 @@ export function UpdateStoryPage() {
             Update Story
           </Button>
         </form>
+        <div className="py-5">
+              <button
+                onClick={() => navigate(-1)}
+                className="text-white bg-yellow-700 hover:bg-yellow-800 focus:ring-4 justify-center focus:ring-yellow-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 dark:bg-yellow-600 dark:hover:bg-yellow-700 dark:focus:ring-yellow-800 inline-flex items-center w-full"
+              >
+                Back
+              </button>
+            </div>
       </div>
     </div>
   );
