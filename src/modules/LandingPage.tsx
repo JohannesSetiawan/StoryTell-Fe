@@ -92,7 +92,7 @@ export function LandingPage() {
               </h2>
               <div className="flex flex-row flex-wrap gap-8 justify-center">
                 <p className="text-2xl md:text-2xl font-bold text-blue-800 text-center mb-12 dark:text-gray-200">
-                  Loading ...
+                  Nothing. You can start reading now! Your most recent read will show up here.
                 </p>
               </div>
             </div>
