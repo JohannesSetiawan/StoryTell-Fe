@@ -1,9 +1,11 @@
 import { useGetAllHistoriesQuery } from "../redux/api/historyApi";
 import { RootState, useAppSelector } from "../redux/store";
 import { dateToString } from "../utils/utils";
+import { useNavigate } from "react-router-dom";
 
 export function LandingPage() {
   const userId = useAppSelector((state: RootState) => state.user).user?.userId;
+  const navigate = useNavigate();
 
   if(userId){
     const {data: historyData} = useGetAllHistoriesQuery()
@@ -24,7 +26,9 @@ export function LandingPage() {
               <p className="text-lg text-gray-700 dark:text-gray-300 mt-2 max-w-md mx-auto">
                 Discover, share, and enjoy engaging stories anytime, anywhere.
               </p>
-              <button className="mt-4 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg transition-all duration-200">
+              <button 
+                onClick={() => navigate("/read")}
+                className="mt-4 px-6 py-3 bg-blue-500 text-white hover:bg-blue-600 dark:bg-gray-500 hover:dark:bg-gray-600 text-white font-semibold rounded-lg transition-all duration-200">
                 Start Reading
               </button>
             </div>
