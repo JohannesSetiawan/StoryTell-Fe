@@ -70,10 +70,18 @@ export function LandingPage() {
           </div>
 
           <div className="mt-8 mb-4">
-            <div className="flex justify-center">
-              <div className="text-3xl font-bold">
-                Create and read story to your heart content!
-              </div>
+            <div className="text-center px-4 py-6">
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+                Create and Read Stories to Your Heart's Content!
+              </h2>
+              <p className="text-lg text-gray-700 dark:text-gray-300 mt-2 max-w-md mx-auto">
+                Discover, share, and enjoy engaging stories anytime, anywhere.
+              </p>
+              <button 
+                onClick={() => navigate("/read")}
+                className="mt-4 px-6 py-3 bg-blue-500 text-white hover:bg-blue-600 dark:bg-gray-500 hover:dark:bg-gray-600 text-white font-semibold rounded-lg transition-all duration-200">
+                Start Reading
+              </button>
             </div>
           </div>
 
