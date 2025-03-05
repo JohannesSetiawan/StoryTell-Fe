@@ -61,7 +61,7 @@ export function UpdateStoryPage() {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen">
+    <div className="flex justify-center items-center">
       <div className="dark:bg-[#343434] bg-white p-8 rounded-lg shadow-md">
         <h2 className="text-3xl font-bold mb-4">Update Story</h2>
         <form onSubmit={handleSubmit}>
