@@ -139,7 +139,7 @@ export function ReadChapterPage() {
                         onClick={handleBack}
                         className="rounded-lg flex flex-row items-center gap-2 justify-center bg-blue-500 text-white hover:bg-blue-600 dark:bg-gray-500 hover:dark:bg-gray-600 duration-200 transition-all ease-in-out px-4 py-2"
                         >
-                        Back to Story Page
+                        Detail
                     </button>
                     </div>
                     <Spacer height={15}/>
@@ -208,7 +208,7 @@ export function ReadChapterPage() {
                         onClick={handleBack}
                         className="rounded-lg flex flex-row items-center gap-2 justify-center bg-blue-500 text-white hover:bg-blue-600 dark:bg-gray-500 hover:dark:bg-gray-600 duration-200 transition-all ease-in-out px-4 py-2"
                         >
-                        Back to Story Page
+                        Detail
                     </button>
                 </div>
                 <Spacer height={15}/>

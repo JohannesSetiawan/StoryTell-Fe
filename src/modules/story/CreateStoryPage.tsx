@@ -54,7 +54,7 @@ export function CreateStoryPage() {
   };
 
   return (
-    <div className="flex justify-center items-center">
+    <div className="flex justify-center items-center py-5 px-4 md:px-8">
       <div className="dark:bg-[#343434] bg-white p-8 rounded-lg shadow-md">
         <h2 className="text-3xl font-bold mb-4">Create New Story</h2>
         <form onSubmit={handleSubmit}>

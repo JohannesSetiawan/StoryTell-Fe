@@ -79,7 +79,7 @@ function App() {
 
 function NavbarWrapper() {
   return (
-    <div className="min-h-screen flex flex-col gap-2 w-full items-center relative">
+    <div className="min-h-screen flex flex-col gap-2 w-full items-center relative bg-gradient-to-b from-blue-100 to-blue-300 dark:from-gray-900 dark:to-gray-700">
       <Navbar />
       <Outlet />
     </div>

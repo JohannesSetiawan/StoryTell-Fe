@@ -64,7 +64,7 @@ export function UpdateChapterPage() {
 
   if(chapter){
     return (
-        <div className="flex justify-center items-center w-full">
+        <div className="flex justify-center items-center w-full py-5 px-4 md:px-8">
             <div className="dark:bg-[#343434] bg-white p-8 rounded-lg shadow-md w-full">
             <h2 className="text-3xl font-bold mb-4">Update Chapter</h2>
             <form onSubmit={handleSubmit}>
@@ -133,18 +133,18 @@ export function UpdateChapterPage() {
     );
   }
   return (
-    <div>
-    <div className="flex flex-wrap gap-3 w-full py-10">
-      <div className="flex flex-wrap gap-3 w-full py-5">
-        
-      </div>
+    <div className="py-5 px-4 md:px-8">
+      <div className="flex flex-wrap gap-3 w-full py-10">
+        <div className="flex flex-wrap gap-3 w-full py-5">
+          
+        </div>
 
-      <div className="flex flex-wrap gap-3 w-full py-5 px-4">
-        <div className="w-full">
-          <p> Loading ... </p>
+        <div className="flex flex-wrap gap-3 w-full py-5 px-4">
+          <div className="w-full">
+            <p> Loading ... </p>
+          </div>
         </div>
       </div>
-    </div>
   </div>
 )
   
