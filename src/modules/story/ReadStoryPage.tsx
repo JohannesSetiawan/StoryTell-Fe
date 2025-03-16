@@ -61,7 +61,7 @@ export function ReadStoryPage() {
     .sort((a, b) => a.order - b.order) // Sort by chapter order ascending
 
   const handleBack = () => {
-    navigate("/read")
+    navigate(-1)
   }
 
   const handleCreateChapter = () => {
