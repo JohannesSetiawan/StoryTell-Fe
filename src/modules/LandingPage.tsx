@@ -1,132 +1,245 @@
-import { useGetAllHistoriesQuery } from "../redux/api/historyApi";
-import { RootState, useAppSelector } from "../redux/store";
-import { dateToString } from "../utils/utils";
-import { useNavigate } from "react-router-dom";
+"use client"
+
+import { useGetAllHistoriesQuery } from "../redux/api/historyApi"
+import { type RootState, useAppSelector } from "../redux/store"
+import { dateToString } from "../utils/utils"
+import { useNavigate } from "react-router-dom"
+import { Book, BookOpen, History, PenTool, Sparkles } from "lucide-react"
 
 export function LandingPage() {
-  const userId = useAppSelector((state: RootState) => state.user).user?.userId;
-  const navigate = useNavigate();
+  const userId = useAppSelector((state: RootState) => state.user).user?.userId
+  const navigate = useNavigate()
 
-  if(userId){
-    const {data: historyData} = useGetAllHistoriesQuery()
-    if(historyData){
-      return (
-        <div>
-          <div className="mt-8 mb-4">
-            <div className="flex justify-center">
-              <div className="text-6xl font-bold">StoryTell</div>
-            </div>
-          </div>
-
-          <div className="mt-8 mb-4">
-            <div className="text-center px-4 py-6">
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+  if (userId) {
+    const { data: historyData, isLoading } = useGetAllHistoriesQuery()
+    return (
+      <div className="min-h-screen pt-20">
+        {/* Hero Section */}
+        <section className="relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-secondary/10 dark:from-primary/5 dark:to-secondary/5 -z-10"></div>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
+            <div className="text-center">
+              <h1 className="text-5xl md:text-7xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent pb-2 animate-in fade-in slide-in-from-bottom-5 duration-700">
+                StoryTell
+              </h1>
+              <p className="mt-6 text-xl md:text-2xl text-gray-700 dark:text-gray-300 max-w-3xl mx-auto animate-in fade-in slide-in-from-bottom-5 duration-700 delay-150">
                 Create and Read Stories to Your Heart's Content!
-              </h2>
-              <p className="text-lg text-gray-700 dark:text-gray-300 mt-2 max-w-md mx-auto">
+              </p>
+              <p className="mt-4 text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-5 duration-700 delay-300">
                 Discover, share, and enjoy engaging stories anytime, anywhere.
               </p>
-              <button 
-                onClick={() => navigate("/read")}
-                className="mt-4 px-6 py-3 bg-blue-500 text-white hover:bg-blue-600 dark:bg-gray-500 hover:dark:bg-gray-600 text-white font-semibold rounded-lg transition-all duration-200">
-                Start Reading
-              </button>
-            </div>
-          </div>
-
-          <div className="py-10">
-            <div className="container mx-auto w-4/5">
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-800 text-center mb-12 dark:text-gray-200">
-                Your Reading History
-              </h2>
-              <div className="flex flex-row flex-wrap gap-8 justify-center">
-                {historyData?.map((history) => (
-                  <a href={`/read-story/${history.storyId}`} key={history.id}>
-                    <div className="flex flex-col justify-center items-center border border-black-800 rounded-lg p-4 hover:scale-110 duration-200 ease-in-out transition-all">
-                      <div className="rounded-full h-4 w-4 md:h-6 md:w-6 drop-shadow-xl text-start dark:bg-gray-200 dark:text-gray-800 flex items-center justify-center bg-gray-800 text-white">
-                        {historyData.findIndex((items) => (items.id == history.id)) + 1}
-                      </div>
-                      <h3 className="mt-4 text-xl font-semibold text-gray-800 dark:text-gray-200 text-center">
-                        {history.story.title.length > 50 ? history.story.title.substring(0,50) + "..." : history.story.title}
-                      </h3>
-                      <p className="text-gray-600 mt-2 text-center dark:text-gray-400">
-                        {dateToString(history.date)}
-                      </p>
-                    </div>
-                  </a>
-                ))}
+              <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center animate-in fade-in slide-in-from-bottom-5 duration-700 delay-500">
+                <button
+                  onClick={() => navigate("/read")}
+                  className="px-8 py-3 rounded-full bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 shadow-md"
+                >
+                  <BookOpen size={20} />
+                  Start Reading
+                </button>
+                <button
+                  onClick={() => navigate("/your-story")}
+                  className="px-8 py-3 rounded-full bg-secondary text-secondary-foreground font-medium hover:bg-secondary/90 transition-colors flex items-center justify-center gap-2 shadow-md"
+                >
+                  <PenTool size={20} />
+                  Write a Story
+                </button>
               </div>
             </div>
           </div>
-        </div>
-      );
-    } else {
-      return (
-        <div>
-          <div className="mt-8 mb-4">
-            <div className="flex justify-center">
-              <div className="text-6xl font-bold">StoryTell</div>
-            </div>
-          </div>
+        </section>
 
-          <div className="mt-8 mb-4">
-            <div className="text-center px-4 py-6">
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
-                Create and Read Stories to Your Heart's Content!
-              </h2>
-              <p className="text-lg text-gray-700 dark:text-gray-300 mt-2 max-w-md mx-auto">
-                Discover, share, and enjoy engaging stories anytime, anywhere.
-              </p>
-              <button 
-                onClick={() => navigate("/read")}
-                className="mt-4 px-6 py-3 bg-blue-500 text-white hover:bg-blue-600 dark:bg-gray-500 hover:dark:bg-gray-600 text-white font-semibold rounded-lg transition-all duration-200">
-                Start Reading
-              </button>
-            </div>
-          </div>
-
-          <div className="py-10">
-            <div className="container mx-auto w-4/5">
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-800 text-center mb-12 dark:text-gray-200">
-                Your Reading History
-              </h2>
-              <div className="flex flex-row flex-wrap gap-8 justify-center">
-                <p className="text-2xl md:text-2xl font-bold text-blue-800 text-center mb-12 dark:text-gray-200">
-                  Nothing. You can start reading now! Your most recent read will show up here.
+        {/* Features Section */}
+        <section className="py-16 bg-muted/50 dark:bg-muted/20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 className="text-3xl font-bold text-center mb-12">Why StoryTell?</h2>
+            <div className="grid md:grid-cols-3 gap-8">
+              <div className="bg-card rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
+                <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                  <PenTool className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">Create</h3>
+                <p className="text-muted-foreground">
+                  Express yourself through storytelling. Our intuitive editor makes it easy to bring your ideas to life.
+                </p>
+              </div>
+              <div className="bg-card rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
+                <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                  <BookOpen className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">Read</h3>
+                <p className="text-muted-foreground">
+                  Explore a vast library of stories from writers around the world, across all genres and styles.
+                </p>
+              </div>
+              <div className="bg-card rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
+                <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                  <Sparkles className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">Share</h3>
+                <p className="text-muted-foreground">
+                  Connect with a community of readers and writers who share your passion for storytelling.
                 </p>
               </div>
             </div>
           </div>
-        </div>
-      );
-    }
-    
+        </section>
+
+        {/* Reading History Section */}
+        <section className="py-16">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-center gap-3 mb-2">
+              <History className="h-6 w-6 text-primary" />
+              <h2 className="text-3xl font-bold text-center">Your Reading History</h2>
+            </div>
+            <p className="text-center text-muted-foreground mb-12 max-w-2xl mx-auto">
+              Pick up where you left off or revisit your favorite stories.
+            </p>
+
+            {isLoading ? (
+              <div className="flex justify-center py-12">
+                <div className="h-8 w-8 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
+              </div>
+            ) : historyData && historyData.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {historyData.map((history, index) => (
+                  <a href={`/read-story/${history.storyId}`} key={history.id} className="group">
+                    <div className="h-full bg-card border border-border rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group-hover:translate-y-[-4px]">
+                      <div className="p-6">
+                        <div className="flex items-center gap-3 mb-4">
+                          <div className="flex-shrink-0 h-8 w-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-medium">
+                            {index + 1}
+                          </div>
+                          <div className="text-sm text-muted-foreground">{dateToString(history.date)}</div>
+                        </div>
+                        <h3 className="text-xl font-semibold line-clamp-2 group-hover:text-primary transition-colors">
+                          {history.story.title}
+                        </h3>
+                        <div className="mt-4 flex items-center text-sm text-muted-foreground">
+                          <Book className="h-4 w-4 mr-1" />
+                          <span>Continue reading</span>
+                        </div>
+                      </div>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            ) : (
+              <div className="bg-muted/30 rounded-xl p-8 text-center max-w-2xl mx-auto">
+                <BookOpen className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                <h3 className="text-xl font-medium mb-2">No reading history yet</h3>
+                <p className="text-muted-foreground mb-6">
+                  Start exploring stories and your most recent reads will appear here.
+                </p>
+                <button
+                  onClick={() => navigate("/read")}
+                  className="px-6 py-2 rounded-full bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors inline-flex items-center gap-2"
+                >
+                  <BookOpen size={18} />
+                  Discover Stories
+                </button>
+              </div>
+            )}
+          </div>
+        </section>
+      </div>
+    )
   } else {
     return (
-      <div>
-        <div className="mt-8 mb-4">
-          <div className="flex justify-center">
-            <div className="text-6xl font-bold">StoryTell</div>
-          </div>
-        </div>
-
-        <div className="mt-8 mb-4">
-          <div className="flex justify-center">
-            <div className="text-3xl font-bold">
-              Create and read story to your heart content!
+      <div className="min-h-screen pt-20">
+        {/* Hero Section for Non-Logged In Users */}
+        <section className="relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-secondary/10 dark:from-primary/5 dark:to-secondary/5 -z-10"></div>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+            <div className="text-center">
+              <h1 className="text-5xl md:text-7xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent pb-2 animate-in fade-in slide-in-from-bottom-5 duration-700">
+                StoryTell
+              </h1>
+              <p className="mt-6 text-xl md:text-2xl text-gray-700 dark:text-gray-300 max-w-3xl mx-auto animate-in fade-in slide-in-from-bottom-5 duration-700 delay-150">
+                Your Gateway to Endless Stories
+              </p>
+              <p className="mt-4 text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-5 duration-700 delay-300">
+                Create, read, and share stories to your heart's content. Join our community of storytellers today!
+              </p>
+              <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center animate-in fade-in slide-in-from-bottom-5 duration-700 delay-500">
+                <button
+                  onClick={() => navigate("/login")}
+                  className="px-8 py-3 rounded-full bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors shadow-md"
+                >
+                  Login
+                </button>
+                <button
+                  onClick={() => navigate("/register")}
+                  className="px-8 py-3 rounded-full bg-card border border-input text-card-foreground font-medium hover:bg-muted transition-colors shadow-sm"
+                >
+                  Register
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        </section>
 
-        <div className="mt-8 mb-4">
-          <div className="flex justify-center">
-            <div className="text-2xl font-bold">
-              Please Login or Register to enjoy Storytell.
+        {/* Features Section */}
+        <section className="py-16 bg-muted/50 dark:bg-muted/20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 className="text-3xl font-bold text-center mb-12">Unleash Your Creativity</h2>
+            <div className="grid md:grid-cols-3 gap-8">
+              <div className="bg-card rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
+                <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                  <PenTool className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">Write Stories</h3>
+                <p className="text-muted-foreground">
+                  Express yourself through storytelling with our intuitive editor that makes it easy to bring your ideas
+                  to life.
+                </p>
+              </div>
+              <div className="bg-card rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
+                <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                  <BookOpen className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">Read Anywhere</h3>
+                <p className="text-muted-foreground">
+                  Explore a vast library of stories from writers around the world, across all genres and styles.
+                </p>
+              </div>
+              <div className="bg-card rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
+                <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                  <Sparkles className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">Join Community</h3>
+                <p className="text-muted-foreground">
+                  Connect with a community of readers and writers who share your passion for storytelling.
+                </p>
+              </div>
             </div>
           </div>
-        </div>
+        </section>
+
+        {/* CTA Section */}
+        <section className="py-16">
+          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 className="text-3xl font-bold mb-6">Ready to Begin Your Journey?</h2>
+            <p className="text-lg text-muted-foreground mb-8">
+              Join StoryTell today and become part of a growing community of storytellers and readers.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <button
+                onClick={() => navigate("/register")}
+                className="px-8 py-3 rounded-full bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors shadow-md"
+              >
+                Get Started
+              </button>
+              <button
+                onClick={() => navigate("/login")}
+                className="px-8 py-3 rounded-full bg-secondary text-secondary-foreground font-medium hover:bg-secondary/90 transition-colors shadow-md"
+              >
+                Sign In
+              </button>
+            </div>
+          </div>
+        </section>
       </div>
-    );
+    )
   }
-  
 }
+
