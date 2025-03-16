@@ -45,4 +45,4 @@ export type specificStoryResponse = {
     isprivate: boolean
     chapters: Chapter[]
     storyComments: AllCommentResponse
-}
+} & {author: Author}
