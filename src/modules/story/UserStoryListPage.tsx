@@ -18,15 +18,14 @@ import {
   Filter,
   BookOpen,
   Edit,
-  Trash2,
 } from "lucide-react"
 
-type Story = {
-  id: string
-  title: string
-  createdAt?: string // Adding this assuming it exists in your API response
-  updatedAt?: string // Adding this assuming it exists in your API response
-}
+// type Story = {
+//   id: string
+//   title: string
+//   createdAt?: string // Adding this assuming it exists in your API response
+//   updatedAt?: string // Adding this assuming it exists in your API response
+// }
 
 type SortOption = "newest" | "oldest" | "title-asc" | "title-desc"
 
