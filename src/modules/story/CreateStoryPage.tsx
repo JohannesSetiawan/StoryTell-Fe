@@ -44,7 +44,7 @@ export function CreateStoryPage() {
     }
 
     try {
-      const res = await CreateStory({ ...data }).unwrap()
+      await CreateStory({ ...data }).unwrap()
       toast.success("Story created successfully!")
       navigate("/your-story")
     } catch (error: any) {
