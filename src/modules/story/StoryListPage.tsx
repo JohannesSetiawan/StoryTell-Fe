@@ -20,7 +20,7 @@ export function StoryListPage() {
   // RTK Query will handle re-fetching automatically when these parameters change.
   const { data: paginatedResult, isLoading, isError } = useGetAllStoriesQuery({
     page: currentPage,
-    perPage: 1,
+    perPage: 10,
     search: searchQuery,
     sort: sortOption,
   })
