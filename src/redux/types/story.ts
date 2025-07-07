@@ -15,7 +15,17 @@ export type Author = {
 }
 
 export type StoryWithAuthorName = Story & {author: Author}
-export type allStoriesResponse = StoryWithAuthorName[]
+export type allStoriesResponse = {
+    data: StoryWithAuthorName[],
+    meta: {
+        total:  number,
+        lastPage: number,
+        currentPage: number,
+        perPage: number,
+        prev: number,
+        next: number
+    }
+}
 
 export type createStoryData = {
     title: string

@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useNavigate } from "react-router-dom"
 import { useGetSpecificUserStoryQuery } from "../../redux/api/storyApi"
 import { type RootState, useAppSelector } from "../../redux/store"
@@ -9,6 +8,7 @@ import { useState } from "react"
 import {
   Book,
   ChevronLeft,
+  ChevronRight,
   Search,
   PenTool,
   Plus,
@@ -20,74 +20,69 @@ import {
   Edit,
 } from "lucide-react"
 
-// type Story = {
-//   id: string
-//   title: string
-//   createdAt?: string // Adding this assuming it exists in your API response
-//   updatedAt?: string // Adding this assuming it exists in your API response
-// }
-
+// Define the available sorting options
 type SortOption = "newest" | "oldest" | "title-asc" | "title-desc"
 
 export function UserStoryListPage() {
   const navigate = useNavigate()
   const userId = useAppSelector((state: RootState) => state.user).user?.userId
 
-  const { data: stories, isLoading } = useGetSpecificUserStoryQuery(userId === undefined ? "idSalah" : userId)
-
+  // State for pagination, search, and sorting
+  const [currentPage, setCurrentPage] = useState(1)
   const [searchQuery, setSearchQuery] = useState("")
   const [sortOption, setSortOption] = useState<SortOption>("newest")
   const [isSearchFocused, setIsSearchFocused] = useState(false)
 
-  // Filter and sort stories
-  const getFilteredAndSortedStories = () => {
-    if (!stories) return []
+  // Fetch paginated data for the specific user.
+  // We now pass `searchQuery` and `sortOption` to the hook.
+  // RTK Query will automatically re-fetch when these values change.
+  const { data: paginatedResult, isLoading, isError } = useGetSpecificUserStoryQuery({
+    userId: userId!,
+    page: currentPage,
+    perPage: 10,
+    search: searchQuery,
+    sort: sortOption,    
+  }, {
+    skip: !userId,
+  })
 
-    // Filter stories based on search query
-    const filtered = stories.filter((story) => story.title.toLowerCase().includes(searchQuery.toLowerCase()))
+  // The stories to display are now directly from the API response.
+  // No more client-side filtering or sorting is needed.
+  const displayedStories = paginatedResult?.data || []
 
-    // Sort stories based on selected option
-    return [...filtered].sort((a, b) => {
-      switch (sortOption) {
-        case "newest":
-          return new Date(b.dateCreated || "").getTime() - new Date(a.dateCreated || "").getTime()
-        case "oldest":
-          return new Date(a.dateCreated || "").getTime() - new Date(b.dateCreated || "").getTime()
-        case "title-asc":
-          return a.title.localeCompare(b.title)
-        case "title-desc":
-          return b.title.localeCompare(a.title)
-        default:
-          return 0
-      }
-    })
-  }
-
-  const filteredAndSortedStories = getFilteredAndSortedStories()
-
+  // Handlers for UI interactions
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value)
+    setCurrentPage(1) // Reset to page 1 on new search to show relevant results
   }
 
   const handleSortChange = (option: SortOption) => {
     setSortOption(option)
+    setCurrentPage(1) // Reset to page 1 on sort change
   }
+  
+  const handleBack = () => navigate("/")
+  const handleCreateStory = () => navigate("/create-story")
 
-  const handleBack = () => {
-    navigate("/")
-  }
+  const handleNextPage = () => {
+    if (paginatedResult?.meta.next) {
+      setCurrentPage(paginatedResult.meta.next)
+    }
+  };
 
-  const handleCreateStory = () => {
-    navigate("/create-story")
-  }
+  const handlePrevPage = () => {
+    if (paginatedResult?.meta.prev) {
+      setCurrentPage(paginatedResult.meta.prev)
+    }
+  };
 
-  // Generate a random pastel color based on the story title for the card accent
+  // Helper to generate a unique color for the list item accent
   const getStoryColor = (title: string) => {
     const hue = title.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0) % 360
     return `hsl(${hue}, 70%, 85%)`
   }
 
-  // Format date to a readable string
+  // Helper to format date strings
   const formatDate = (dateString?: string) => {
     if (!dateString) return ""
     const date = new Date(dateString)
@@ -98,66 +93,41 @@ export function UserStoryListPage() {
     })
   }
 
+  // Loading State
   if (isLoading) {
     return (
-      <div className="min-h-screen pt-20 pb-12 bg-muted/20">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <button
-            onClick={handleBack}
-            className="mb-4 inline-flex items-center text-sm font-medium text-primary hover:text-primary/80 transition-colors"
-          >
-            <ChevronLeft size={16} className="mr-1" />
-            Back to Home
-          </button>
-
-          <h1 className="text-3xl md:text-4xl font-bold mb-8 flex items-center gap-3">
-            <PenTool className="h-8 w-8 text-primary" />
-            Your Stories
-          </h1>
-
-          <div className="flex flex-col items-center justify-center py-16">
-            <div className="h-12 w-12 rounded-full border-4 border-primary border-t-transparent animate-spin mb-4"></div>
-            <p className="text-lg font-medium">Loading your stories...</p>
-          </div>
+      <div className="min-h-screen pt-20 pb-12 bg-muted/20 flex items-center justify-center">
+        <div className="flex flex-col items-center justify-center">
+          <div className="h-12 w-12 rounded-full border-4 border-primary border-t-transparent animate-spin mb-4"></div>
+          <p className="text-lg font-medium">Loading your stories...</p>
         </div>
       </div>
     )
   }
 
-  if (!stories || !userId) {
+  // Error State
+  if (isError || !userId || !paginatedResult) {
     return (
-      <div className="min-h-screen pt-20 pb-12 bg-muted/20">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <button
-            onClick={handleBack}
-            className="mb-4 inline-flex items-center text-sm font-medium text-primary hover:text-primary/80 transition-colors"
-          >
-            <ChevronLeft size={16} className="mr-1" />
-            Back to Home
-          </button>
-
-          <h1 className="text-3xl md:text-4xl font-bold mb-8 flex items-center gap-3">
-            <PenTool className="h-8 w-8 text-primary" />
-            Your Stories
-          </h1>
-
-          <div className="bg-card border border-border rounded-xl p-8 text-center">
-            <div className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-muted mb-4">
-              <Book size={24} className="text-muted-foreground" />
-            </div>
-            <h3 className="text-xl font-medium mb-2">Something went wrong</h3>
-            <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-              We couldn't load your stories. Please try again later or contact support if the problem persists.
-            </p>
-            <button
-              onClick={handleBack}
-              className="px-4 py-2 rounded-md bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors"
-            >
-              Return to Home
-            </button>
-          </div>
-        </div>
-      </div>
+       <div className="min-h-screen pt-20 pb-12 bg-muted/20">
+         <div className="max-w-6xl mx-auto px-4 sm:px-6">
+           <button
+             onClick={handleBack}
+             className="mb-4 inline-flex items-center text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+           >
+             <ChevronLeft size={16} className="mr-1" />
+             Back to Home
+           </button>
+           <div className="bg-card border border-border rounded-xl p-8 text-center">
+             <div className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-muted mb-4">
+               <Book size={24} className="text-muted-foreground" />
+             </div>
+             <h3 className="text-xl font-medium mb-2">Something went wrong</h3>
+             <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+               We couldn't load your stories. Please ensure you are logged in and try again later.
+             </p>
+           </div>
+         </div>
+       </div>
     )
   }
 
@@ -173,7 +143,6 @@ export function UserStoryListPage() {
             <ChevronLeft size={16} className="mr-1" />
             Back to Home
           </button>
-
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
               <h1 className="text-3xl md:text-4xl font-bold flex items-center gap-3">
@@ -182,7 +151,6 @@ export function UserStoryListPage() {
               </h1>
               <p className="mt-2 text-muted-foreground">Manage and view all the stories you've created</p>
             </div>
-
             <button
               onClick={handleCreateStory}
               className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors shadow-sm"
@@ -212,160 +180,144 @@ export function UserStoryListPage() {
               aria-label="Search stories"
             />
           </div>
-
-          <div className="mt-4 flex flex-wrap gap-2">
+          <div className="mt-4 flex flex-wrap gap-2 items-center">
             <div className="text-sm font-medium text-muted-foreground flex items-center mr-2">
               <Filter size={16} className="mr-1" />
               Sort by:
             </div>
-            <button
-              onClick={() => handleSortChange("newest")}
-              className={`px-3 py-1 text-sm rounded-full ${
-                sortOption === "newest"
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted text-muted-foreground hover:bg-muted/80"
-              } transition-colors`}
-            >
-              <Clock size={14} className="inline mr-1" />
-              Newest
-            </button>
-            <button
-              onClick={() => handleSortChange("oldest")}
-              className={`px-3 py-1 text-sm rounded-full ${
-                sortOption === "oldest"
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted text-muted-foreground hover:bg-muted/80"
-              } transition-colors`}
-            >
-              <Clock size={14} className="inline mr-1" />
-              Oldest
-            </button>
-            <button
-              onClick={() => handleSortChange("title-asc")}
-              className={`px-3 py-1 text-sm rounded-full ${
-                sortOption === "title-asc"
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted text-muted-foreground hover:bg-muted/80"
-              } transition-colors`}
-            >
-              <SortAsc size={14} className="inline mr-1" />
-              Title A-Z
-            </button>
-            <button
-              onClick={() => handleSortChange("title-desc")}
-              className={`px-3 py-1 text-sm rounded-full ${
-                sortOption === "title-desc"
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted text-muted-foreground hover:bg-muted/80"
-              } transition-colors`}
-            >
-              <SortDesc size={14} className="inline mr-1" />
-              Title Z-A
-            </button>
+            {(["newest", "oldest", "title-asc", "title-desc"] as const).map((option) => (
+              <button
+                key={option}
+                onClick={() => handleSortChange(option)}
+                className={`px-3 py-1 text-sm rounded-full flex items-center gap-1 ${
+                  sortOption === option
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted text-muted-foreground hover:bg-muted/80"
+                } transition-colors`}
+              >
+                {option.includes('newest') && <Clock size={14} />}
+                {option.includes('oldest') && <Clock size={14} />}
+                {option.includes('asc') && <SortAsc size={14} />}
+                {option.includes('desc') && <SortDesc size={14} />}
+                {option === 'newest' && 'Newest'}
+                {option === 'oldest' && 'Oldest'}
+                {option === 'title-asc' && 'Title A-Z'}
+                {option === 'title-desc' && 'Title Z-A'}
+              </button>
+            ))}
           </div>
         </div>
 
-        {/* Story List */}
-        {stories.length === 0 ? (
+        {/* Story List Section */}
+        {paginatedResult.meta.total === 0 && !searchQuery ? (
           <div className="bg-card border border-border rounded-xl p-8 text-center">
-            <div className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-muted mb-4">
-              <Book size={24} className="text-muted-foreground" />
-            </div>
-            <h3 className="text-xl font-medium mb-2">No stories yet</h3>
-            <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-              You haven't created any stories yet. Start your creative journey by writing your first story!
-            </p>
-            <button
-              onClick={handleCreateStory}
-              className="px-5 py-2 rounded-md bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors inline-flex items-center gap-2"
-            >
-              <Plus size={18} />
-              Create Your First Story
-            </button>
-          </div>
-        ) : filteredAndSortedStories.length === 0 ? (
-          <div className="bg-card border border-border rounded-xl p-8 text-center">
-            <div className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-muted mb-4">
-              <Search size={24} className="text-muted-foreground" />
-            </div>
-            <h3 className="text-xl font-medium mb-2">No matching stories</h3>
-            <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-              We couldn't find any stories matching your search criteria. Try adjusting your search.
-            </p>
-            <button
-              onClick={() => setSearchQuery("")}
-              className="px-4 py-2 rounded-md bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors"
-            >
-              Clear Search
-            </button>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredAndSortedStories.map((story) => {
-              const accentColor = getStoryColor(story.title)
-
-              return (
-                <div
-                  key={story.id}
-                  className="h-full flex flex-col bg-card border border-border rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300"
-                  style={{ borderTopColor: accentColor, borderTopWidth: "4px" }}
-                >
-                  <div className="p-6 flex-grow">
-                    <div className="flex items-start justify-between mb-3">
-                      <div
-                        className="h-10 w-10 rounded-full flex items-center justify-center text-primary-foreground"
-                        style={{ backgroundColor: accentColor }}
-                      >
-                        <Book size={20} />
-                      </div>
-                      <div className="text-xs text-muted-foreground">{formatDate(story.dateCreated)}</div>
-                    </div>
-
-                    <h3 className="text-xl font-semibold mb-2 line-clamp-2 hover:text-primary transition-colors">
-                      {story.title}
-                    </h3>
-
-                    {/* <div className="flex items-center mt-4 text-xs text-muted-foreground">
-                      <Clock size={14} className="mr-1" />
-                      <span>Last updated: {formatDate(story.updatedAt || story.createdAt)}</span>
-                    </div> */}
-                  </div>
-
-                  <div className="px-6 py-3 bg-muted/30 border-t border-border">
-                    <div className="flex justify-between">
-                      <a
-                        href={`/read-story/${story.id}`}
-                        className="text-sm font-medium text-primary hover:text-primary/80 transition-colors flex items-center"
-                      >
-                        <BookOpen size={16} className="mr-1" />
-                        Read
-                      </a>
-
-                      <div className="flex items-center gap-3">
-                        <a
-                          href={`/update-story/${story.id}`}
-                          className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center"
-                        >
-                          <Edit size={16} />
-                          <span className="sr-only">Edit</span>
-                        </a>
-                        {/* <button
-                          className="text-sm font-medium text-destructive hover:text-destructive/80 transition-colors flex items-center"
-                          aria-label="Delete story"
-                        >
-                          <Trash2 size={16} />
-                          <span className="sr-only">Delete</span>
-                        </button> */}
-                      </div>
-                    </div>
-                  </div>
+             <div className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-muted mb-4">
+               <Book size={24} className="text-muted-foreground" />
+             </div>
+             <h3 className="text-xl font-medium mb-2">No stories yet</h3>
+             <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+               You haven't created any stories. Start your creative journey by writing your first one!
+             </p>
+             <button
+               onClick={handleCreateStory}
+               className="px-5 py-2 rounded-md bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors inline-flex items-center gap-2"
+             >
+               <Plus size={18} />
+               Create Your First Story
+             </button>
+           </div>
+        ) : displayedStories.length === 0 ? (
+            <div className="bg-card border border-border rounded-xl p-8 text-center">
+                <div className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-muted mb-4">
+                    <Search size={24} className="text-muted-foreground" />
                 </div>
-              )
-            })}
-          </div>
+                <h3 className="text-xl font-medium mb-2">No matching stories</h3>
+                <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+                    We couldn't find any stories matching your search query.
+                </p>
+                <button
+                    onClick={() => setSearchQuery("")}
+                    className="px-4 py-2 rounded-md bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors"
+                >
+                    Clear Search
+                </button>
+            </div>
+        ) : (
+          <>
+            <div className="flex flex-col gap-4">
+              {displayedStories.map((story) => {
+                const accentColor = getStoryColor(story.title)
+                return (
+                  <div
+                    key={story.id}
+                    className="flex items-center bg-card border border-border rounded-xl overflow-hidden shadow-sm transition-all duration-300"
+                    style={{ borderLeftColor: accentColor, borderLeftWidth: "4px" }}
+                  >
+                    <div className="p-4 flex-grow flex flex-col sm:flex-row sm:items-center sm:gap-4">
+                      <div className="flex-grow">
+                        <h3 className="text-lg font-semibold mb-1">
+                          {story.title}
+                        </h3>
+                        <div className="flex items-center text-sm text-muted-foreground">
+                          <Clock size={14} className="mr-1.5" />
+                          <span>Created: {formatDate(story.dateCreated)}</span>
+                          <span className="mx-2">·</span>
+                          <span className={`font-medium ${story.isprivate ? 'text-yellow-600' : 'text-green-600'}`}>
+                            {story.isprivate ? 'Private' : 'Public'}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 mt-3 sm:mt-0 flex-shrink-0">
+                         <a
+                           href={`/read-story/${story.id}`}
+                           className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3"
+                         >
+                           <BookOpen size={16} className="mr-2" />
+                           Read
+                         </a>
+                         <a
+                           href={`/update-story/${story.id}`}
+                           className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-3"
+                         >
+                           <Edit size={16} className="mr-2" />
+                           Edit
+                         </a>
+                      </div>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+            
+            {/* Pagination Controls */}
+            {paginatedResult.meta.lastPage > 1 && (
+                <div className="mt-12 flex items-center justify-center gap-4">
+                    <button 
+                        onClick={handlePrevPage}
+                        disabled={!paginatedResult?.meta.prev}
+                        className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2"
+                    >
+                        <ChevronLeft className="h-4 w-4 mr-2" />
+                        Previous
+                    </button>
+
+                    <span className="text-sm font-medium text-muted-foreground">
+                        Page {paginatedResult?.meta.currentPage} of {paginatedResult?.meta.lastPage}
+                    </span>
+
+                    <button 
+                        onClick={handleNextPage}
+                        disabled={!paginatedResult?.meta.next}
+                        className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2"
+                    >
+                        Next
+                        <ChevronRight className="h-4 w-4 ml-2" />
+                    </button>
+                </div>
+            )}
+          </>
         )}
       </div>
     </div>
   )
 }
-

@@ -3,6 +3,13 @@ import { Message, Story, allStoriesResponse, createStoryData, specificStoryRespo
 
 const STORY_API = import.meta.env.VITE_API_URL + "story";
 
+type pagination = {
+  page: number,
+  perPage: number,
+  search?: string,
+  sort?: string
+}
+
 export const storyApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getSpecificStory: builder.query<specificStoryResponse, string>({
@@ -12,24 +19,24 @@ export const storyApi = baseApi.injectEndpoints({
       }),
       providesTags: (result) => [{ type: 'Story', id: result?.id }],
     }),
-    getAllStories: builder.query<allStoriesResponse, void>({
-      query: () => ({
-        url: STORY_API,
+    getAllStories: builder.query<allStoriesResponse, pagination>({
+      query: ({page, perPage, search, sort}) => ({
+        url: STORY_API + `?page=${page}&perPage=${perPage}` + (search ? `&search=${search}` : '') + (sort ? `&sort=${sort}` : ''),
         method: "GET",
       }),
       providesTags: (result) =>
         result
-          ? result.map(({ id }) => ({ type: 'Story', id: id }))
+          ? result.data.map(({ id }) => ({ type: 'Story', id: id }))
           : [{ type: 'Story' }],
     }),
-    getSpecificUserStory: builder.query<allStoriesResponse, string>({
-      query: (userId) => ({
-        url: STORY_API + `/user/${userId}`,
+    getSpecificUserStory: builder.query<allStoriesResponse, {userId: string} & pagination>({
+      query: ({userId, page, perPage, search, sort}) => ({
+        url: STORY_API + `/user/${userId}?page=${page}&perPage=${perPage}` + (search ? `&search=${search}` : '') + (sort ? `&sort=${sort}` : ''),
         method: "GET",
       }),
       providesTags: (result) =>
         result
-          ? result.map(({ id }) => ({ type: 'Story', id: id }))
+          ? result.data.map(({ id }) => ({ type: 'Story', id: id }))
           : [{ type: 'Story' }],
     }),
     createStory: builder.mutation<Story, createStoryData>({
