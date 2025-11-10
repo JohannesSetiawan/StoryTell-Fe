@@ -34,8 +34,9 @@ export default function RatingModal(props: RatingModalProps) {
     setIsLoading(true)
     const body = { rate }
 
+
     try {
-      if (props.prevRating) {
+      if (props.prevRating !== 'undefined') {
         await updateRating({ updateData: body, ratingId: props.prevRating }).unwrap()
         toast.success("Rating updated successfully!")
       } else {

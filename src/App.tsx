@@ -5,6 +5,7 @@ import {
   HomePage,
   LoginPage,
   RegisterPage,
+  ProfilePage,
   StoryListPage,
   UserStoryListPage,
   CreateStoryPage,
@@ -36,6 +37,10 @@ const router = createBrowserRouter([
       {
         path: "/register",
         element: <RegisterPage />,
+      },
+      {
+        path: "/profile",
+        element: <ProfilePage />,
       },
       {
         path: "/read",

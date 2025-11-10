@@ -56,6 +56,10 @@ export function Navbar() {
     navigate("/")
   }
 
+  const handleProfile = () => {
+    navigate("/profile")
+  }
+
   const isActive = (path: string) => {
     return location.pathname === path
   }
@@ -153,6 +157,12 @@ export function Navbar() {
               Your Story
             </button>
             <button
+              onClick={handleProfile}
+              className={`${navLinkClasses} ${isActive("/profile") ? activeNavLinkClasses : ""}`}
+            >
+              Profile
+            </button>
+            <button
               onClick={handleLogout}
               className="px-4 py-2 rounded-md bg-destructive text-destructive-foreground font-medium hover:bg-destructive/90 transition-colors"
             >
@@ -190,6 +200,12 @@ export function Navbar() {
                 className={`${navLinkClasses} ${isActive("/your-story") ? activeNavLinkClasses : ""} py-2`}
               >
                 Your Story
+              </button>
+              <button
+                onClick={handleProfile}
+                className={`${navLinkClasses} ${isActive("/profile") ? activeNavLinkClasses : ""} py-2`}
+              >
+                Profile
               </button>
               <button onClick={handleLogout} className="text-destructive font-medium py-2">
                 Logout

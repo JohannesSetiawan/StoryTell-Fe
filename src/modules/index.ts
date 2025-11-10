@@ -2,6 +2,7 @@ export * from "./LandingPage";
 export * from "./HomePage";
 export * from "./LoginPage";
 export * from "./RegisterPage";
+export * from "./ProfilePage";
 export * from "./story/StoryListPage";
 export * from "./story/UserStoryListPage"
 export * from "./story/CreateStoryPage"

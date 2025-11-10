@@ -13,7 +13,9 @@ export type LoginResponse = {
 export type RegisterResponse = LoginResponse
 
 export type UserInfoResponse = {
-    userId: string
+    id: string
     username: string
-    description: string
+    description?: string
+    dateCreated: Date
+    isAdmin: boolean
 }

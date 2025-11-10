@@ -30,6 +30,15 @@ export const authApi = baseApi.injectEndpoints({
         url: AUTH_API,
         method: "GET",
       }),
+      providesTags: ['UserProfile'],
+    }),
+    updateProfile: builder.mutation<UserInfoResponse, { username?: string; password?: string; description?: string }>({
+      query: (body) => ({
+        url: AUTH_API,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: ['UserProfile'],
     }),
   }),
 });
@@ -39,4 +48,5 @@ export const {
   useRegisterMutation,
   useLazyGetUserInfoQuery,
   useGetUserInfoQuery,
+  useUpdateProfileMutation,
 } = authApi;
