@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 interface MarkdownRendererProps {
   content: string;
@@ -10,6 +11,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, cla
   return (
     <div className={`prose dark:prose-invert max-w-none ${className}`}>
       <ReactMarkdown
+        remarkPlugins={[remarkGfm]}
         components={{
           // Customize heading styles
           h1: ({ node, ...props }) => <h1 className="text-3xl font-bold mt-6 mb-4" {...props} />,
@@ -59,6 +61,28 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, cla
           
           // Emphasis/Italic
           em: ({ node, ...props }) => <em className="italic" {...props} />,
+          
+          // Table styles (GFM)
+          table: ({ node, ...props }) => (
+            <div className="overflow-x-auto my-4">
+              <table className="min-w-full border-collapse border border-border" {...props} />
+            </div>
+          ),
+          thead: ({ node, ...props }) => <thead className="bg-muted" {...props} />,
+          tbody: ({ node, ...props }) => <tbody {...props} />,
+          tr: ({ node, ...props }) => <tr className="border-b border-border" {...props} />,
+          th: ({ node, ...props }) => (
+            <th className="border border-border px-4 py-2 text-left font-semibold" {...props} />
+          ),
+          td: ({ node, ...props }) => <td className="border border-border px-4 py-2" {...props} />,
+          
+          // Strikethrough (GFM)
+          del: ({ node, ...props }) => <del className="line-through text-muted-foreground" {...props} />,
+          
+          // Task list items (GFM)
+          input: ({ node, ...props }) => (
+            <input className="mr-2 align-middle" disabled {...props} />
+          ),
         }}
       >
         {content}
