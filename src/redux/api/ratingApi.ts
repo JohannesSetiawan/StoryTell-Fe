@@ -17,7 +17,7 @@ export const ratingApi = baseApi.injectEndpoints({
         url: RATING_API + `/${storyId}`,
         method: "GET",
       }),
-      providesTags: (result) => [{ type: 'Rating', id: result?.storyId, authorId: result?.authorId }]
+      providesTags: (result) => [{ type: 'Rating', id: `${result?.storyId}-user` }]
     }),
     createRating: builder.mutation<SpecificRatingResponse, {body: RatingRequest, storyId: string}>({
       query: ({body, storyId}) => ({
@@ -25,7 +25,11 @@ export const ratingApi = baseApi.injectEndpoints({
         method: "POST",
         body,
       }),
-      invalidatesTags: (result) => [{ type: 'Rating', id: result?.storyId }],
+      invalidatesTags: (result) => [
+        { type: 'Rating', id: result?.storyId },
+        { type: 'Rating', id: `${result?.storyId}-user` },
+        { type: 'Story', id: result?.storyId }
+      ],
     }),
     updateRating: builder.mutation<SpecificRatingResponse, {updateData: RatingRequest, ratingId: string}>({
       query: ({updateData, ratingId}) => ({
@@ -33,14 +37,22 @@ export const ratingApi = baseApi.injectEndpoints({
         method: "PUT",
         body: updateData,
       }),
-      invalidatesTags: (result) => [{ type: 'Rating', id: result?.storyId }, { type: 'Rating', id: result?.storyId, authorId: result?.authorId }],
+      invalidatesTags: (result) => [
+        { type: 'Rating', id: result?.storyId },
+        { type: 'Rating', id: `${result?.storyId}-user` },
+        { type: 'Story', id: result?.storyId }
+      ],
     }),
-    deleteStory: builder.mutation<SpecificRatingResponse, string>({
+    deleteRating: builder.mutation<SpecificRatingResponse, string>({
       query: (ratingId) => ({
         url: RATING_API + `/${ratingId}`,
         method: "DELETE",
       }),
-      invalidatesTags: (result) => [{ type: 'Rating', id: result?.storyId }, { type: 'Rating', id: result?.storyId, authorId: result?.authorId }],
+      invalidatesTags: (result) => [
+        { type: 'Rating', id: result?.storyId },
+        { type: 'Rating', id: `${result?.storyId}-user` },
+        { type: 'Story', id: result?.storyId }
+      ],
     }),
   }),
 });
@@ -49,6 +61,6 @@ export const {
     useGetRatingsForSpecificStoryQuery,
     useGetSpecificUserRatingForStoryQuery,
     useCreateRatingMutation,
-    useDeleteStoryMutation,
+    useDeleteRatingMutation,
     useUpdateRatingMutation
 } = ratingApi;

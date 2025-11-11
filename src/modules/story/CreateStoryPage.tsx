@@ -4,11 +4,8 @@ import type React from "react"
 import { useState } from "react"
 import toast from "react-hot-toast"
 import { useNavigate } from "react-router-dom"
-import { Button } from "../../components/common"
+import { Button, MarkdownEditor } from "../../components/common"
 import { useCreateStoryMutation } from "../../redux/api/storyApi"
-import ReactQuill from "react-quill"
-import "react-quill/dist/quill.snow.css" // Import Quill styles
-import { QuillToolbar, modules, formats } from "../../utils/quill"
 import { BookOpen, ChevronLeft, Eye, EyeOff, Info } from "lucide-react"
 
 export function CreateStoryPage() {
@@ -31,7 +28,7 @@ export function CreateStoryPage() {
       return
     }
 
-    if (!description.trim() || description === "<p><br></p>") {
+    if (!description.trim()) {
       toast.error("Please enter a description for your story")
       setIsLoading(false)
       return
@@ -46,7 +43,7 @@ export function CreateStoryPage() {
     try {
       await CreateStory({ ...data }).unwrap()
       toast.success("Story created successfully!")
-      navigate("/your-story")
+      navigate("/your-story", { replace: true })
     } catch (error: any) {
       toast.error(error?.data?.message || "Failed to create story")
     } finally {
@@ -119,26 +116,19 @@ export function CreateStoryPage() {
                   Story Description
                 </label>
                 <p className="text-xs text-muted-foreground mb-2">
-                  Provide a brief overview of your story to attract readers.
+                  Provide a brief overview of your story to attract readers using Markdown formatting.
                 </p>
 
-                <div className="border border-input rounded-md overflow-hidden bg-background">
-                  <QuillToolbar />
-                  <ReactQuill
-                    value={description}
-                    onChange={handleDescriptionChange}
-                    placeholder="Enter your story description..."
-                    modules={modules}
-                    formats={formats}
-                    className="bg-background text-foreground"
-                    style={{
-                      height: "200px",
-                      borderRadius: "0",
-                      border: "none",
-                      borderTop: "1px solid var(--border)",
-                    }}
-                  />
-                </div>
+                <MarkdownEditor
+                  value={description}
+                  onChange={handleDescriptionChange}
+                  placeholder="Enter your story description using Markdown..."
+                  minHeight="200px"
+                />
+                
+                <p className="text-xs text-muted-foreground mt-2">
+                  Tip: Use Markdown syntax for formatting. For example: **bold**, *italic*, # Heading, [link](url)
+                </p>
               </div>
 
               {/* Privacy Toggle */}

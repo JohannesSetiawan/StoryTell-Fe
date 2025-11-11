@@ -53,14 +53,14 @@ export const storyApi = baseApi.injectEndpoints({
         method: "PUT",
         body: updateData,
       }),
-      invalidatesTags: (result) => [{ type: 'Story', id: result?.id }, 'Story'],
+      invalidatesTags: (result) => [{ type: 'Story', id: result?.id }],
     }),
     deleteStory: builder.mutation<Message, string>({
       query: (storyId) => ({
         url: STORY_API + `/${storyId}`,
         method: "DELETE",
       }),
-      invalidatesTags: ['Story'],
+      invalidatesTags: ['Story', 'Chapter', 'Comment', 'Rating', 'History'],
     }),
   }),
 });

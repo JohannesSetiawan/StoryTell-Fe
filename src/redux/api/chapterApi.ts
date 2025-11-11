@@ -19,7 +19,10 @@ export const chapterApi = baseApi.injectEndpoints({
           method: "POST",
           body,
         }),
-        invalidatesTags: ['Chapter', 'Story'],
+        invalidatesTags: (result) => [
+          { type: 'Story', id: result?.storyId },
+          { type: 'History', id: result?.storyId }
+        ],
       }),
       updateChapter: builder.mutation<Chapter, {updateData: CreateChapterData, chapterId: string}>({
         query: ({updateData, chapterId}) => ({
@@ -27,14 +30,17 @@ export const chapterApi = baseApi.injectEndpoints({
           method: "PUT",
           body: updateData,
         }),
-        invalidatesTags: (result) => [{ type: 'Chapter', id: result?.id }, 'Chapter'],
+        invalidatesTags: (result) => [
+          { type: 'Chapter', id: result?.id },
+          { type: 'History', id: result?.storyId }
+        ],
       }),
       deleteChapter: builder.mutation<Message, string>({
         query: (chapterId) => ({
           url: CHAPTER_API + `/${chapterId}`,
           method: "DELETE",
         }),
-        invalidatesTags: ['Chapter', 'Story'],
+        invalidatesTags: ['Chapter', 'Story', 'History'],
       }),
     }),
   });

@@ -29,7 +29,7 @@ export const commentApi = baseApi.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ['Comment', 'Story'],
+      invalidatesTags: ['Comment'],
     }),
     createChapterComment: builder.mutation<CommentResponse, {data: CommentRequest, storyId: string, chapterId: string}>({
       query: ({data, storyId, chapterId}) => ({
@@ -37,7 +37,7 @@ export const commentApi = baseApi.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ['Comment', 'Chapter'],
+      invalidatesTags: ['Comment'],
     }),
     updateComment: builder.mutation<CommentResponse, {data: CommentRequest, storyId: string, commentId: string}>({
       query: ({data, storyId, commentId}) => ({
@@ -45,14 +45,14 @@ export const commentApi = baseApi.injectEndpoints({
         method: "PUT",
         body: data,
       }),
-      invalidatesTags: (result) => [{ type: 'Comment', id: result?.id }, 'Story', "Chapter"],
+      invalidatesTags: (result) => [{ type: 'Comment', id: result?.id }],
     }),
     deleteComment: builder.mutation<Message, {storyId: string, commentId: string}>({
       query: ({storyId, commentId}) => ({
         url: COMMENT_API + `/${storyId}/${commentId}`,
         method: "DELETE",
       }),
-      invalidatesTags: ['Comment', 'Story', 'Chapter'],
+      invalidatesTags: ['Comment'],
     }),
   }),
 });

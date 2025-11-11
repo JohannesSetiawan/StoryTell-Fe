@@ -4,12 +4,9 @@ import type React from "react"
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import { useNavigate, useParams } from "react-router-dom"
-import { Button } from "../../components/common"
+import { Button, MarkdownEditor } from "../../components/common"
 import { useCreateChapterMutation } from "../../redux/api/chapterApi"
 import { useGetSpecificStoryQuery } from "../../redux/api/storyApi"
-import ReactQuill from "react-quill"
-import "react-quill/dist/quill.snow.css" // Import Quill styles
-import { QuillToolbar, modules, formats } from "../../utils/quill"
 import { BookOpen, ChevronLeft, FileText, Info, Loader, Plus } from "lucide-react"
 
 export function CreateChapterPage() {
@@ -34,7 +31,7 @@ export function CreateChapterPage() {
       return
     }
 
-    if (!content.trim() || content === "<p><br></p>") {
+    if (!content.trim()) {
       toast.error("Please enter chapter content")
       return
     }
@@ -193,28 +190,18 @@ export function CreateChapterPage() {
                   Chapter Content
                 </label>
                 <p className="text-xs text-muted-foreground mb-2">
-                  Write your chapter content using the rich text editor below.
+                  Write your chapter content using Markdown formatting.
                 </p>
 
-                <div className="border border-input rounded-md overflow-hidden bg-background">
-                  <QuillToolbar />
-                  <ReactQuill
-                    value={content}
-                    onChange={handleContentChange}
-                    placeholder="Write your chapter content here..."
-                    modules={modules}
-                    formats={formats}
-                    className="bg-background text-foreground"
-                    style={{
-                      height: "400px",
-                      borderRadius: "0",
-                      border: "none",
-                      borderTop: "1px solid var(--border)",
-                    }}
-                  />
-                </div>
+                <MarkdownEditor
+                  value={content}
+                  onChange={handleContentChange}
+                  placeholder="Write your chapter content here using Markdown..."
+                  minHeight="400px"
+                />
+                
                 <p className="text-xs text-muted-foreground mt-2">
-                  Tip: You can resize the editor by dragging the bottom-right corner.
+                  Tip: Use Markdown syntax for formatting. For example: **bold**, *italic*, # Heading, [link](url)
                 </p>
               </div>
 

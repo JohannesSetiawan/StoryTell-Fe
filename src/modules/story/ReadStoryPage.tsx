@@ -8,8 +8,7 @@ import { useGetSpecificStoryQuery, useDeleteStoryMutation } from "../../redux/ap
 import { type RootState, useAppSelector } from "../../redux/store"
 import toast from "react-hot-toast"
 import { CommentsList } from "../comment/Comment"
-import ReactQuill from "react-quill"
-import "react-quill/dist/quill.bubble.css"
+import { MarkdownRenderer } from "../../components/common"
 import { useGetRatingsForSpecificStoryQuery, useGetSpecificUserRatingForStoryQuery } from "../../redux/api/ratingApi"
 import RatingModal from "../rating/RatingModal"
 import useToggle from "../../components/hooks/useToggle"
@@ -162,9 +161,7 @@ export function ReadStoryPage() {
 
             <h1 className="text-3xl font-bold mb-4">{story.title}</h1>
 
-            <div className="prose dark:prose-invert max-w-none">
-              <ReactQuill value={story.description} readOnly={true} theme={"bubble"} />
-            </div>
+            <MarkdownRenderer content={story.description} />
           </div>
         </div>
 

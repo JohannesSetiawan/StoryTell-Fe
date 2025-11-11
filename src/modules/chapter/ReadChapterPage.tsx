@@ -6,8 +6,7 @@ import { useGetSpecificChapterQuery, useDeleteChapterMutation } from "../../redu
 import { type RootState, useAppSelector } from "../../redux/store"
 import toast from "react-hot-toast"
 import type { Chapter } from "../../redux/types/story"
-import ReactQuill from "react-quill"
-import "react-quill/dist/quill.bubble.css"
+import { MarkdownRenderer } from "../../components/common"
 import { ChapterCommentsList } from "../comment/Comment"
 import { useState } from "react"
 import { ArrowLeft, ArrowRight, Book, BookOpen, ChevronLeft, Edit, Loader, MessageSquare, Trash2 } from "lucide-react"
@@ -141,9 +140,7 @@ export function ReadChapterPage() {
               {chapter.dateCreated && <span>Published on {new Date(chapter.dateCreated).toLocaleDateString()}</span>}
             </div>
 
-            <div className="prose dark:prose-invert max-w-none">
-              <ReactQuill value={chapter.content} readOnly={true} theme={"bubble"} />
-            </div>
+            <MarkdownRenderer content={chapter.content} />
           </div>
         </div>
 
