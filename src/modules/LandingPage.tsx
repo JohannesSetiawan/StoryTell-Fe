@@ -5,6 +5,7 @@ import { type RootState, useAppSelector } from "../redux/store"
 import { dateToString } from "../utils/utils"
 import { useNavigate } from "react-router-dom"
 import { Book, BookOpen, History, PenTool, Sparkles } from "lucide-react"
+import { useGetUserInfoQuery } from "../redux/api/authAPi"
 
 export function LandingPage() {
   const userId = useAppSelector((state: RootState) => state.user).user?.userId
@@ -12,6 +13,7 @@ export function LandingPage() {
 
   if (userId) {
     const { data: historyData, isLoading } = useGetAllHistoriesQuery()
+    useGetUserInfoQuery()
     return (
       <div className="min-h-screen pt-20">
         {/* Hero Section */}

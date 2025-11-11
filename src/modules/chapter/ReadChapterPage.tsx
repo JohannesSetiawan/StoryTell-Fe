@@ -33,7 +33,7 @@ export function ReadChapterPage() {
   }
 
   const handleBack = () => {
-    navigate(`/read-story/${chapter?.storyId}`)
+    navigate(`/read-story/${chapter?.storyId}`, { replace: true })
   }
 
   const handleUpdateChapter = () => {
@@ -42,9 +42,9 @@ export function ReadChapterPage() {
 
   const handleNextChapter = (nextChapter: Chapter) => {
     if (nextChapter) {
-      navigate(`/read-chapter/${nextChapter.id}`)
+      navigate(`/read-chapter/${nextChapter.id}`, { replace: true })
     } else {
-      navigate(`/read-story/${chapter?.storyId}`)
+      navigate(`/read-story/${chapter?.storyId}`, { replace: true })
     }
   }
 

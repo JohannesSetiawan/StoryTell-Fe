@@ -58,7 +58,7 @@ export function UpdateStoryPage() {
     try {
       await updateStory({ updateData: data, storyId: storyId || "undefined" }).unwrap()
       toast.success("Story updated successfully!")
-      navigate(`/read-story/${storyId}`)
+      navigate(`/read-story/${storyId}`, { replace: true })
     } catch (error: any) {
       toast.error(error?.data?.message || "Failed to update story")
     } finally {

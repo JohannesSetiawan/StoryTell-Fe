@@ -66,7 +66,7 @@ export function UpdateChapterPage() {
         chapterId: chapterId ? chapterId : "undefined",
       }).unwrap()
       toast.success("Chapter updated successfully!")
-      navigate(`/read-chapter/${chapterId}`)
+      navigate(`/read-chapter/${chapterId}`, { replace: true })
     } catch (error: any) {
       toast.error(error?.data?.message || "Failed to update chapter")
     } finally {

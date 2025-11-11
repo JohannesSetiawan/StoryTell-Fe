@@ -6,10 +6,11 @@ import { useDispatch } from "react-redux"
 import { logout } from "../redux/slice"
 import { useNavigate, useLocation } from "react-router-dom"
 import ToggleTheme from "./common/ToggleTheme"
-import { Menu, X } from "lucide-react"
+import { Menu, X, Shield } from "lucide-react"
 
 export function Navbar() {
   const user_token = useAppSelector((state: RootState) => state.user).token
+  const user = useAppSelector((state: RootState) => state.user).user
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
 
@@ -58,6 +59,10 @@ export function Navbar() {
 
   const handleProfile = () => {
     navigate("/profile")
+  }
+
+  const handleAdmin = () => {
+    navigate("/admin")
   }
 
   const isActive = (path: string) => {
@@ -162,6 +167,15 @@ export function Navbar() {
             >
               Profile
             </button>
+            {user?.isAdmin && (
+              <button
+                onClick={handleAdmin}
+                className={`${navLinkClasses} ${isActive("/admin") ? activeNavLinkClasses : ""} inline-flex items-center gap-1`}
+              >
+                <Shield size={16} />
+                Admin
+              </button>
+            )}
             <button
               onClick={handleLogout}
               className="px-4 py-2 rounded-md bg-destructive text-destructive-foreground font-medium hover:bg-destructive/90 transition-colors"
@@ -207,6 +221,15 @@ export function Navbar() {
               >
                 Profile
               </button>
+              {user?.isAdmin && (
+                <button
+                  onClick={handleAdmin}
+                  className={`${navLinkClasses} ${isActive("/admin") ? activeNavLinkClasses : ""} py-2 inline-flex items-center gap-1`}
+                >
+                  <Shield size={16} />
+                  Admin
+                </button>
+              )}
               <button onClick={handleLogout} className="text-destructive font-medium py-2">
                 Logout
               </button>

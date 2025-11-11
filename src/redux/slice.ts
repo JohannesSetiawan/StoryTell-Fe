@@ -41,9 +41,17 @@ const userSlice = createSlice({
           state.token = payload.token
           state.user = {userId: payload.user}
         }
+      ),
+      builder.addMatcher(
+        authApi.endpoints.getUserInfo.matchFulfilled,
+        (state, { payload }) => {
+          if (state.user) {
+            state.user.isAdmin = payload.isAdmin
+          }
+        }
       )
   },
-})
+});
 
 export const { logout } = userSlice.actions
 export default userSlice.reducer
