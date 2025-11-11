@@ -4,9 +4,9 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import toast from "react-hot-toast"
 import { useNavigate, useParams } from "react-router-dom"
-import { Button, MarkdownEditor } from "../../components/common"
+import { Button, MarkdownEditor, MarkdownInfoModal } from "../../components/common"
 import { useUpdateStoryMutation, useGetSpecificStoryQuery } from "../../redux/api/storyApi"
-import { BookOpen, ChevronLeft, Info, Save, Loader } from "lucide-react"
+import { BookOpen, ChevronLeft, Info, Save, Loader, HelpCircle } from "lucide-react"
 
 export function UpdateStoryPage() {
   const { storyId } = useParams()
@@ -15,6 +15,7 @@ export function UpdateStoryPage() {
   const [isPrivate, setIsPrivate] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [showTooltip, setShowTooltip] = useState(false)
+  const [showMarkdownModal, setShowMarkdownModal] = useState(false)
   const [updateStory] = useUpdateStoryMutation()
   const {
     data: story,
@@ -161,9 +162,19 @@ export function UpdateStoryPage() {
 
               {/* Description Field */}
               <div className="space-y-2">
-                <label htmlFor="description" className="block text-sm font-medium">
-                  Story Description
-                </label>
+                <div className="flex items-center justify-between">
+                  <label htmlFor="description" className="block text-sm font-medium">
+                    Story Description
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setShowMarkdownModal(true)}
+                    className="inline-flex items-center gap-1 text-xs text-primary hover:text-primary/80 transition-colors"
+                  >
+                    <HelpCircle size={14} />
+                    Markdown Help
+                  </button>
+                </div>
                 <p className="text-xs text-muted-foreground mb-2">
                   Provide a brief overview of your story to attract readers using Markdown formatting.
                 </p>
@@ -176,7 +187,7 @@ export function UpdateStoryPage() {
                 />
                 
                 <p className="text-xs text-muted-foreground mt-2">
-                  Tip: Use Markdown syntax for formatting. For example: **bold**, *italic*, # Heading, [link](url)
+                  Tip: Use Markdown syntax for formatting. Click "Markdown Help" above for a complete guide.
                 </p>
               </div>
 
@@ -261,6 +272,9 @@ export function UpdateStoryPage() {
           </form>
         </div>
       </div>
+
+      {/* Markdown Info Modal */}
+      <MarkdownInfoModal isOpen={showMarkdownModal} onClose={() => setShowMarkdownModal(false)} />
     </div>
   )
 }

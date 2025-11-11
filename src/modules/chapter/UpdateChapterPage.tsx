@@ -4,10 +4,10 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import toast from "react-hot-toast"
 import { useNavigate, useParams } from "react-router-dom"
-import { Button, MarkdownEditor } from "../../components/common"
+import { Button, MarkdownEditor, MarkdownInfoModal } from "../../components/common"
 import { useUpdateChapterMutation, useGetSpecificChapterQuery } from "../../redux/api/chapterApi"
 import { useGetSpecificStoryQuery } from "../../redux/api/storyApi"
-import { BookOpen, ChevronLeft, Edit, Loader, Save } from "lucide-react"
+import { BookOpen, ChevronLeft, Edit, Loader, Save, HelpCircle } from "lucide-react"
 
 export function UpdateChapterPage() {
   const { chapterId } = useParams()
@@ -15,6 +15,7 @@ export function UpdateChapterPage() {
   const [content, setContent] = useState("")
   const [order, setOrder] = useState(1)
   const [isLoading, setIsLoading] = useState(false)
+  const [showMarkdownModal, setShowMarkdownModal] = useState(false)
   const [updateChapter] = useUpdateChapterMutation()
   const {
     data: chapter,
@@ -192,9 +193,19 @@ export function UpdateChapterPage() {
 
               {/* Chapter Content Field */}
               <div className="space-y-2">
-                <label htmlFor="content" className="block text-sm font-medium">
-                  Chapter Content
-                </label>
+                <div className="flex items-center justify-between">
+                  <label htmlFor="content" className="block text-sm font-medium">
+                    Chapter Content
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setShowMarkdownModal(true)}
+                    className="inline-flex items-center gap-1 text-xs text-primary hover:text-primary/80 transition-colors"
+                  >
+                    <HelpCircle size={14} />
+                    Markdown Help
+                  </button>
+                </div>
                 <p className="text-xs text-muted-foreground mb-2">
                   Edit your chapter content using Markdown formatting.
                 </p>
@@ -207,7 +218,7 @@ export function UpdateChapterPage() {
                 />
                 
                 <p className="text-xs text-muted-foreground mt-2">
-                  Tip: Use Markdown syntax for formatting. For example: **bold**, *italic*, # Heading, [link](url)
+                  Tip: Use Markdown syntax for formatting. Click "Markdown Help" above for a complete guide.
                 </p>
               </div>
 
@@ -239,6 +250,9 @@ export function UpdateChapterPage() {
           </form>
         </div>
       </div>
+
+      {/* Markdown Info Modal */}
+      <MarkdownInfoModal isOpen={showMarkdownModal} onClose={() => setShowMarkdownModal(false)} />
     </div>
   )
 }
