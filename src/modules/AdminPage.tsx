@@ -15,6 +15,14 @@ import { useDeleteStoryMutation } from '../redux/api/storyApi';
 import { useDeleteChapterMutation } from '../redux/api/chapterApi';
 import { useDeleteCommentMutation } from '../redux/api/commentApi';
 import {
+  useGetAllTagsQuery,
+  useCreateTagMutation,
+  useUpdateTagMutation,
+  useDeleteTagMutation,
+  useGetTagCategoriesQuery,
+} from '../redux/api/tagApi';
+import { Tag, CreateTagDto, UpdateTagDto } from '../redux/types/tag';
+import {
   Users,
   BookOpen,
   FileText,
@@ -30,10 +38,12 @@ import {
   Unlock,
   Filter,
   X,
+  Tag as TagIcon,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { TagBadge } from '../components/common/TagBadge';
 
-type TabType = 'users' | 'stories' | 'chapters' | 'comments';
+type TabType = 'users' | 'stories' | 'chapters' | 'comments' | 'tags';
 
 export function AdminPage() {
   const navigate = useNavigate();
@@ -42,6 +52,13 @@ export function AdminPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageLimit] = useState(10);
   const [showFilters, setShowFilters] = useState(false);
+
+  // Tag management states
+  const [isCreateTagModalOpen, setIsCreateTagModalOpen] = useState(false);
+  const [editingTag, setEditingTag] = useState<Tag | null>(null);
+  const [tagFormData, setTagFormData] = useState<CreateTagDto>({ name: '', category: '' });
+  const [tagSearchTerm, setTagSearchTerm] = useState('');
+  const [tagCategoryFilter, setTagCategoryFilter] = useState('');
 
   // Filter states
   const [userFilters, setUserFilters] = useState<Omit<UserFilterParams, 'page' | 'limit'>>({});
@@ -95,6 +112,21 @@ export function AdminPage() {
   const [deleteStory] = useDeleteStoryMutation();
   const [deleteChapter] = useDeleteChapterMutation();
   const [deleteComment] = useDeleteCommentMutation();
+
+  // Tag API hooks
+  const { data: tagsData, isLoading: tagsLoading } = useGetAllTagsQuery(
+    {
+      page: currentPage,
+      limit: pageLimit,
+      name: tagSearchTerm || undefined,
+      category: tagCategoryFilter || undefined,
+    },
+    { skip: activeTab !== 'tags' }
+  );
+  const { data: categoriesData } = useGetTagCategoriesQuery(undefined, { skip: activeTab !== 'tags' });
+  const [createTag, { isLoading: isCreatingTag }] = useCreateTagMutation();
+  const [updateTag, { isLoading: isUpdatingTag }] = useUpdateTagMutation();
+  const [deleteTag] = useDeleteTagMutation();
 
   const handleTabChange = (tab: TabType) => {
     setActiveTab(tab);
@@ -180,7 +212,59 @@ export function AdminPage() {
     }
   };
 
+  // Tag management handlers
+  const handleCreateTag = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await createTag(tagFormData).unwrap();
+      setTagFormData({ name: '', category: '' });
+      setIsCreateTagModalOpen(false);
+      toast.success('Tag created successfully!');
+    } catch (error: any) {
+      toast.error(error?.data?.message || 'Failed to create tag');
+    }
+  };
 
+  const handleUpdateTag = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingTag) return;
+
+    try {
+      await updateTag({
+        id: editingTag.id,
+        data: tagFormData as UpdateTagDto,
+      }).unwrap();
+      setEditingTag(null);
+      setTagFormData({ name: '', category: '' });
+      toast.success('Tag updated successfully!');
+    } catch (error: any) {
+      toast.error(error?.data?.message || 'Failed to update tag');
+    }
+  };
+
+  const handleDeleteTag = async (tag: Tag) => {
+    if (!window.confirm(`Are you sure you want to delete "${tag.name}"? This will remove it from all stories.`)) {
+      return;
+    }
+
+    try {
+      await deleteTag(tag.id).unwrap();
+      toast.success('Tag deleted successfully!');
+    } catch (error: any) {
+      toast.error(error?.data?.message || 'Failed to delete tag');
+    }
+  };
+
+  const openEditTagModal = (tag: Tag) => {
+    setEditingTag(tag);
+    setTagFormData({ name: tag.name, category: tag.category });
+  };
+
+  const closeTagModal = () => {
+    setIsCreateTagModalOpen(false);
+    setEditingTag(null);
+    setTagFormData({ name: '', category: '' });
+  };
 
   const getCurrentData = () => {
     switch (activeTab) {
@@ -192,10 +276,12 @@ export function AdminPage() {
         return chaptersData;
       case 'comments':
         return commentsData;
+      case 'tags':
+        return tagsData;
     }
   };
 
-  const isLoading = usersLoading || storiesLoading || chaptersLoading || commentsLoading;
+  const isLoading = usersLoading || storiesLoading || chaptersLoading || commentsLoading || tagsLoading;
   const currentData = getCurrentData();
 
   return (
@@ -260,6 +346,17 @@ export function AdminPage() {
               <MessageSquare size={18} />
               Comments
               {commentsData && <span className="text-xs">({commentsData.total})</span>}
+            </button>
+            <button
+              onClick={() => handleTabChange('tags')}
+              className={`flex items-center gap-2 px-6 py-4 font-medium transition-colors ${
+                activeTab === 'tags'
+                  ? 'bg-primary text-primary-foreground border-b-2 border-primary'
+                  : 'text-muted-foreground hover:bg-muted/50'
+              }`}
+            >
+              <TagIcon size={18} />
+              Tags
             </button>
           </div>
 
@@ -523,6 +620,7 @@ export function AdminPage() {
                         <tr className="border-b border-border">
                           <th className="text-left py-3 px-4 font-semibold">Title</th>
                           <th className="text-left py-3 px-4 font-semibold">Author</th>
+                          <th className="text-left py-3 px-4 font-semibold">Tags</th>
                           <th className="text-left py-3 px-4 font-semibold">Chapters</th>
                           <th className="text-left py-3 px-4 font-semibold">Privacy</th>
                           <th className="text-left py-3 px-4 font-semibold">Created</th>
@@ -534,6 +632,22 @@ export function AdminPage() {
                           <tr key={story.id} className="border-b border-border hover:bg-muted/30">
                             <td className="py-3 px-4 font-medium">{story.title}</td>
                             <td className="py-3 px-4 text-sm text-muted-foreground">{story.author.username}</td>
+                            <td className="py-3 px-4">
+                              {story.tags && story.tags.length > 0 ? (
+                                <div className="flex flex-wrap gap-1 max-w-xs">
+                                  {story.tags.slice(0, 3).map((tag) => (
+                                    <TagBadge key={tag} name={tag} />
+                                  ))}
+                                  {story.tags.length > 3 && (
+                                    <span className="text-xs text-muted-foreground">
+                                      +{story.tags.length - 3} more
+                                    </span>
+                                  )}
+                                </div>
+                              ) : (
+                                <span className="text-xs text-muted-foreground italic">No tags</span>
+                              )}
+                            </td>
                             <td className="py-3 px-4 text-sm">{story.chapters.length}</td>
                             <td className="py-3 px-4">
                               {story.isprivate ? (
@@ -707,6 +821,86 @@ export function AdminPage() {
                   </div>
                 )}
 
+                {/* Tags Table */}
+                {activeTab === 'tags' && tagsData && (
+                  <>
+                    <div className="mb-4 flex justify-between items-center">
+                      <div className="flex gap-3 flex-1">
+                        <input
+                          type="text"
+                          placeholder="Search tags..."
+                          value={tagSearchTerm}
+                          onChange={(e) => setTagSearchTerm(e.target.value)}
+                          className="flex-1 px-4 py-2 border border-input rounded-md bg-background text-sm"
+                        />
+                        <select
+                          value={tagCategoryFilter}
+                          onChange={(e) => setTagCategoryFilter(e.target.value)}
+                          className="px-4 py-2 border border-input rounded-md bg-background text-sm"
+                        >
+                          <option value="">All Categories</option>
+                          {categoriesData?.categories.map(category => (
+                            <option key={category} value={category}>
+                              {category.charAt(0).toUpperCase() + category.slice(1)}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <button
+                        onClick={() => setIsCreateTagModalOpen(true)}
+                        className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 font-medium"
+                      >
+                        Create Tag
+                      </button>
+                    </div>
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead>
+                          <tr className="border-b border-border">
+                            <th className="text-left py-3 px-4 font-semibold">Tag</th>
+                            <th className="text-left py-3 px-4 font-semibold">Category</th>
+                            <th className="text-left py-3 px-4 font-semibold">Created</th>
+                            <th className="text-left py-3 px-4 font-semibold">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {tagsData.data.map((tag) => (
+                            <tr key={tag.id} className="border-b border-border hover:bg-muted/30">
+                              <td className="py-3 px-4">
+                                <TagBadge name={tag.name} />
+                              </td>
+                              <td className="py-3 px-4 text-sm text-muted-foreground">
+                                {tag.category.charAt(0).toUpperCase() + tag.category.slice(1)}
+                              </td>
+                              <td className="py-3 px-4 text-sm text-muted-foreground">
+                                {new Date(tag.dateCreated).toLocaleDateString()}
+                              </td>
+                              <td className="py-3 px-4">
+                                <div className="flex items-center gap-2">
+                                  <button
+                                    onClick={() => openEditTagModal(tag)}
+                                    className="p-2 rounded-md hover:bg-muted transition-colors"
+                                    title="Edit tag"
+                                  >
+                                    <Edit size={16} />
+                                  </button>
+                                  <button
+                                    onClick={() => handleDeleteTag(tag)}
+                                    className="p-2 rounded-md hover:bg-destructive/10 text-destructive transition-colors"
+                                    title="Delete tag"
+                                  >
+                                    <Trash2 size={16} />
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </>
+                )}
+
                 {/* Empty State */}
                 {currentData && currentData.data.length === 0 && (
                   <div className="text-center py-12">
@@ -770,6 +964,61 @@ export function AdminPage() {
           </div>
         </div>
       </div>
+
+      {/* Tag Create/Edit Modal */}
+      {(isCreateTagModalOpen || editingTag) && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-card border border-border rounded-lg p-6 w-full max-w-md mx-4">
+            <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+              <TagIcon size={20} className="text-primary" />
+              {editingTag ? 'Edit Tag' : 'Create Tag'}
+            </h2>
+            <form onSubmit={editingTag ? handleUpdateTag : handleCreateTag}>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Tag Name</label>
+                  <input
+                    type="text"
+                    required
+                    value={tagFormData.name}
+                    onChange={(e) => setTagFormData({ ...tagFormData, name: e.target.value })}
+                    className="w-full px-3 py-2 border border-input rounded-md bg-background"
+                    placeholder="e.g., Horror, Action, English"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Category</label>
+                  <input
+                    type="text"
+                    required
+                    value={tagFormData.category}
+                    onChange={(e) => setTagFormData({ ...tagFormData, category: e.target.value })}
+                    className="w-full px-3 py-2 border border-input rounded-md bg-background"
+                    placeholder="e.g., genre, language"
+                  />
+                </div>
+              </div>
+              <div className="mt-6 flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={closeTagModal}
+                  className="px-4 py-2 border border-input rounded-md hover:bg-muted transition-colors"
+                  disabled={isCreatingTag || isUpdatingTag}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+                  disabled={isCreatingTag || isUpdatingTag}
+                >
+                  {isCreatingTag || isUpdatingTag ? 'Saving...' : editingTag ? 'Update' : 'Create'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

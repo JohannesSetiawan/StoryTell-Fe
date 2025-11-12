@@ -8,7 +8,8 @@ export const baseApi = createApi({
     'Comment',
     'Rating',
     'History',
-    'UserProfile'
+    'UserProfile',
+    'Tag'
   ],
   baseQuery: fetchBaseQuery({
     prepareHeaders: (headers, { getState }) => {

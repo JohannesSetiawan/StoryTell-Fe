@@ -6,7 +6,8 @@ export type Story = {
     description: string,
     dateCreated: string,
     authorId: string,
-    isprivate: boolean
+    isprivate: boolean,
+    tags?: string[]
 }
 
 
@@ -55,4 +56,5 @@ export type specificStoryResponse = {
     isprivate: boolean
     chapters: Chapter[]
     storyComments: AllCommentResponse
+    tags?: string[]
 } & {author: Author}

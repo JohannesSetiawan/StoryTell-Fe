@@ -31,6 +31,7 @@ export interface AdminStory {
   author: {
     username: string;
   };
+  tags?: string[];
 }
 
 export interface AdminChapter {

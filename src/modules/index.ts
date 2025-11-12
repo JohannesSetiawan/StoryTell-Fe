@@ -11,4 +11,4 @@ export * from "./story/ReadStoryPage"
 export * from "./story/UpdateStoryPage"
 export * from "./chapter/CreateChapterPage"
 export * from "./chapter/ReadChapterPage"
-export * from "./chapter/UpdateChapterPage"
+export * from "./chapter/UpdateChapterPage";

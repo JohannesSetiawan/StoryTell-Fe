@@ -7,7 +7,8 @@ type pagination = {
   page: number,
   perPage: number,
   search?: string,
-  sort?: string
+  sort?: string,
+  tagIds?: string[]
 }
 
 export const storyApi = baseApi.injectEndpoints({
@@ -20,8 +21,8 @@ export const storyApi = baseApi.injectEndpoints({
       providesTags: (result) => [{ type: 'Story', id: result?.id }],
     }),
     getAllStories: builder.query<allStoriesResponse, pagination>({
-      query: ({page, perPage, search, sort}) => ({
-        url: STORY_API + `?page=${page}&perPage=${perPage}` + (search ? `&search=${search}` : '') + (sort ? `&sort=${sort}` : ''),
+      query: ({page, perPage, search, sort, tagIds}) => ({
+        url: STORY_API + `?page=${page}&perPage=${perPage}` + (search ? `&search=${search}` : '') + (sort ? `&sort=${sort}` : '') + (tagIds && tagIds.length > 0 ? `&tagIds=${tagIds.join(',')}` : ''),
         method: "GET",
       }),
       providesTags: (result) =>
@@ -30,8 +31,8 @@ export const storyApi = baseApi.injectEndpoints({
           : [{ type: 'Story' }],
     }),
     getSpecificUserStory: builder.query<allStoriesResponse, {userId: string} & pagination>({
-      query: ({userId, page, perPage, search, sort}) => ({
-        url: STORY_API + `/user/${userId}?page=${page}&perPage=${perPage}` + (search ? `&search=${search}` : '') + (sort ? `&sort=${sort}` : ''),
+      query: ({userId, page, perPage, search, sort, tagIds}) => ({
+        url: STORY_API + `/user/${userId}?page=${page}&perPage=${perPage}` + (search ? `&search=${search}` : '') + (sort ? `&sort=${sort}` : '') + (tagIds && tagIds.length > 0 ? `&tagIds=${tagIds.join(',')}` : ''),
         method: "GET",
       }),
       providesTags: (result) =>

@@ -3,13 +3,14 @@
 import type React from "react"
 
 import { useNavigate, useParams } from "react-router-dom"
-import { type SetStateAction, useState } from "react"
+import { type SetStateAction, useState, useEffect } from "react"
 import { useGetSpecificStoryQuery, useDeleteStoryMutation } from "../../redux/api/storyApi"
 import { type RootState, useAppSelector } from "../../redux/store"
 import toast from "react-hot-toast"
 import { CommentsList } from "../comment/Comment"
-import { MarkdownRenderer } from "../../components/common"
+import { MarkdownRenderer, TagBadge, TagSelector } from "../../components/common"
 import { useGetRatingsForSpecificStoryQuery, useGetSpecificUserRatingForStoryQuery } from "../../redux/api/ratingApi"
+import { useAssignTagsToStoryMutation, useGetStoryTagsQuery } from "../../redux/api/tagApi"
 import RatingModal from "../rating/RatingModal"
 import useToggle from "../../components/hooks/useToggle"
 import { useGetHistoryForSpecificStoryQuery } from "../../redux/api/historyApi"
@@ -27,6 +28,7 @@ import {
   Trash2,
   History,
   Filter,
+  Tag as TagIcon,
 } from "lucide-react"
 
 export function ReadStoryPage() {
@@ -42,8 +44,20 @@ export function ReadStoryPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedOption, setSelectedOption] = useState("title")
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [isManageTagsOpen, setIsManageTagsOpen] = useState(false)
+  const [selectedTagIds, setSelectedTagIds] = useState<string[]>([])
+
+  const { data: storyTags } = useGetStoryTagsQuery(storyId || '', { skip: !storyId })
+  const [assignTags, { isLoading: isAssigningTags }] = useAssignTagsToStoryMutation()
 
   const navigate = useNavigate()
+
+  // Initialize selected tags when modal opens
+  useEffect(() => {
+    if (isManageTagsOpen && storyTags) {
+      setSelectedTagIds(storyTags.map(tag => tag.id))
+    }
+  }, [isManageTagsOpen, storyTags])
 
   const filteredChapter = story?.chapters
     ?.filter((chapter) => {
@@ -90,6 +104,21 @@ export function ReadStoryPage() {
       navigate("/your-story")
     } catch (error: any) {
       toast.error(error?.data?.message || "Failed to delete story")
+    }
+  }
+
+  const handleSaveTags = async () => {
+    if (!storyId) return
+    
+    try {
+      await assignTags({
+        storyId,
+        data: { tagIds: selectedTagIds },
+      }).unwrap()
+      toast.success("Tags updated successfully")
+      setIsManageTagsOpen(false)
+    } catch (error: any) {
+      toast.error(error?.data?.message || "Failed to update tags")
     }
   }
 
@@ -162,6 +191,21 @@ export function ReadStoryPage() {
             <h1 className="text-3xl font-bold mb-4">{story.title}</h1>
 
             <MarkdownRenderer content={story.description} />
+
+            {/* Tags Section */}
+            {story.tags && story.tags.length > 0 && (
+              <div className="mt-4 pt-4 border-t border-border">
+                <div className="flex items-center gap-2 mb-2">
+                  <TagIcon size={16} className="text-muted-foreground" />
+                  <span className="text-sm font-medium text-muted-foreground">Tags:</span>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {story.tags.map((tag) => (
+                    <TagBadge key={tag} name={tag} />
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -252,6 +296,14 @@ export function ReadStoryPage() {
                 >
                   <Edit size={16} />
                   Edit Story
+                </button>
+
+                <button
+                  onClick={() => setIsManageTagsOpen(true)}
+                  className="w-full px-3 py-2 rounded-md bg-secondary text-secondary-foreground text-sm font-medium hover:bg-secondary/90 transition-colors inline-flex items-center justify-center gap-1"
+                >
+                  <TagIcon size={16} />
+                  Manage Tags
                 </button>
 
                 <button
@@ -395,6 +447,53 @@ export function ReadStoryPage() {
       {/* Rating Modal */}
       {on && (
         <RatingModal toggler={toggler} storyId={storyId} prevRating={userRating.id ? userRating.id : "undefined"} />
+      )}
+
+      {/* Manage Tags Modal */}
+      {isManageTagsOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black opacity-50" onClick={() => setIsManageTagsOpen(false)}></div>
+
+          <div className="relative bg-card border border-border rounded-lg shadow-lg w-full max-w-2xl mx-4 p-6 max-h-[90vh] overflow-y-auto">
+            <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
+              <TagIcon size={20} className="text-primary" />
+              Manage Story Tags
+            </h3>
+
+            <TagSelector
+              selectedTagIds={selectedTagIds}
+              onTagsChange={setSelectedTagIds}
+            />
+
+            <div className="flex justify-end gap-3 mt-6">
+              <button
+                onClick={() => setIsManageTagsOpen(false)}
+                className="px-4 py-2 rounded-md border border-input bg-background hover:bg-muted transition-colors"
+                disabled={isAssigningTags}
+              >
+                Cancel
+              </button>
+
+              <button
+                onClick={handleSaveTags}
+                disabled={isAssigningTags}
+                className="px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors flex items-center gap-2"
+              >
+                {isAssigningTags ? (
+                  <>
+                    <div className="h-4 w-4 rounded-full border-2 border-primary-foreground border-t-transparent animate-spin"></div>
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    <TagIcon size={16} />
+                    Save Tags
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Delete Confirmation Modal */}
