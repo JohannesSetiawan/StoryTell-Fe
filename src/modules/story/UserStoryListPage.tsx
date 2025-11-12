@@ -3,6 +3,7 @@
 import type React from "react"
 import { useNavigate } from "react-router-dom"
 import { useGetSpecificUserStoryQuery } from "../../redux/api/storyApi"
+import { useGetAllTagsQuery } from "../../redux/api/tagApi"
 import { type RootState, useAppSelector } from "../../redux/store"
 import { useState } from "react"
 import {
@@ -18,6 +19,8 @@ import {
   Filter,
   BookOpen,
   Edit,
+  Tag,
+  X,
 } from "lucide-react"
 
 // Define the available sorting options
@@ -27,21 +30,27 @@ export function UserStoryListPage() {
   const navigate = useNavigate()
   const userId = useAppSelector((state: RootState) => state.user).user?.userId
 
-  // State for pagination, search, and sorting
+  // State for pagination, search, sorting, and tag filtering
   const [currentPage, setCurrentPage] = useState(1)
   const [searchQuery, setSearchQuery] = useState("")
   const [sortOption, setSortOption] = useState<SortOption>("newest")
   const [isSearchFocused, setIsSearchFocused] = useState(false)
+  const [selectedTagIds, setSelectedTagIds] = useState<string[]>([])
+  const [showTagFilter, setShowTagFilter] = useState(false)
+
+  // Fetch tags for filtering
+  const { data: tagsData } = useGetAllTagsQuery({ page: 1, limit: 100 })
 
   // Fetch paginated data for the specific user.
-  // We now pass `searchQuery` and `sortOption` to the hook.
+  // We now pass `searchQuery`, `sortOption`, and `tagIds` to the hook.
   // RTK Query will automatically re-fetch when these values change.
   const { data: paginatedResult, isLoading, isError } = useGetSpecificUserStoryQuery({
     userId: userId!,
     page: currentPage,
     perPage: 10,
     search: searchQuery,
-    sort: sortOption,    
+    sort: sortOption,
+    tagIds: selectedTagIds.length > 0 ? selectedTagIds : undefined,    
   }, {
     skip: !userId,
   })
@@ -59,6 +68,20 @@ export function UserStoryListPage() {
   const handleSortChange = (option: SortOption) => {
     setSortOption(option)
     setCurrentPage(1) // Reset to page 1 on sort change
+  }
+
+  const handleTagToggle = (tagId: string) => {
+    setSelectedTagIds(prev => 
+      prev.includes(tagId) 
+        ? prev.filter(id => id !== tagId)
+        : [...prev, tagId]
+    )
+    setCurrentPage(1) // Reset to first page on tag filter change
+  }
+
+  const handleClearTags = () => {
+    setSelectedTagIds([])
+    setCurrentPage(1)
   }
   
   const handleBack = () => navigate("/")
@@ -180,6 +203,8 @@ export function UserStoryListPage() {
               aria-label="Search stories"
             />
           </div>
+          
+          {/* Sort Options */}
           <div className="mt-4 flex flex-wrap gap-2 items-center">
             <div className="text-sm font-medium text-muted-foreground flex items-center mr-2">
               <Filter size={16} className="mr-1" />
@@ -205,6 +230,69 @@ export function UserStoryListPage() {
                 {option === 'title-desc' && 'Title Z-A'}
               </button>
             ))}
+          </div>
+
+          {/* Tag Filter Section */}
+          <div className="mt-4 pt-4 border-t border-border">
+            <button
+              onClick={() => setShowTagFilter(!showTagFilter)}
+              className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors mb-3"
+            >
+              <Tag size={16} />
+              Filter by Tags
+              <span className="text-xs">
+                {selectedTagIds.length > 0 && `(${selectedTagIds.length} selected)`}
+              </span>
+            </button>
+            
+            {/* Selected Tags Display */}
+            {selectedTagIds.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-3">
+                {selectedTagIds.map(tagId => {
+                  const tag = tagsData?.data.find(t => t.id === tagId)
+                  return tag ? (
+                    <div
+                      key={tagId}
+                      className="inline-flex items-center gap-1 px-2 py-1 bg-primary/10 text-primary rounded-full text-xs font-medium"
+                    >
+                      {tag.name}
+                      <button
+                        onClick={() => handleTagToggle(tagId)}
+                        className="hover:bg-primary/20 rounded-full p-0.5 transition-colors"
+                        aria-label={`Remove ${tag.name} filter`}
+                      >
+                        <X size={12} />
+                      </button>
+                    </div>
+                  ) : null
+                })}
+                <button
+                  onClick={handleClearTags}
+                  className="text-xs text-muted-foreground hover:text-foreground underline"
+                >
+                  Clear all
+                </button>
+              </div>
+            )}
+
+            {/* Tag Selection Grid */}
+            {showTagFilter && tagsData?.data && (
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 mt-3">
+                {tagsData.data.map((tag) => (
+                  <button
+                    key={tag.id}
+                    onClick={() => handleTagToggle(tag.id)}
+                    className={`px-3 py-2 text-xs rounded-md border transition-all ${
+                      selectedTagIds.includes(tag.id)
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-background text-foreground border-input hover:border-primary/50"
+                    }`}
+                  >
+                    {tag.name}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
