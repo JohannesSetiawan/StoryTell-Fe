@@ -3,6 +3,7 @@ export * from "./HomePage";
 export * from "./LoginPage";
 export * from "./RegisterPage";
 export * from "./ProfilePage";
+export * from "./UserProfilePage";
 export * from "./AdminPage";
 export * from "./story/StoryListPage";
 export * from "./story/UserStoryListPage"
@@ -12,3 +13,5 @@ export * from "./story/UpdateStoryPage"
 export * from "./chapter/CreateChapterPage"
 export * from "./chapter/ReadChapterPage"
 export * from "./chapter/UpdateChapterPage";
+export * from "./history/ReadHistoryPage";
+export * from "./profile/UserStoriesPage";

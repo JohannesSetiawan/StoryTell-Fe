@@ -6,6 +6,7 @@ import {
   LoginPage,
   RegisterPage,
   ProfilePage,
+  UserProfilePage,
   AdminPage,
   StoryListPage,
   UserStoryListPage,
@@ -14,7 +15,9 @@ import {
   UpdateStoryPage,
   CreateChapterPage,
   ReadChapterPage,
-  UpdateChapterPage
+  UpdateChapterPage,
+  ReadHistoryPage,
+  UserStoriesPage
 } from "./modules";
 import { Navbar } from "./components";
 
@@ -78,6 +81,18 @@ const router = createBrowserRouter([
       {
         path: "/update-chapter/:chapterId",
         element: <UpdateChapterPage />,
+      },
+      {
+        path: "/history",
+        element: <ReadHistoryPage />,
+      },
+      {
+        path: "/profile/:username",
+        element: <UserProfilePage />,
+      },
+      {
+        path: "/profile/:username/stories",
+        element: <UserStoriesPage />,
       },
     ],
   },

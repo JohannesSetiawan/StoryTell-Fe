@@ -6,12 +6,19 @@ import { useGetUserInfoQuery, useUpdateProfileMutation } from "../redux/api/auth
 import toast from "react-hot-toast"
 import { useNavigate } from "react-router-dom"
 import { Button } from "../components/common"
-import { User, Lock, Edit2, Save, X, Eye, EyeOff, Calendar, Shield } from "lucide-react"
+import { User, Lock, Save, X, Eye, EyeOff, Calendar, Shield, Edit2 } from "lucide-react"
 
 export function ProfilePage() {
   const { data: userInfo, isLoading: isLoadingUserInfo, error } = useGetUserInfoQuery()
   const [updateProfile, { isLoading: isUpdating }] = useUpdateProfileMutation()
   const navigate = useNavigate()
+
+  // Redirect to user profile page if username is available
+  useEffect(() => {
+    if (userInfo?.username) {
+      navigate(`/profile/${userInfo.username}`, { replace: true })
+    }
+  }, [userInfo, navigate])
 
   const [isEditing, setIsEditing] = useState(false)
   const [username, setUsername] = useState("")

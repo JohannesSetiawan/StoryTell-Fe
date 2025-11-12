@@ -32,14 +32,14 @@ const userSlice = createSlice({
       (state, { payload }: PayloadAction<LoginResponse>) => {
         const token = payload.token
         state.token = token
-        state.user = {userId: payload.user, isAdmin: payload.isAdmin}
+        state.user = {userId: payload.user, username: payload.username, isAdmin: payload.isAdmin}
       }
     ),
       builder.addMatcher(
         authApi.endpoints.register.matchFulfilled,
         (state, { payload }: PayloadAction<LoginResponse>) => {
           state.token = payload.token
-          state.user = {userId: payload.user, isAdmin: payload.isAdmin}
+          state.user = {userId: payload.user, username: payload.username, isAdmin: payload.isAdmin}
         }
       ),
       builder.addMatcher(
@@ -47,6 +47,7 @@ const userSlice = createSlice({
         (state, { payload }) => {
           if (state.user) {
             state.user.isAdmin = payload.isAdmin
+            state.user.username = payload.username
           }
         }
       )

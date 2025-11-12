@@ -8,6 +8,7 @@ export type RegisterRequest = LoginRequest
 export type LoginResponse = {
     token: string,
     user: string,
+    username: string,
     isAdmin: boolean
 }
 

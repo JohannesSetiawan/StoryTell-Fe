@@ -53,12 +53,20 @@ export function Navbar() {
     navigate("/read")
   }
 
+  const handleHistory = () => {
+    navigate("/history")
+  }
+
   const handleHome = () => {
     navigate("/")
   }
 
   const handleProfile = () => {
-    navigate("/profile")
+    if (user?.username) {
+      navigate(`/profile/${user.username}`)
+    } else {
+      navigate("/profile")
+    }
   }
 
   const handleAdmin = () => {
@@ -162,8 +170,14 @@ export function Navbar() {
               Your Story
             </button>
             <button
+              onClick={handleHistory}
+              className={`${navLinkClasses} ${isActive("/history") ? activeNavLinkClasses : ""}`}
+            >
+              History
+            </button>
+            <button
               onClick={handleProfile}
-              className={`${navLinkClasses} ${isActive("/profile") ? activeNavLinkClasses : ""}`}
+              className={`${navLinkClasses} ${location.pathname.startsWith("/profile") ? activeNavLinkClasses : ""}`}
             >
               Profile
             </button>
@@ -216,8 +230,14 @@ export function Navbar() {
                 Your Story
               </button>
               <button
+                onClick={handleHistory}
+                className={`${navLinkClasses} ${isActive("/history") ? activeNavLinkClasses : ""} py-2`}
+              >
+                History
+              </button>
+              <button
                 onClick={handleProfile}
-                className={`${navLinkClasses} ${isActive("/profile") ? activeNavLinkClasses : ""} py-2`}
+                className={`${navLinkClasses} ${location.pathname.startsWith("/profile") ? activeNavLinkClasses : ""} py-2`}
               >
                 Profile
               </button>

@@ -40,6 +40,16 @@ export const storyApi = baseApi.injectEndpoints({
           ? result.data.map(({ id }) => ({ type: 'Story', id: id }))
           : [{ type: 'Story' }],
     }),
+    getPublicStoriesByUsername: builder.query<allStoriesResponse, {username: string} & pagination>({
+      query: ({username, page, perPage, search, sort, tagIds}) => ({
+        url: STORY_API + `/username/${username}/public?page=${page}&perPage=${perPage}` + (search ? `&search=${search}` : '') + (sort ? `&sort=${sort}` : '') + (tagIds && tagIds.length > 0 ? `&tagIds=${tagIds.join(',')}` : ''),
+        method: "GET",
+      }),
+      providesTags: (result) =>
+        result
+          ? result.data.map(({ id }) => ({ type: 'Story', id: id }))
+          : [{ type: 'Story' }],
+    }),
     createStory: builder.mutation<Story, createStoryData>({
       query: (body) => ({
         url: STORY_API,
@@ -72,5 +82,6 @@ export const {
   useDeleteStoryMutation,
   useGetSpecificStoryQuery,
   useGetSpecificUserStoryQuery,
+  useGetPublicStoriesByUsernameQuery,
   useUpdateStoryMutation
 } = storyApi;

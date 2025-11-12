@@ -40,6 +40,12 @@ export const authApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['UserProfile'],
     }),
+    getUserByUsername: builder.query<UserInfoResponse, string>({
+      query: (username) => ({
+        url: AUTH_API + `/username/${username}`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -49,4 +55,5 @@ export const {
   useLazyGetUserInfoQuery,
   useGetUserInfoQuery,
   useUpdateProfileMutation,
+  useGetUserByUsernameQuery,
 } = authApi;
