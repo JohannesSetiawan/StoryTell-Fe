@@ -6,13 +6,16 @@ import toast from "react-hot-toast"
 import { useNavigate, useParams } from "react-router-dom"
 import { Button, MarkdownEditor, MarkdownInfoModal } from "../../components/common"
 import { useUpdateStoryMutation, useGetSpecificStoryQuery } from "../../redux/api/storyApi"
-import { BookOpen, ChevronLeft, Info, Save, Loader, HelpCircle } from "lucide-react"
+import { useGetAllTagsQuery, useGetStoryTagsQuery } from "../../redux/api/tagApi"
+import { BookOpen, ChevronLeft, Info, Save, Loader, HelpCircle, Tag as TagIcon, X } from "lucide-react"
 
 export function UpdateStoryPage() {
   const { storyId } = useParams()
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
   const [isPrivate, setIsPrivate] = useState(false)
+  const [selectedTagIds, setSelectedTagIds] = useState<string[]>([])
+  const [storyStatus, setStoryStatus] = useState<"Ongoing" | "Cancelled" | "Dropped" | "Completed">("Ongoing")
   const [isLoading, setIsLoading] = useState(false)
   const [showTooltip, setShowTooltip] = useState(false)
   const [showMarkdownModal, setShowMarkdownModal] = useState(false)
@@ -22,6 +25,8 @@ export function UpdateStoryPage() {
     isLoading: isLoadingStory,
     error: storyError,
   } = useGetSpecificStoryQuery(storyId ? storyId : "undefined")
+  const { data: tagsData, isLoading: isLoadingTags } = useGetAllTagsQuery({ page: 1, limit: 100 })
+  const { data: storyTags } = useGetStoryTagsQuery(storyId || "undefined", { skip: !storyId })
 
   const navigate = useNavigate()
 
@@ -30,8 +35,19 @@ export function UpdateStoryPage() {
       setDescription(story.description || "")
       setTitle(story.title || "")
       setIsPrivate(story.isprivate || false)
+      setStoryStatus(story.storyStatus || "Ongoing")
     }
   }, [story])
+
+  useEffect(() => {
+    if (storyTags && tagsData) {
+      // Map tag names to tag IDs
+      const tagIds = storyTags
+        .map(storyTag => tagsData.data.find(t => t.name === storyTag.name)?.id)
+        .filter((id): id is string => id !== undefined)
+      setSelectedTagIds(tagIds)
+    }
+  }, [storyTags, tagsData])
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     setIsLoading(true)
@@ -53,6 +69,8 @@ export function UpdateStoryPage() {
       title: title,
       description: description,
       isprivate: isPrivate,
+      tagIds: selectedTagIds,
+      storyStatus: storyStatus,
     }
 
     try {
@@ -81,6 +99,27 @@ export function UpdateStoryPage() {
   const handleBack = () => {
     navigate(-1)
   }
+
+  const handleToggleTag = (tagId: string) => {
+    setSelectedTagIds(prev => 
+      prev.includes(tagId) 
+        ? prev.filter(id => id !== tagId)
+        : [...prev, tagId]
+    )
+  }
+
+  const handleRemoveTag = (tagId: string) => {
+    setSelectedTagIds(prev => prev.filter(id => id !== tagId))
+  }
+
+  // Group tags by category
+  const groupedTags = tagsData?.data.reduce((acc, tag) => {
+    if (!acc[tag.category]) {
+      acc[tag.category] = []
+    }
+    acc[tag.category].push(tag)
+    return acc
+  }, {} as Record<string, typeof tagsData.data>)
 
   if (isLoadingStory) {
     return (
@@ -189,6 +228,94 @@ export function UpdateStoryPage() {
                 <p className="text-xs text-muted-foreground mt-2">
                   Tip: Use Markdown syntax for formatting. Click "Markdown Help" above for a complete guide.
                 </p>
+              </div>
+
+              {/* Tags Selection */}
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <TagIcon size={16} className="text-primary" />
+                  <label className="block text-sm font-medium">
+                    Tags (Optional)
+                  </label>
+                </div>
+                <p className="text-xs text-muted-foreground mb-2">
+                  Select tags that describe your story to help readers discover it.
+                </p>
+
+                {isLoadingTags ? (
+                  <div className="text-sm text-muted-foreground">Loading tags...</div>
+                ) : (
+                  <>
+                    {/* Selected Tags Display */}
+                    {selectedTagIds.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mb-3 p-3 bg-muted/30 rounded-lg">
+                        {selectedTagIds.map(tagId => {
+                          const tag = tagsData?.data.find(t => t.id === tagId)
+                          return tag ? (
+                            <button
+                              key={tagId}
+                              type="button"
+                              onClick={() => handleRemoveTag(tagId)}
+                              className="inline-flex items-center gap-1 px-3 py-1 bg-primary/10 text-primary rounded-full text-sm hover:bg-primary/20 transition-colors"
+                            >
+                              {tag.name}
+                              <X size={14} />
+                            </button>
+                          ) : null
+                        })}
+                      </div>
+                    )}
+
+                    {/* Tag Selection by Category */}
+                    <div className="max-h-60 overflow-y-auto border border-input rounded-lg p-3 space-y-3">
+                      {groupedTags && Object.entries(groupedTags).map(([category, tags]) => (
+                        <div key={category}>
+                          <h4 className="text-xs font-semibold text-muted-foreground uppercase mb-2">
+                            {category}
+                          </h4>
+                          <div className="flex flex-wrap gap-2">
+                            {tags.map(tag => {
+                              const isSelected = selectedTagIds.includes(tag.id)
+                              return (
+                                <button
+                                  key={tag.id}
+                                  type="button"
+                                  onClick={() => handleToggleTag(tag.id)}
+                                  className={`px-3 py-1 rounded-full text-sm transition-colors ${
+                                    isSelected
+                                      ? "bg-primary text-primary-foreground"
+                                      : "bg-muted hover:bg-muted/70 text-foreground"
+                                  }`}
+                                >
+                                  {tag.name}
+                                </button>
+                              )
+                            })}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {/* Story Status Selection */}
+              <div className="space-y-2">
+                <label htmlFor="storyStatus" className="block text-sm font-medium">
+                  Story Status
+                </label>
+                <select
+                  id="storyStatus"
+                  name="storyStatus"
+                  value={storyStatus}
+                  onChange={(e) => setStoryStatus(e.target.value as any)}
+                  className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                >
+                  <option value="Ongoing">Ongoing</option>
+                  <option value="Completed">Completed</option>
+                  <option value="Cancelled">Cancelled</option>
+                  <option value="Dropped">Dropped</option>
+                </select>
               </div>
 
               {/* Privacy Toggle */}

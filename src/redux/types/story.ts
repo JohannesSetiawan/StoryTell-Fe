@@ -1,5 +1,7 @@
 import { AllCommentResponse } from "./comment"
 
+export type StoryStatus = 'Ongoing' | 'Cancelled' | 'Dropped' | 'Completed';
+
 export type Story = {
     id: string,
     title: string,
@@ -8,6 +10,7 @@ export type Story = {
     authorId: string,
     isprivate: boolean,
     tags?: string[]
+    storyStatus: StoryStatus
 }
 
 
@@ -31,6 +34,9 @@ export type allStoriesResponse = {
 export type createStoryData = {
     title: string
     description: string
+    isprivate?: boolean
+    tagIds?: string[]
+    storyStatus?: StoryStatus
 }
 
 export type Chapter = {
@@ -57,4 +63,5 @@ export type specificStoryResponse = {
     chapters: Chapter[]
     storyComments: AllCommentResponse
     tags?: string[]
+    storyStatus: StoryStatus
 } & {author: Author}

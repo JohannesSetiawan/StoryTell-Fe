@@ -22,6 +22,7 @@ import {
   Tag,
   X,
 } from "lucide-react"
+import { StoryStatusBadge } from "../../components/common"
 
 // Define the available sorting options
 type SortOption = "newest" | "oldest" | "title-asc" | "title-desc"
@@ -343,9 +344,12 @@ export function UserStoryListPage() {
                   >
                     <div className="p-4 flex-grow flex flex-col sm:flex-row sm:items-center sm:gap-4">
                       <div className="flex-grow">
-                        <h3 className="text-lg font-semibold mb-1">
-                          {story.title}
-                        </h3>
+                        <div className="flex items-center gap-2 mb-1">
+                          <h3 className="text-lg font-semibold">
+                            {story.title}
+                          </h3>
+                          <StoryStatusBadge status={story.storyStatus} />
+                        </div>
                         <div className="flex items-center text-sm text-muted-foreground">
                           <Clock size={14} className="mr-1.5" />
                           <span>Created: {formatDate(story.dateCreated)}</span>

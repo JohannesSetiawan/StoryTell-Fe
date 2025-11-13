@@ -6,6 +6,7 @@ import { useGetAllStoriesQuery } from "../../redux/api/storyApi"
 import { useGetAllTagsQuery } from "../../redux/api/tagApi"
 import { useState } from "react"
 import { Book, ChevronLeft, ChevronRight, Search, SortAsc, SortDesc, Filter, BookOpen, Clock, User, Tag, X } from "lucide-react"
+import { StoryStatusBadge } from "../../components/common"
 
 // Define the available sorting options
 type SortOption = "newest" | "oldest" | "title-asc" | "title-desc"
@@ -283,9 +284,12 @@ export function StoryListPage() {
                           <Book size={20} />
                         </div>
                         <div className="flex-grow">
-                          <h3 className="text-lg font-semibold mb-1 group-hover:text-primary transition-colors">
-                            {story.title}
-                          </h3>
+                          <div className="flex items-center gap-2 mb-1">
+                            <h3 className="text-lg font-semibold group-hover:text-primary transition-colors">
+                              {story.title}
+                            </h3>
+                            <StoryStatusBadge status={story.storyStatus} />
+                          </div>
                           <div className="flex items-center text-sm text-muted-foreground">
                             <User size={14} className="mr-1.5" />
                             <span>By {story.author.username}</span>

@@ -8,7 +8,7 @@ import { useGetSpecificStoryQuery, useDeleteStoryMutation } from "../../redux/ap
 import { type RootState, useAppSelector } from "../../redux/store"
 import toast from "react-hot-toast"
 import { CommentsList } from "../comment/Comment"
-import { MarkdownRenderer, TagBadge, TagSelector } from "../../components/common"
+import { MarkdownRenderer, TagBadge, TagSelector, StoryStatusBadge } from "../../components/common"
 import { useGetRatingsForSpecificStoryQuery, useGetSpecificUserRatingForStoryQuery } from "../../redux/api/ratingApi"
 import { useAssignTagsToStoryMutation, useGetStoryTagsQuery } from "../../redux/api/tagApi"
 import RatingModal from "../rating/RatingModal"
@@ -188,7 +188,10 @@ export function ReadStoryPage() {
               <span>Story by {story.author?.username || "Unknown Author"}</span>
             </div>
 
-            <h1 className="text-3xl font-bold mb-4">{story.title}</h1>
+            <div className="flex items-start gap-3 mb-4">
+              <h1 className="text-3xl font-bold flex-1">{story.title}</h1>
+              <StoryStatusBadge status={story.storyStatus} />
+            </div>
 
             <MarkdownRenderer content={story.description} />
 
