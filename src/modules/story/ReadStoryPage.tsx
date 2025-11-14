@@ -52,6 +52,7 @@ export function ReadStoryPage() {
   const [openComments, setOpenComments] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedOption, setSelectedOption] = useState("title")
+  const [chapterSortOrder, setChapterSortOrder] = useState<"asc" | "desc">("asc")
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [isManageTagsOpen, setIsManageTagsOpen] = useState(false)
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([])
@@ -80,7 +81,9 @@ export function ReadStoryPage() {
         return chapter.title.toLowerCase().includes(searchQuery.toLowerCase())
       }
     })
-    .sort((a, b) => a.order - b.order) // Sort by chapter order ascending
+    .sort((a, b) => {
+      return chapterSortOrder === "asc" ? a.order - b.order : b.order - a.order
+    })
 
   const handleBack = () => {
     navigate(`/read`)
@@ -425,21 +428,36 @@ export function ReadStoryPage() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
-                <div className="flex items-center gap-1 text-muted-foreground text-sm">
-                  <Filter size={14} />
-                  <span>Filter by:</span>
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1 text-muted-foreground text-sm">
+                    <Filter size={14} />
+                    <span>Filter by:</span>
+                  </div>
+                  <select
+                    id="dropdown"
+                    value={selectedOption}
+                    onChange={handleChange}
+                    className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                  >
+                    <option value="title">Title</option>
+                    <option value="number">Chapter Number</option>
+                    <option value="content">Content</option>
+                  </select>
                 </div>
-                <select
-                  id="dropdown"
-                  value={selectedOption}
-                  onChange={handleChange}
-                  className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-                >
-                  <option value="title">Title</option>
-                  <option value="number">Chapter Number</option>
-                  <option value="content">Content</option>
-                </select>
+
+                <div className="flex items-center gap-2">
+                  <span className="text-muted-foreground text-sm">Sort:</span>
+                  <select
+                    id="sortOrder"
+                    value={chapterSortOrder}
+                    onChange={(e) => setChapterSortOrder(e.target.value as "asc" | "desc")}
+                    className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                  >
+                    <option value="asc">Oldest First</option>
+                    <option value="desc">Newest First</option>
+                  </select>
+                </div>
               </div>
             </div>
           </div>
