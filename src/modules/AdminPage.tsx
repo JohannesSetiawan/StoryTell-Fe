@@ -598,7 +598,7 @@ export function AdminPage() {
                             </td>
                             <td className="py-3 px-4">
                               <button
-                                onClick={() => navigate(`/profile/${user.id}`)}
+                                onClick={() => navigate(`/profile/${user.username}`)}
                                 className="p-2 rounded-md hover:bg-muted transition-colors"
                                 title="View profile"
                               >

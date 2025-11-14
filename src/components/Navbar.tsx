@@ -57,6 +57,10 @@ export function Navbar() {
     navigate("/history")
   }
 
+  const handleBookmark = () => {
+    navigate("/bookmark")
+  }
+
   const handleHome = () => {
     navigate("/")
   }
@@ -176,6 +180,12 @@ export function Navbar() {
               History
             </button>
             <button
+              onClick={handleBookmark}
+              className={`${navLinkClasses} ${isActive("/bookmark") ? activeNavLinkClasses : ""}`}
+            >
+              Bookmark
+            </button>
+            <button
               onClick={handleProfile}
               className={`${navLinkClasses} ${location.pathname.startsWith("/profile") ? activeNavLinkClasses : ""}`}
             >
@@ -236,20 +246,17 @@ export function Navbar() {
                 History
               </button>
               <button
+                onClick={handleBookmark}
+                className={`${navLinkClasses} ${isActive("/bookmark") ? activeNavLinkClasses : ""} py-2`}
+              >
+                Bookmark
+              </button>
+              <button
                 onClick={handleProfile}
                 className={`${navLinkClasses} ${location.pathname.startsWith("/profile") ? activeNavLinkClasses : ""} py-2`}
               >
                 Profile
               </button>
-              {user?.isAdmin && (
-                <button
-                  onClick={handleAdmin}
-                  className={`${navLinkClasses} ${isActive("/admin") ? activeNavLinkClasses : ""} py-2 inline-flex items-center gap-1`}
-                >
-                  <Shield size={16} />
-                  Admin
-                </button>
-              )}
               <button onClick={handleLogout} className="text-destructive font-medium py-2">
                 Logout
               </button>

@@ -9,7 +9,8 @@ export const baseApi = createApi({
     'Rating',
     'History',
     'UserProfile',
-    'Tag'
+    'Tag',
+    'Bookmark'
   ],
   baseQuery: fetchBaseQuery({
     prepareHeaders: (headers, { getState }) => {

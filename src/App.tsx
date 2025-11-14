@@ -17,7 +17,8 @@ import {
   ReadChapterPage,
   UpdateChapterPage,
   ReadHistoryPage,
-  UserStoriesPage
+  UserStoriesPage,
+  BookmarkPage
 } from "./modules";
 import { Navbar } from "./components";
 
@@ -85,6 +86,10 @@ const router = createBrowserRouter([
       {
         path: "/history",
         element: <ReadHistoryPage />,
+      },
+      {
+        path: "/bookmark",
+        element: <BookmarkPage />,
       },
       {
         path: "/profile/:username",

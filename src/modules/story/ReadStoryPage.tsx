@@ -14,6 +14,11 @@ import { useAssignTagsToStoryMutation, useGetStoryTagsQuery } from "../../redux/
 import RatingModal from "../rating/RatingModal"
 import useToggle from "../../components/hooks/useToggle"
 import { useGetHistoryForSpecificStoryQuery } from "../../redux/api/historyApi"
+import { 
+  useCheckBookmarkStatusQuery, 
+  useCreateBookmarkMutation, 
+  useDeleteBookmarkMutation 
+} from "../../redux/api/bookmarkApi"
 import { dateToString } from "../../utils/utils"
 import {
   Book,
@@ -29,6 +34,7 @@ import {
   History,
   Filter,
   Tag as TagIcon,
+  Bookmark,
 } from "lucide-react"
 
 export function ReadStoryPage() {
@@ -39,6 +45,9 @@ export function ReadStoryPage() {
   const { data: rating } = useGetRatingsForSpecificStoryQuery(storyId ? storyId : "undefined")
   const { data: userRating } = useGetSpecificUserRatingForStoryQuery(storyId ? storyId : "undefined")
   const { data: history } = useGetHistoryForSpecificStoryQuery(storyId ? storyId : "undefined")
+  const { data: bookmarkStatus } = useCheckBookmarkStatusQuery(storyId || '', { skip: !storyId })
+  const [createBookmark, { isLoading: isCreatingBookmark }] = useCreateBookmarkMutation()
+  const [deleteBookmark, { isLoading: isDeletingBookmark }] = useDeleteBookmarkMutation()
   const [deleteStory, { isLoading: isDeleting }] = useDeleteStoryMutation()
   const [openComments, setOpenComments] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
@@ -119,6 +128,22 @@ export function ReadStoryPage() {
       setIsManageTagsOpen(false)
     } catch (error: any) {
       toast.error(error?.data?.message || "Failed to update tags")
+    }
+  }
+
+  const handleToggleBookmark = async () => {
+    if (!storyId) return
+
+    try {
+      if (bookmarkStatus?.isBookmarked) {
+        await deleteBookmark({ storyId }).unwrap()
+        toast.success("Bookmark removed")
+      } else {
+        await createBookmark({ storyId }).unwrap()
+        toast.success("Story bookmarked")
+      }
+    } catch (error: any) {
+      toast.error(error?.data?.message || "Failed to update bookmark")
     }
   }
 
@@ -213,7 +238,47 @@ export function ReadStoryPage() {
         </div>
 
         {/* Story Info and Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          {/* Bookmark Section */}
+          {!isAuthor && (
+            <div className="bg-card border border-border rounded-xl p-5">
+              <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                <Bookmark className={bookmarkStatus?.isBookmarked ? "text-primary fill-primary" : "text-primary"} size={18} />
+                Bookmark
+              </h3>
+
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground mb-3">
+                  {bookmarkStatus?.isBookmarked 
+                    ? "This story is in your bookmarks" 
+                    : "Save this story for easy access later"}
+                </p>
+
+                <button
+                  className={`w-full px-3 py-2 rounded-md text-sm font-medium transition-colors inline-flex items-center justify-center gap-1 ${
+                    bookmarkStatus?.isBookmarked
+                      ? "bg-destructive/10 text-destructive hover:bg-destructive/20"
+                      : "bg-primary text-primary-foreground hover:bg-primary/90"
+                  }`}
+                  onClick={handleToggleBookmark}
+                  disabled={isCreatingBookmark || isDeletingBookmark}
+                >
+                  {isCreatingBookmark || isDeletingBookmark ? (
+                    <>
+                      <div className="h-4 w-4 rounded-full border-2 border-current border-t-transparent animate-spin"></div>
+                      {bookmarkStatus?.isBookmarked ? "Removing..." : "Adding..."}
+                    </>
+                  ) : (
+                    <>
+                      <Bookmark size={16} className={bookmarkStatus?.isBookmarked ? "fill-current" : ""} />
+                      {bookmarkStatus?.isBookmarked ? "Remove Bookmark" : "Add Bookmark"}
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Rating Section */}
           <div className="bg-card border border-border rounded-xl p-5">
             <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">

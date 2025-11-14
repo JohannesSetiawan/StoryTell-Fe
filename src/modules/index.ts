@@ -15,3 +15,4 @@ export * from "./chapter/ReadChapterPage"
 export * from "./chapter/UpdateChapterPage";
 export * from "./history/ReadHistoryPage";
 export * from "./profile/UserStoriesPage";
+export * from "./bookmark/BookmarkPage";
