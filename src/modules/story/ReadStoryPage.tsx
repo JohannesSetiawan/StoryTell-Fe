@@ -52,7 +52,7 @@ export function ReadStoryPage() {
   const [openComments, setOpenComments] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedOption, setSelectedOption] = useState("title")
-  const [chapterSortOrder, setChapterSortOrder] = useState<"asc" | "desc">("asc")
+  const [chapterSortOrder, setChapterSortOrder] = useState<"asc" | "desc">("desc")
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [isManageTagsOpen, setIsManageTagsOpen] = useState(false)
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([])
