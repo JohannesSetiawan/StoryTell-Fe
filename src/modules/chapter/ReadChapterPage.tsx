@@ -145,7 +145,21 @@ export function ReadChapterPage() {
               {chapter.dateCreated && <span>Published on {new Date(chapter.dateCreated).toLocaleDateString()}</span>}
             </div>
 
-            <MarkdownRenderer content={chapter.content} />
+            <div 
+              className="select-none"
+              style={{
+                userSelect: 'none',
+                WebkitUserSelect: 'none',
+                MozUserSelect: 'none',
+                msUserSelect: 'none'
+              }}
+              onContextMenu={(e) => e.preventDefault()}
+              onCopy={(e) => e.preventDefault()}
+              onCut={(e) => e.preventDefault()}
+              onDragStart={(e) => e.preventDefault()}
+            >
+              <MarkdownRenderer content={chapter.content} />
+            </div>
           </div>
         </div>
 
