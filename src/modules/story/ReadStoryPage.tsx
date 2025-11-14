@@ -41,10 +41,10 @@ export function ReadStoryPage() {
   const { on, toggler } = useToggle()
   const { storyId } = useParams()
   const userId = useAppSelector((state: RootState) => state.user).user?.userId
-  const { data: story, error, isLoading } = useGetSpecificStoryQuery(storyId ? storyId : "undefined")
-  const { data: rating } = useGetRatingsForSpecificStoryQuery(storyId ? storyId : "undefined")
-  const { data: userRating } = useGetSpecificUserRatingForStoryQuery(storyId ? storyId : "undefined")
-  const { data: history } = useGetHistoryForSpecificStoryQuery(storyId ? storyId : "undefined")
+  const { data: story, error, isLoading } = useGetSpecificStoryQuery(storyId || '', { skip: !storyId })
+  const { data: rating } = useGetRatingsForSpecificStoryQuery(storyId || '', { skip: !storyId })
+  const { data: userRating } = useGetSpecificUserRatingForStoryQuery(storyId || '', { skip: !storyId })
+  const { data: history } = useGetHistoryForSpecificStoryQuery(storyId || '', { skip: !storyId })
   const { data: bookmarkStatus } = useCheckBookmarkStatusQuery(storyId || '', { skip: !storyId })
   const [createBookmark, { isLoading: isCreatingBookmark }] = useCreateBookmarkMutation()
   const [deleteBookmark, { isLoading: isDeletingBookmark }] = useDeleteBookmarkMutation()
@@ -83,7 +83,7 @@ export function ReadStoryPage() {
     .sort((a, b) => a.order - b.order) // Sort by chapter order ascending
 
   const handleBack = () => {
-    navigate(-1)
+    navigate(`/read`)
   }
 
   const handleCreateChapter = () => {
@@ -107,8 +107,12 @@ export function ReadStoryPage() {
   }
 
   const handleDeleteStory = async () => {
+    if (!storyId) {
+      toast.error("Story ID is missing")
+      return
+    }
     try {
-      await deleteStory(storyId ? storyId : "undefined").unwrap()
+      await deleteStory(storyId).unwrap()
       toast.success("Story deleted successfully")
       navigate("/your-story")
     } catch (error: any) {
@@ -513,8 +517,8 @@ export function ReadStoryPage() {
       </div>
 
       {/* Rating Modal */}
-      {on && (
-        <RatingModal toggler={toggler} storyId={storyId} prevRating={userRating.id ? userRating.id : "undefined"} />
+      {on && storyId && (
+        <RatingModal toggler={toggler} storyId={storyId} prevRating={userRating?.id} />
       )}
 
       {/* Manage Tags Modal */}

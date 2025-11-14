@@ -24,9 +24,9 @@ export function UpdateStoryPage() {
     data: story,
     isLoading: isLoadingStory,
     error: storyError,
-  } = useGetSpecificStoryQuery(storyId ? storyId : "undefined")
+  } = useGetSpecificStoryQuery(storyId || '', { skip: !storyId })
   const { data: tagsData, isLoading: isLoadingTags } = useGetAllTagsQuery({ page: 1, limit: 100 })
-  const { data: storyTags } = useGetStoryTagsQuery(storyId || "undefined", { skip: !storyId })
+  const { data: storyTags } = useGetStoryTagsQuery(storyId || '', { skip: !storyId })
 
   const navigate = useNavigate()
 
@@ -65,6 +65,12 @@ export function UpdateStoryPage() {
       return
     }
 
+    if (!storyId) {
+      toast.error("Story ID is missing")
+      setIsLoading(false)
+      return
+    }
+
     const data = {
       title: title,
       description: description,
@@ -74,7 +80,7 @@ export function UpdateStoryPage() {
     }
 
     try {
-      await updateStory({ updateData: data, storyId: storyId || "undefined" }).unwrap()
+      await updateStory({ updateData: data, storyId: storyId }).unwrap()
       toast.success("Story updated successfully!")
       navigate(`/read-story/${storyId}`, { replace: true })
     } catch (error: any) {

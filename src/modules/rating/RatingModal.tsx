@@ -8,7 +8,7 @@ import { Button } from "../../components/common"
 import { Star, X } from "lucide-react"
 
 interface RatingModalProps {
-  prevRating: string
+  prevRating?: string
   storyId: string
   toggler: () => void
 }
@@ -36,7 +36,7 @@ export default function RatingModal(props: RatingModalProps) {
 
 
     try {
-      if (props.prevRating !== 'undefined') {
+      if (props.prevRating) {
         await updateRating({ updateData: body, ratingId: props.prevRating }).unwrap()
         toast.success("Rating updated successfully!")
       } else {

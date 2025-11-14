@@ -21,7 +21,7 @@ export function CreateChapterPage() {
     data: story,
     isLoading: isLoadingStory,
     error: storyError,
-  } = useGetSpecificStoryQuery(storyId ? storyId : "undefined")
+  } = useGetSpecificStoryQuery(storyId || '', { skip: !storyId })
   const navigate = useNavigate()
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -37,12 +37,17 @@ export function CreateChapterPage() {
       return
     }
 
+    if (!storyId) {
+      toast.error("Story ID is missing")
+      return
+    }
+
     setIsLoading(true)
 
     const data = {
       title: title.trim(),
       content: content,
-      storyId: storyId ? storyId : "undefined",
+      storyId: storyId,
       order: order,
     }
 

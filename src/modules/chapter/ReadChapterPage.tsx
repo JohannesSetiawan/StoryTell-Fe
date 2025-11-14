@@ -18,9 +18,10 @@ export function ReadChapterPage() {
     data: chapter,
     isLoading: isLoadingChapter,
     error: chapterError,
-  } = useGetSpecificChapterQuery(chapterId ? chapterId : "undefined")
+  } = useGetSpecificChapterQuery(chapterId || '', { skip: !chapterId })
   const { data: story, isLoading: isLoadingStory } = useGetSpecificStoryQuery(
-    chapter?.storyId ? chapter?.storyId : "undefined",
+    chapter?.storyId || '',
+    { skip: !chapter?.storyId },
   )
   const [deleteChapter, { isLoading: isDeleting }] = useDeleteChapterMutation()
   const [openComments, setOpenComments] = useState(false)
@@ -57,8 +58,12 @@ export function ReadChapterPage() {
   }
 
   const handleDeleteChapter = async () => {
+    if (!chapterId) {
+      toast.error("Chapter ID is missing")
+      return
+    }
     try {
-      await deleteChapter(chapterId ? chapterId : "undefined").unwrap()
+      await deleteChapter(chapterId).unwrap()
       toast.success("Chapter deleted successfully")
       navigate(`/read-story/${chapter?.storyId}`)
     } catch (error: any) {

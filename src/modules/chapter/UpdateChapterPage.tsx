@@ -21,10 +21,10 @@ export function UpdateChapterPage() {
     data: chapter,
     isLoading: isLoadingChapter,
     error: chapterError,
-  } = useGetSpecificChapterQuery(chapterId ? chapterId : "undefined")
+  } = useGetSpecificChapterQuery(chapterId || '', { skip: !chapterId })
 
   const { data: story, isLoading: isLoadingStory } = useGetSpecificStoryQuery(
-    chapter?.storyId ? chapter.storyId : "undefined",
+    chapter?.storyId || '',
     { skip: !chapter?.storyId },
   )
 
@@ -53,17 +53,29 @@ export function UpdateChapterPage() {
 
     setIsLoading(true)
 
+    if (!chapter?.storyId) {
+      toast.error("Story ID is missing")
+      setIsLoading(false)
+      return
+    }
+
     const data = {
       title: title.trim(),
       content: content,
       order: order,
-      storyId: chapter?.storyId ? chapter.storyId : "undefined",
+      storyId: chapter.storyId,
+    }
+
+    if (!chapterId) {
+      toast.error("Chapter ID is missing")
+      setIsLoading(false)
+      return
     }
 
     try {
       await updateChapter({
         updateData: data,
-        chapterId: chapterId ? chapterId : "undefined",
+        chapterId: chapterId,
       }).unwrap()
       toast.success("Chapter updated successfully!")
       navigate(`/read-chapter/${chapterId}`, { replace: true })
