@@ -112,8 +112,10 @@ export function ReadChapterPage() {
 
   const chapterList = story.chapters || []
   const currChapIdx = chapterList.findIndex((chap) => chap.id === chapterId)
-  const nextChap = chapterList[currChapIdx + 1]
-  const prevChap = chapterList[currChapIdx - 1]
+  // Chapters are sorted DESC, so next chapter (higher order) is at currChapIdx - 1
+  // and previous chapter (lower order) is at currChapIdx + 1
+  const nextChap = chapterList[currChapIdx - 1]
+  const prevChap = chapterList[currChapIdx + 1]
   const isAuthor = story.authorId === userId
 
   return (

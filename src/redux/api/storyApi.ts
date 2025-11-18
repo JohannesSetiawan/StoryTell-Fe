@@ -13,6 +13,19 @@ type pagination = {
 
 export const storyApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
+    getStoryDetails: builder.query<any, string>({
+      query: (storyId) => ({
+        url: STORY_API + `/${storyId}/details`,
+        method: "GET",
+      }),
+      providesTags: (result) => [
+        { type: 'Story', id: result?.story?.id },
+        { type: 'Rating', id: result?.story?.id },
+        { type: 'Bookmark', id: result?.story?.id },
+        { type: 'History', id: result?.story?.id },
+        { type: 'Tag', id: result?.story?.id }
+      ],
+    }),
     getSpecificStory: builder.query<specificStoryResponse, string>({
       query: (storyId) => ({
         url: STORY_API + `/${storyId}`,
@@ -81,6 +94,7 @@ export const {
   useCreateStoryMutation,
   useDeleteStoryMutation,
   useGetSpecificStoryQuery,
+  useGetStoryDetailsQuery,
   useGetSpecificUserStoryQuery,
   useGetPublicStoriesByUsernameQuery,
   useUpdateStoryMutation

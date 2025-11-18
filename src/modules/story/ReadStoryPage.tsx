@@ -4,18 +4,15 @@ import type React from "react"
 
 import { useNavigate, useParams } from "react-router-dom"
 import { type SetStateAction, useState, useEffect } from "react"
-import { useGetSpecificStoryQuery, useDeleteStoryMutation } from "../../redux/api/storyApi"
+import { useGetStoryDetailsQuery, useDeleteStoryMutation } from "../../redux/api/storyApi"
 import { type RootState, useAppSelector } from "../../redux/store"
 import toast from "react-hot-toast"
 import { CommentsList } from "../comment/Comment"
 import { MarkdownRenderer, TagBadge, TagSelector, StoryStatusBadge } from "../../components/common"
-import { useGetRatingsForSpecificStoryQuery, useGetSpecificUserRatingForStoryQuery } from "../../redux/api/ratingApi"
-import { useAssignTagsToStoryMutation, useGetStoryTagsQuery } from "../../redux/api/tagApi"
+import { useAssignTagsToStoryMutation } from "../../redux/api/tagApi"
 import RatingModal from "../rating/RatingModal"
 import useToggle from "../../components/hooks/useToggle"
-import { useGetHistoryForSpecificStoryQuery } from "../../redux/api/historyApi"
 import { 
-  useCheckBookmarkStatusQuery, 
   useCreateBookmarkMutation, 
   useDeleteBookmarkMutation 
 } from "../../redux/api/bookmarkApi"
@@ -41,11 +38,18 @@ export function ReadStoryPage() {
   const { on, toggler } = useToggle()
   const { storyId } = useParams()
   const userId = useAppSelector((state: RootState) => state.user).user?.userId
-  const { data: story, error, isLoading } = useGetSpecificStoryQuery(storyId || '', { skip: !storyId })
-  const { data: rating } = useGetRatingsForSpecificStoryQuery(storyId || '', { skip: !storyId })
-  const { data: userRating } = useGetSpecificUserRatingForStoryQuery(storyId || '', { skip: !storyId })
-  const { data: history } = useGetHistoryForSpecificStoryQuery(storyId || '', { skip: !storyId })
-  const { data: bookmarkStatus } = useCheckBookmarkStatusQuery(storyId || '', { skip: !storyId })
+  
+  // Single aggregated API call instead of 6 separate calls
+  const { data: storyDetails, error, isLoading } = useGetStoryDetailsQuery(storyId || '', { skip: !storyId })
+  
+  // Destructure all the data from the aggregated response
+  const story = storyDetails?.story
+  const rating = storyDetails?.ratings
+  const userRating = storyDetails?.userRating
+  const history = storyDetails?.history
+  const bookmarkStatus = storyDetails?.isBookmarked
+  const storyTags = storyDetails?.storyTags
+  
   const [createBookmark, { isLoading: isCreatingBookmark }] = useCreateBookmarkMutation()
   const [deleteBookmark, { isLoading: isDeletingBookmark }] = useDeleteBookmarkMutation()
   const [deleteStory, { isLoading: isDeleting }] = useDeleteStoryMutation()
@@ -57,7 +61,6 @@ export function ReadStoryPage() {
   const [isManageTagsOpen, setIsManageTagsOpen] = useState(false)
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([])
 
-  const { data: storyTags } = useGetStoryTagsQuery(storyId || '', { skip: !storyId })
   const [assignTags, { isLoading: isAssigningTags }] = useAssignTagsToStoryMutation()
 
   const navigate = useNavigate()
@@ -65,12 +68,12 @@ export function ReadStoryPage() {
   // Initialize selected tags when modal opens
   useEffect(() => {
     if (isManageTagsOpen && storyTags) {
-      setSelectedTagIds(storyTags.map(tag => tag.id))
+      setSelectedTagIds(storyTags.map((tag: any) => tag.id))
     }
   }, [isManageTagsOpen, storyTags])
 
   const filteredChapter = story?.chapters
-    ?.filter((chapter) => {
+    ?.filter((chapter: any) => {
       if (selectedOption === "title") {
         return chapter.title.toLowerCase().includes(searchQuery.toLowerCase())
       } else if (selectedOption === "number") {
@@ -81,7 +84,7 @@ export function ReadStoryPage() {
         return chapter.title.toLowerCase().includes(searchQuery.toLowerCase())
       }
     })
-    .sort((a, b) => {
+    .sort((a: any, b: any) => {
       return chapterSortOrder === "asc" ? a.order - b.order : b.order - a.order
     })
 
@@ -235,7 +238,7 @@ export function ReadStoryPage() {
                   <span className="text-sm font-medium text-muted-foreground">Tags:</span>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {story.tags.map((tag) => (
+                  {story.tags.map((tag: any) => (
                     <TagBadge key={tag} name={tag} />
                   ))}
                 </div>
@@ -466,7 +469,7 @@ export function ReadStoryPage() {
           <div className="p-5">
             {filteredChapter && filteredChapter.length > 0 ? (
               <div className="space-y-3 max-h-[500px] overflow-y-auto pr-2">
-                {filteredChapter.map((chapter) => (
+                {filteredChapter.map((chapter: any) => (
                   <a href={`/read-chapter/${chapter.id}`} key={chapter.id} className="block group">
                     <div className="flex items-center gap-3 p-4 rounded-lg border border-border bg-background hover:border-primary/50 hover:bg-muted/30 transition-colors">
                       <div className="flex-shrink-0 h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
