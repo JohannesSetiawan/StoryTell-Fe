@@ -114,7 +114,7 @@ export function UserProfilePage() {
             <div className="space-y-6">
               {/* Follow Stats */}
               <div className="flex items-center justify-between pb-4 border-b border-border">
-                <FollowStats userId={userInfo.userId} />
+                <FollowStats userId={userInfo.id} />
                 <Link
                   to="/follows"
                   className="text-sm text-primary hover:text-primary/80 transition-colors inline-flex items-center gap-1"
@@ -142,7 +142,7 @@ export function UserProfilePage() {
                   </button>
                 )}
                 {!isOwnProfile && (
-                  <FollowButton userId={userInfo.userId} className="flex-1" />
+                  <FollowButton userId={userInfo.id} className="flex-1" />
                 )}
                 <button
                   onClick={() => navigate(`/profile/${username}/stories`)}
