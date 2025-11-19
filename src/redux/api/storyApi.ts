@@ -94,6 +94,7 @@ export const {
   useCreateStoryMutation,
   useDeleteStoryMutation,
   useGetSpecificStoryQuery,
+  useLazyGetSpecificStoryQuery,
   useGetStoryDetailsQuery,
   useGetSpecificUserStoryQuery,
   useGetPublicStoriesByUsernameQuery,

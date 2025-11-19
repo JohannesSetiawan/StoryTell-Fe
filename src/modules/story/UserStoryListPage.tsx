@@ -2,10 +2,10 @@
 
 import type React from "react"
 import { useNavigate } from "react-router-dom"
-import { useGetSpecificUserStoryQuery } from "../../redux/api/storyApi"
+import { useGetSpecificUserStoryQuery, useLazyGetSpecificStoryQuery } from "../../redux/api/storyApi"
 import { useGetAllTagsQuery } from "../../redux/api/tagApi"
 import { type RootState, useAppSelector } from "../../redux/store"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import {
   Book,
   ChevronLeft,
@@ -21,15 +21,30 @@ import {
   Edit,
   Tag,
   X,
+  Download,
+  Loader2,
 } from "lucide-react"
 import { StoryStatusBadge } from "../../components/common"
+import type { Chapter } from "../../redux/types/story"
+import toast from "react-hot-toast"
+import { extractFilenameFromHeader, triggerBrowserDownload } from "../../utils/download"
+import { getDefaultExportFormat, setDefaultExportFormat, type ExportFormat } from "../../utils/exportPreferences"
 
 // Define the available sorting options
 type SortOption = "newest" | "oldest" | "title-asc" | "title-desc"
+const EXPORT_API_BASE = `${import.meta.env.VITE_API_URL}export`
+
+const EXPORT_FORMAT_OPTIONS: { value: ExportFormat; label: string; helper: string }[] = [
+  { value: "pdf", label: "PDF", helper: "Printer friendly" },
+  { value: "epub", label: "EPUB", helper: "E-reader ready" },
+  { value: "html", label: "HTML", helper: "Share as webpage" },
+  { value: "txt", label: "Plain Text", helper: "Lightweight" },
+]
 
 export function UserStoryListPage() {
   const navigate = useNavigate()
   const userId = useAppSelector((state: RootState) => state.user).user?.userId
+  const token = useAppSelector((state: RootState) => state.user).token
 
   // State for pagination, search, sorting, and tag filtering
   const [currentPage, setCurrentPage] = useState(1)
@@ -38,6 +53,28 @@ export function UserStoryListPage() {
   const [isSearchFocused, setIsSearchFocused] = useState(false)
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([])
   const [showTagFilter, setShowTagFilter] = useState(false)
+  const [exportDialog, setExportDialog] = useState<{ storyId: string; title: string } | null>(null)
+  const [selectedFormat, setSelectedFormat] = useState<ExportFormat | "">(() => getDefaultExportFormat() || "")
+  const [rememberFormat, setRememberFormat] = useState(false)
+  const [selectedChapterIds, setSelectedChapterIds] = useState<string[]>([])
+  const [isExporting, setIsExporting] = useState(false)
+  const [fetchStoryForExport, { data: storyForExport, isFetching: isLoadingStory }] = useLazyGetSpecificStoryQuery()
+
+  useEffect(() => {
+    if (exportDialog) {
+      fetchStoryForExport(exportDialog.storyId)
+    } else {
+      setSelectedChapterIds([])
+      setSelectedFormat(getDefaultExportFormat() || "")
+      setRememberFormat(false)
+    }
+  }, [exportDialog, fetchStoryForExport])
+
+  useEffect(() => {
+    if (storyForExport?.chapters) {
+      setSelectedChapterIds(storyForExport.chapters.map((chapter: Chapter) => chapter.id))
+    }
+  }, [storyForExport])
 
   // Fetch tags for filtering
   const { data: tagsData } = useGetAllTagsQuery({ page: 1, limit: 100 })
@@ -83,6 +120,87 @@ export function UserStoryListPage() {
   const handleClearTags = () => {
     setSelectedTagIds([])
     setCurrentPage(1)
+  }
+
+  const handleOpenExportDialog = (storyId: string, title: string) => {
+    setExportDialog({ storyId, title })
+  }
+
+  const handleCloseExportDialog = () => {
+    if (isExporting) return
+    setExportDialog(null)
+  }
+
+  const handleChapterToggle = (chapterId: string) => {
+    setSelectedChapterIds((prev) =>
+      prev.includes(chapterId)
+        ? prev.filter((id) => id !== chapterId)
+        : [...prev, chapterId],
+    )
+  }
+
+  const handleToggleAllChapters = () => {
+    if (!storyForExport?.chapters) return
+    if (selectedChapterIds.length === storyForExport.chapters.length) {
+      setSelectedChapterIds([])
+      return
+    }
+    setSelectedChapterIds(storyForExport.chapters.map((chapter: Chapter) => chapter.id))
+  }
+
+  const handleConfirmExport = async () => {
+    if (!exportDialog) return
+    if (!selectedFormat) {
+      toast.error("Please choose an export format")
+      return
+    }
+    if (!token) {
+      toast.error("Please login again to export your story")
+      return
+    }
+    if (selectedChapterIds.length === 0) {
+      toast.error("Select at least one chapter to export")
+      return
+    }
+
+    try {
+      setIsExporting(true)
+      const url = new URL(`${EXPORT_API_BASE}/story/${exportDialog.storyId}/${selectedFormat}`)
+      if (
+        storyForExport?.chapters &&
+        selectedChapterIds.length > 0 &&
+        selectedChapterIds.length !== storyForExport.chapters.length
+      ) {
+        url.searchParams.set("chapterIds", selectedChapterIds.join(","))
+      }
+
+      const response = await fetch(url.toString(), {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      if (!response.ok) {
+        const errorMessage = await response.text()
+        throw new Error(errorMessage || "Failed to export story")
+      }
+
+      const blob = await response.blob()
+      const fallbackName = `${exportDialog.title}.${selectedFormat}`
+      const filename = extractFilenameFromHeader(response.headers.get("Content-Disposition"), fallbackName)
+      triggerBrowserDownload(blob, filename)
+
+      if (rememberFormat && selectedFormat) {
+        setDefaultExportFormat(selectedFormat)
+      }
+
+      toast.success("Story export is ready!")
+      setExportDialog(null)
+    } catch (error: any) {
+      toast.error(error?.message || "Failed to export story")
+    } finally {
+      setIsExporting(false)
+    }
   }
   
   const handleBack = () => navigate("/")
@@ -156,6 +274,7 @@ export function UserStoryListPage() {
   }
 
   return (
+    <>
     <div className="min-h-screen pt-20 pb-12 bg-muted/20">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         {/* Header */}
@@ -360,6 +479,13 @@ export function UserStoryListPage() {
                         </div>
                       </div>
                       <div className="flex items-center gap-2 mt-3 sm:mt-0 flex-shrink-0">
+                         <button
+                           onClick={() => handleOpenExportDialog(story.id, story.title)}
+                           className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-dashed border-primary/40 text-primary hover:bg-primary/10 h-9 px-3"
+                         >
+                           <Download size={16} className="mr-2" />
+                           Export
+                         </button>
                          <a
                            href={`/read-story/${story.id}`}
                            className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3"
@@ -411,5 +537,123 @@ export function UserStoryListPage() {
         )}
       </div>
     </div>
+    {exportDialog && (
+      <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm px-4 flex items-center justify-center">
+        <div className="bg-card border border-border rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden">
+          <div className="flex items-start justify-between p-6 border-b border-border">
+            <div>
+              <p className="text-sm uppercase tracking-wide text-muted-foreground">Story Export</p>
+              <h2 className="text-2xl font-semibold mt-1">{exportDialog.title}</h2>
+              <p className="text-sm text-muted-foreground">Choose a format and chapter selection for this export</p>
+            </div>
+            <button
+              onClick={handleCloseExportDialog}
+              className="h-8 w-8 rounded-full inline-flex items-center justify-center border border-border hover:bg-muted"
+            >
+              <X size={16} />
+            </button>
+          </div>
+          <div className="p-6 space-y-6 overflow-y-auto max-h-[60vh]">
+            <section>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Format</h3>
+                {!selectedFormat && <span className="text-xs text-destructive">Required</span>}
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {EXPORT_FORMAT_OPTIONS.map((option) => (
+                  <button
+                    key={option.value}
+                    onClick={() => setSelectedFormat(option.value)}
+                    className={`text-left p-4 rounded-xl border transition-all ${
+                      selectedFormat === option.value
+                        ? "border-primary bg-primary/10"
+                        : "border-border hover:border-primary/50"
+                    }`}
+                  >
+                    <p className="font-semibold flex items-center justify-between">
+                      {option.label}
+                      {selectedFormat === option.value && <span className="text-xs text-primary">Selected</span>}
+                    </p>
+                    <p className="text-sm text-muted-foreground mt-1">{option.helper}</p>
+                  </button>
+                ))}
+              </div>
+              <label className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
+                <input
+                  type="checkbox"
+                  className="h-4 w-4 rounded border-border"
+                  checked={rememberFormat}
+                  onChange={(event) => setRememberFormat(event.target.checked)}
+                />
+                Remember this format for future exports
+              </label>
+            </section>
+            <section>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Chapters</h3>
+                <button
+                  type="button"
+                  onClick={handleToggleAllChapters}
+                  className="text-xs font-medium text-primary hover:text-primary/80"
+                  disabled={!storyForExport?.chapters || storyForExport.chapters.length === 0}
+                >
+                  {storyForExport?.chapters && selectedChapterIds.length === storyForExport.chapters.length
+                    ? "Deselect all"
+                    : "Select all"}
+                </button>
+              </div>
+              {isLoadingStory ? (
+                <div className="h-32 flex items-center justify-center text-muted-foreground text-sm">
+                  Fetching chapters...
+                </div>
+              ) : storyForExport?.chapters && storyForExport.chapters.length > 0 ? (
+                <div className="max-h-64 overflow-y-auto space-y-2 pr-2">
+                  {storyForExport.chapters.map((chapter: Chapter, index: number) => (
+                    <label
+                      key={chapter.id}
+                      className="flex items-start gap-3 p-3 border border-border rounded-xl hover:border-primary/50"
+                    >
+                      <input
+                        type="checkbox"
+                        className="mt-1 h-4 w-4"
+                        checked={selectedChapterIds.includes(chapter.id)}
+                        onChange={() => handleChapterToggle(chapter.id)}
+                      />
+                      <div>
+                        <p className="font-semibold">{chapter.title}</p>
+                        <p className="text-xs text-muted-foreground">Chapter {chapter.order ?? index + 1}</p>
+                      </div>
+                    </label>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">No chapters available for this story.</p>
+              )}
+              {selectedChapterIds.length === 0 && !isLoadingStory && (
+                <p className="text-xs text-destructive mt-2">Select at least one chapter to continue.</p>
+              )}
+            </section>
+          </div>
+          <div className="flex items-center justify-end gap-3 p-6 border-t border-border bg-muted/20">
+            <button
+              onClick={handleCloseExportDialog}
+              className="h-10 px-4 rounded-md border border-input bg-background hover:bg-muted"
+              disabled={isExporting}
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleConfirmExport}
+              disabled={!selectedFormat || selectedChapterIds.length === 0 || isExporting}
+              className="inline-flex items-center justify-center h-10 px-5 rounded-md bg-primary text-primary-foreground font-medium hover:bg-primary/90 disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {isExporting && <Loader2 size={18} className="mr-2 animate-spin" />}
+              Export Story
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   )
 }

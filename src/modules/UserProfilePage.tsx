@@ -3,15 +3,27 @@
 import { useNavigate, useParams, Link } from "react-router-dom"
 import { useGetUserByUsernameQuery, useUpdateProfileMutation } from "../redux/api/authAPi"
 import { type RootState, useAppSelector } from "../redux/store"
-import { User, Calendar, Shield, ChevronLeft, Book, Edit2, Users, Lock, Save, X, Eye, EyeOff } from "lucide-react"
+import { User, Calendar, Shield, ChevronLeft, Book, Edit2, Users, Lock, Save, X, Eye, EyeOff, Download } from "lucide-react"
 import { FollowButton, FollowStats, Button } from "../components/common"
 import { useState, useEffect } from "react"
 import toast from "react-hot-toast"
+import { extractFilenameFromHeader, triggerBrowserDownload } from "../utils/download"
+import {
+  ALL_BACKUP_SECTIONS,
+  getBackupSections,
+  setBackupSections,
+  getDefaultExportFormat,
+  setDefaultExportFormat,
+  type BackupSection,
+  type ExportFormat,
+} from "../utils/exportPreferences"
 
 export function UserProfilePage() {
   const { username } = useParams<{ username: string }>()
   const navigate = useNavigate()
-  const currentUser = useAppSelector((state: RootState) => state.user).user
+  const authState = useAppSelector((state: RootState) => state.user)
+  const currentUser = authState.user
+  const token = authState.token
   
   const { data: userInfo, isLoading, error } = useGetUserByUsernameQuery(username!, {
     skip: !username,
@@ -359,6 +371,211 @@ export function UserProfilePage() {
             )}
           </div>
         </div>
+
+        {isOwnProfile && (
+          <BackupPreferencesCard token={token} />
+        )}
+      </div>
+    </div>
+  )
+}
+
+type BackupPreferencesCardProps = {
+  token?: string | null
+}
+
+function BackupPreferencesCard({ token }: BackupPreferencesCardProps) {
+  const [sections, setSections] = useState<BackupSection[]>(
+    () => getBackupSections() || [...ALL_BACKUP_SECTIONS],
+  )
+  const [formatChoice, setFormatChoice] = useState<ExportFormat | "">(() => getDefaultExportFormat() || "")
+  const [isDownloading, setIsDownloading] = useState(false)
+
+  const sectionLabels: Record<BackupSection, string> = {
+    stories: "Stories",
+    chapters: "Chapters",
+    bookmarks: "Bookmarks",
+    tags: "Tags",
+    ratings: "Ratings",
+    followers: "Followers",
+    following: "Following",
+    "read-history": "Reading History",
+  }
+
+  const formatOptions: { value: ExportFormat; label: string }[] = [
+    { value: "pdf", label: "PDF" },
+    { value: "epub", label: "EPUB" },
+    { value: "html", label: "HTML" },
+    { value: "txt", label: "Plain Text" },
+  ]
+
+  const handleSectionToggle = (section: BackupSection) => {
+    setSections((prev) => {
+      const exists = prev.includes(section)
+      if (exists && prev.length === 1) {
+        toast.error("Keep at least one data group in your backup")
+        return prev
+      }
+      return exists ? prev.filter((item) => item !== section) : [...prev, section]
+    })
+  }
+
+  const handleSelectAll = () => {
+    setSections([...ALL_BACKUP_SECTIONS])
+  }
+
+  const handleSavePreferences = () => {
+    if (!formatChoice) {
+      toast.error("Choose a default export format")
+      return
+    }
+    setBackupSections(sections)
+    setDefaultExportFormat(formatChoice)
+    toast.success("Backup preferences saved")
+  }
+
+  const handleDownloadBackup = async () => {
+    if (!token) {
+      toast.error("Please login again to download your backup")
+      return
+    }
+
+    try {
+      setIsDownloading(true)
+      const url = new URL(`${import.meta.env.VITE_API_URL}export/backup`)
+      if (sections.length > 0 && sections.length !== ALL_BACKUP_SECTIONS.length) {
+        url.searchParams.set("include", sections.join(","))
+      }
+
+      const response = await fetch(url.toString(), {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      if (!response.ok) {
+        let message = "Failed to download backup"
+        try {
+          const payload = await response.json()
+          message = payload?.message || message
+        } catch (error) {
+          // ignore parse errors
+        }
+        throw new Error(message)
+      }
+
+      const blob = await response.blob()
+      const fallbackName = `storytell-backup-${Date.now()}.zip`
+      const filename = extractFilenameFromHeader(response.headers.get("Content-Disposition"), fallbackName)
+      triggerBrowserDownload(blob, filename)
+      toast.success("Backup downloaded")
+    } catch (error: any) {
+      toast.error(error?.message || "Unable to download backup")
+    } finally {
+      setIsDownloading(false)
+    }
+  }
+
+  return (
+    <div className="mt-10 bg-card border border-border rounded-xl shadow-lg overflow-hidden">
+      <div className="p-6 border-b border-border flex items-center justify-between">
+        <div>
+          <p className="text-sm uppercase tracking-wide text-muted-foreground">Backup Preferences</p>
+          <h3 className="text-2xl font-semibold mt-1">Story Export & Backup</h3>
+          <p className="text-sm text-muted-foreground">
+            Decide which datasets belong in your backup and set a default export format.
+          </p>
+        </div>
+        <div className="text-right text-sm text-muted-foreground hidden sm:block">
+          <p>{sections.length === ALL_BACKUP_SECTIONS.length ? "Everything is included" : `${sections.length} / ${ALL_BACKUP_SECTIONS.length} sections selected`}</p>
+          <button
+            onClick={handleSelectAll}
+            className="text-primary hover:text-primary/80 text-xs mt-1"
+          >
+            Select all
+          </button>
+        </div>
+      </div>
+      <div className="p-6 space-y-6">
+        <section>
+          <h4 className="text-sm font-semibold mb-2">Data Groups</h4>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {ALL_BACKUP_SECTIONS.map((section) => (
+              <label
+                key={section}
+                className={`flex items-center gap-3 rounded-xl border px-3 py-2 text-sm ${
+                  sections.includes(section)
+                    ? "border-primary bg-primary/5"
+                    : "border-border hover:border-primary/40"
+                }`}
+              >
+                <input
+                  type="checkbox"
+                  checked={sections.includes(section)}
+                  onChange={() => handleSectionToggle(section)}
+                  className="h-4 w-4"
+                />
+                <span>{sectionLabels[section]}</span>
+              </label>
+            ))}
+          </div>
+        </section>
+
+        <section>
+          <h4 className="text-sm font-semibold mb-2">Default Story Export Format</h4>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <select
+              className="flex-1 h-10 rounded-md border border-input bg-background px-3"
+              value={formatChoice}
+              onChange={(event) => setFormatChoice(event.target.value as ExportFormat)}
+            >
+              <option value="" disabled>
+                Select a format
+              </option>
+              {formatOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+            <button
+              type="button"
+              onClick={handleSavePreferences}
+              className="flex items-center justify-center gap-2 rounded-md bg-primary text-primary-foreground h-10 px-4 hover:bg-primary/90"
+            >
+              <Save size={16} />
+              Save Preferences
+            </button>
+          </div>
+          {!formatChoice && <p className="text-xs text-destructive mt-1">Pick a default to speed up exports later.</p>}
+        </section>
+
+        <section className="border border-dashed border-border rounded-xl p-4 bg-muted/20">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div>
+              <p className="font-semibold">Manual Backup</p>
+              <p className="text-sm text-muted-foreground">Download everything (or selected sections) instantly.</p>
+            </div>
+            <button
+              type="button"
+              onClick={handleDownloadBackup}
+              disabled={isDownloading}
+              className="inline-flex items-center gap-2 rounded-md bg-primary text-primary-foreground px-4 py-2 hover:bg-primary/90 disabled:opacity-60"
+            >
+              {isDownloading ? (
+                <>
+                  <span className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  Preparing...
+                </>
+              ) : (
+                <>
+                  <Download size={16} />
+                  Download Backup
+                </>
+              )}
+            </button>
+          </div>
+        </section>
       </div>
     </div>
   )
