@@ -22,6 +22,8 @@ const UpdateChapterPage = lazy(() => import("./modules/chapter/UpdateChapterPage
 const ReadHistoryPage = lazy(() => import("./modules/history/ReadHistoryPage").then(m => ({ default: m.ReadHistoryPage })));
 const UserStoriesPage = lazy(() => import("./modules/profile/UserStoriesPage").then(m => ({ default: m.UserStoriesPage })));
 const BookmarkPage = lazy(() => import("./modules/bookmark/BookmarkPage").then(m => ({ default: m.BookmarkPage })));
+const FeedPage = lazy(() => import("./modules/follow/FeedPage").then(m => ({ default: m.FeedPage })));
+const FollowListPage = lazy(() => import("./modules/follow/FollowListPage").then(m => ({ default: m.FollowListPage })));
 
 // Loading fallback component
 const PageLoader = () => (
@@ -179,6 +181,22 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<PageLoader />}>
             <UserStoriesPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: "/feed",
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <FeedPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: "/follows",
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <FollowListPage />
           </Suspense>
         ),
       },

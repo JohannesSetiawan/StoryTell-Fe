@@ -61,6 +61,10 @@ export function Navbar() {
     navigate("/bookmark")
   }
 
+  const handleFeed = () => {
+    navigate("/feed")
+  }
+
   const handleHome = () => {
     navigate("/")
   }
@@ -186,6 +190,12 @@ export function Navbar() {
               Bookmark
             </button>
             <button
+              onClick={handleFeed}
+              className={`${navLinkClasses} ${isActive("/feed") ? activeNavLinkClasses : ""}`}
+            >
+              Feed
+            </button>
+            <button
               onClick={handleProfile}
               className={`${navLinkClasses} ${location.pathname.startsWith("/profile") ? activeNavLinkClasses : ""}`}
             >
@@ -250,6 +260,12 @@ export function Navbar() {
                 className={`${navLinkClasses} ${isActive("/bookmark") ? activeNavLinkClasses : ""} py-2`}
               >
                 Bookmark
+              </button>
+              <button
+                onClick={handleFeed}
+                className={`${navLinkClasses} ${isActive("/feed") ? activeNavLinkClasses : ""} py-2`}
+              >
+                Feed
               </button>
               <button
                 onClick={handleProfile}

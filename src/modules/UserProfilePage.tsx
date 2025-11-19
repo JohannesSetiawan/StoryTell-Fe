@@ -1,9 +1,10 @@
 "use client"
 
-import { useNavigate, useParams } from "react-router-dom"
+import { useNavigate, useParams, Link } from "react-router-dom"
 import { useGetUserByUsernameQuery } from "../redux/api/authAPi"
 import { type RootState, useAppSelector } from "../redux/store"
-import { User, Calendar, Shield, ChevronLeft, Book, Edit2 } from "lucide-react"
+import { User, Calendar, Shield, ChevronLeft, Book, Edit2, Users } from "lucide-react"
+import { FollowButton, FollowStats } from "../components/common"
 
 export function UserProfilePage() {
   const { username } = useParams<{ username: string }>()
@@ -111,6 +112,18 @@ export function UserProfilePage() {
           {/* Profile Content */}
           <div className="p-6">
             <div className="space-y-6">
+              {/* Follow Stats */}
+              <div className="flex items-center justify-between pb-4 border-b border-border">
+                <FollowStats userId={userInfo.userId} />
+                <Link
+                  to="/follows"
+                  className="text-sm text-primary hover:text-primary/80 transition-colors inline-flex items-center gap-1"
+                >
+                  <Users size={16} />
+                  View Connections
+                </Link>
+              </div>
+
               <div>
                 <label className="block text-sm font-medium mb-2 text-muted-foreground">About</label>
                 <div className="p-3 rounded-md bg-muted/30 text-foreground min-h-[100px]">
@@ -128,9 +141,12 @@ export function UserProfilePage() {
                     Edit Profile
                   </button>
                 )}
+                {!isOwnProfile && (
+                  <FollowButton userId={userInfo.userId} className="flex-1" />
+                )}
                 <button
                   onClick={() => navigate(`/profile/${username}/stories`)}
-                  className={`${isOwnProfile ? 'flex-1' : 'w-full'} h-10 rounded-md border border-input bg-background hover:bg-muted transition-colors inline-flex items-center justify-center gap-2`}
+                  className={`${isOwnProfile ? 'flex-1' : 'flex-1'} h-10 rounded-md border border-input bg-background hover:bg-muted transition-colors inline-flex items-center justify-center gap-2`}
                 >
                   <Book size={16} />
                   View Stories

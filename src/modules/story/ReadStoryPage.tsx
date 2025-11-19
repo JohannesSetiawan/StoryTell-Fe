@@ -8,7 +8,7 @@ import { useGetStoryDetailsQuery, useDeleteStoryMutation } from "../../redux/api
 import { type RootState, useAppSelector } from "../../redux/store"
 import toast from "react-hot-toast"
 import { CommentsList } from "../comment/Comment"
-import { MarkdownRenderer, TagBadge, TagSelector, StoryStatusBadge } from "../../components/common"
+import { MarkdownRenderer, TagBadge, TagSelector, StoryStatusBadge, FollowButton } from "../../components/common"
 import { useAssignTagsToStoryMutation } from "../../redux/api/tagApi"
 import RatingModal from "../rating/RatingModal"
 import useToggle from "../../components/hooks/useToggle"
@@ -220,9 +220,14 @@ export function ReadStoryPage() {
         {/* Story Header */}
         <div className="bg-card border border-border rounded-xl overflow-hidden mb-8">
           <div className="p-6">
-            <div className="flex items-center gap-2 text-muted-foreground text-sm mb-2">
-              <FileText size={16} />
-              <span>Story by {story.author?.username || "Unknown Author"}</span>
+            <div className="flex items-center justify-between gap-2 text-sm mb-2">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <FileText size={16} />
+                <span>Story by {story.author?.username || "Unknown Author"}</span>
+              </div>
+              {!isAuthor && story.authorId && (
+                <FollowButton userId={story.authorId} className="text-xs px-3 py-1" />
+              )}
             </div>
 
             <div className="flex items-start gap-3 mb-4">

@@ -6,3 +6,6 @@ export * from "./TagBadge";
 export * from "./TagSelector";
 export * from "./TagFilter";
 export * from "./StoryStatusBadge";
+export * from "./FollowButton";
+export * from "./FollowStats";
+export * from "./ActivityFeedItem";
