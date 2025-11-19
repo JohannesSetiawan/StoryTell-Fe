@@ -47,7 +47,7 @@ export function ReadStoryPage() {
   const rating = storyDetails?.ratings
   const userRating = storyDetails?.userRating
   const history = storyDetails?.history
-  const bookmarkStatus = storyDetails?.isBookmarked
+  const isBookmarked = storyDetails?.isBookmarked
   const storyTags = storyDetails?.storyTags
   
   const [createBookmark, { isLoading: isCreatingBookmark }] = useCreateBookmarkMutation()
@@ -147,7 +147,7 @@ export function ReadStoryPage() {
     if (!storyId) return
 
     try {
-      if (bookmarkStatus?.isBookmarked) {
+      if (isBookmarked) {
         await deleteBookmark({ storyId }).unwrap()
         toast.success("Bookmark removed")
       } else {
@@ -260,20 +260,20 @@ export function ReadStoryPage() {
           {!isAuthor && (
             <div className="bg-card border border-border rounded-xl p-5">
               <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
-                <Bookmark className={bookmarkStatus?.isBookmarked ? "text-primary fill-primary" : "text-primary"} size={18} />
+                <Bookmark className={isBookmarked ? "text-primary fill-primary" : "text-primary"} size={18} />
                 Bookmark
               </h3>
 
               <div className="space-y-2">
                 <p className="text-sm text-muted-foreground mb-3">
-                  {bookmarkStatus?.isBookmarked 
+                  {isBookmarked 
                     ? "This story is in your bookmarks" 
                     : "Save this story for easy access later"}
                 </p>
 
                 <button
                   className={`w-full px-3 py-2 rounded-md text-sm font-medium transition-colors inline-flex items-center justify-center gap-1 ${
-                    bookmarkStatus?.isBookmarked
+                    isBookmarked
                       ? "bg-destructive/10 text-destructive hover:bg-destructive/20"
                       : "bg-primary text-primary-foreground hover:bg-primary/90"
                   }`}
@@ -283,12 +283,12 @@ export function ReadStoryPage() {
                   {isCreatingBookmark || isDeletingBookmark ? (
                     <>
                       <div className="h-4 w-4 rounded-full border-2 border-current border-t-transparent animate-spin"></div>
-                      {bookmarkStatus?.isBookmarked ? "Removing..." : "Adding..."}
+                      {isBookmarked ? "Removing..." : "Adding..."}
                     </>
                   ) : (
                     <>
-                      <Bookmark size={16} className={bookmarkStatus?.isBookmarked ? "fill-current" : ""} />
-                      {bookmarkStatus?.isBookmarked ? "Remove Bookmark" : "Add Bookmark"}
+                      <Bookmark size={16} className={isBookmarked ? "fill-current" : ""} />
+                      {isBookmarked ? "Remove Bookmark" : "Add Bookmark"}
                     </>
                   )}
                 </button>
