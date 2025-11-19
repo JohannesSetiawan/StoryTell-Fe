@@ -7,10 +7,12 @@ import {
   useCreateCommentMutation,
   useDeleteCommentMutation,
   useUpdateCommentMutation,
+  useGetPaginatedStoryCommentsQuery,
+  useGetPaginatedChapterCommentsQuery,
 } from "../../redux/api/commentApi"
 import type { AllCommentResponse, CommentWithAuthorName } from "../../redux/types/comment"
 import type { Chapter, specificStoryResponse } from "../../redux/types/story"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import toast from "react-hot-toast"
 import { type RootState, useAppSelector } from "../../redux/store"
 import { commentDateToString } from "../../utils/utils"
@@ -299,16 +301,40 @@ const ChapterComment: React.FC<Comments> = ({ comment, allComments }) => {
 }
 
 export const CommentsList: React.FC<Story> = ({ story }) => {
-  const allComments = story.storyComments || []
   const storyId = story.id
-  const topLevelComments = allComments.filter((comment) => !comment.parentId)
+  const [page, setPage] = useState(1)
+  const [allLoadedComments, setAllLoadedComments] = useState<AllCommentResponse>([])
+  
+  const { data, isLoading, isFetching } = useGetPaginatedStoryCommentsQuery({
+    storyId,
+    page,
+    limit: 10
+  })
+
+  // Accumulate comments as pages are loaded
+  useEffect(() => {
+    if (data?.comments) {
+      setAllLoadedComments(prev => {
+        // Avoid duplicates
+        const existingIds = new Set(prev.map(c => c.id))
+        const newComments = data.comments.filter(c => !existingIds.has(c.id))
+        return [...prev, ...newComments]
+      })
+    }
+  }, [data])
+
+  const handleLoadMore = () => {
+    setPage(prev => prev + 1)
+  }
+
+  const topLevelComments = allLoadedComments.filter((comment) => !comment.parentId)
 
   return (
     <div className="bg-background rounded-lg border border-border">
       <div className="p-4 border-b border-border">
         <h3 className="text-lg font-semibold flex items-center gap-2 mb-4">
           <MessageSquare size={18} className="text-primary" />
-          Comments ({allComments.length})
+          Comments ({data?.total || 0})
         </h3>
 
         <div className="mb-4">
@@ -317,12 +343,41 @@ export const CommentsList: React.FC<Story> = ({ story }) => {
       </div>
 
       <div className="p-4">
-        {topLevelComments.length > 0 ? (
-          <div className="space-y-4">
-            {topLevelComments.map((comment) => (
-              <Comment key={comment.id} comment={comment} allComments={allComments} />
-            ))}
+        {isLoading && page === 1 ? (
+          <div className="text-center py-8">
+            <div className="h-8 w-8 rounded-full border-4 border-primary border-t-transparent animate-spin mx-auto mb-2"></div>
+            <p className="text-muted-foreground">Loading comments...</p>
           </div>
+        ) : topLevelComments.length > 0 ? (
+          <>
+            <div className="space-y-4">
+              {topLevelComments.map((comment) => (
+                <Comment key={comment.id} comment={comment} allComments={allLoadedComments} />
+              ))}
+            </div>
+            
+            {data?.hasMore && (
+              <div className="mt-6 text-center">
+                <button
+                  onClick={handleLoadMore}
+                  disabled={isFetching}
+                  className="px-6 py-3 rounded-md bg-secondary text-secondary-foreground hover:bg-secondary/90 transition-colors inline-flex items-center gap-2 font-medium"
+                >
+                  {isFetching ? (
+                    <>
+                      <div className="h-4 w-4 rounded-full border-2 border-current border-t-transparent animate-spin"></div>
+                      Loading...
+                    </>
+                  ) : (
+                    <>
+                      <MessageSquare size={16} />
+                      Load More Comments
+                    </>
+                  )}
+                </button>
+              </div>
+            )}
+          </>
         ) : (
           <div className="text-center py-8 text-muted-foreground">
             <MessageSquare size={24} className="mx-auto mb-2 opacity-50" />
@@ -335,17 +390,42 @@ export const CommentsList: React.FC<Story> = ({ story }) => {
 }
 
 export const ChapterCommentsList: React.FC<ChapterComment> = ({ chapter }) => {
-  const allComments = chapter.chapterComments || []
   const storyId = chapter.storyId
   const chapterId = chapter.id
-  const topLevelComments = allComments.filter((comment) => !comment.parentId)
+  const [page, setPage] = useState(1)
+  const [allLoadedComments, setAllLoadedComments] = useState<AllCommentResponse>([])
+  
+  const { data, isLoading, isFetching } = useGetPaginatedChapterCommentsQuery({
+    storyId,
+    chapterId,
+    page,
+    limit: 10
+  })
+
+  // Accumulate comments as pages are loaded
+  useEffect(() => {
+    if (data?.comments) {
+      setAllLoadedComments(prev => {
+        // Avoid duplicates
+        const existingIds = new Set(prev.map(c => c.id))
+        const newComments = data.comments.filter(c => !existingIds.has(c.id))
+        return [...prev, ...newComments]
+      })
+    }
+  }, [data])
+
+  const handleLoadMore = () => {
+    setPage(prev => prev + 1)
+  }
+
+  const topLevelComments = allLoadedComments.filter((comment) => !comment.parentId)
 
   return (
     <div className="bg-background rounded-lg border border-border">
       <div className="p-4 border-b border-border">
         <h3 className="text-lg font-semibold flex items-center gap-2 mb-4">
           <MessageSquare size={18} className="text-primary" />
-          Chapter Comments ({allComments.length})
+          Chapter Comments ({data?.total || 0})
         </h3>
 
         <div className="mb-4">
@@ -354,12 +434,41 @@ export const ChapterCommentsList: React.FC<ChapterComment> = ({ chapter }) => {
       </div>
 
       <div className="p-4">
-        {topLevelComments.length > 0 ? (
-          <div className="space-y-4">
-            {topLevelComments.map((comment) => (
-              <ChapterComment key={comment.id} comment={comment} allComments={allComments} />
-            ))}
+        {isLoading && page === 1 ? (
+          <div className="text-center py-8">
+            <div className="h-8 w-8 rounded-full border-4 border-primary border-t-transparent animate-spin mx-auto mb-2"></div>
+            <p className="text-muted-foreground">Loading comments...</p>
           </div>
+        ) : topLevelComments.length > 0 ? (
+          <>
+            <div className="space-y-4">
+              {topLevelComments.map((comment) => (
+                <ChapterComment key={comment.id} comment={comment} allComments={allLoadedComments} />
+              ))}
+            </div>
+            
+            {data?.hasMore && (
+              <div className="mt-6 text-center">
+                <button
+                  onClick={handleLoadMore}
+                  disabled={isFetching}
+                  className="px-6 py-3 rounded-md bg-secondary text-secondary-foreground hover:bg-secondary/90 transition-colors inline-flex items-center gap-2 font-medium"
+                >
+                  {isFetching ? (
+                    <>
+                      <div className="h-4 w-4 rounded-full border-2 border-current border-t-transparent animate-spin"></div>
+                      Loading...
+                    </>
+                  ) : (
+                    <>
+                      <MessageSquare size={16} />
+                      Load More Comments
+                    </>
+                  )}
+                </button>
+              </div>
+            )}
+          </>
         ) : (
           <div className="text-center py-8 text-muted-foreground">
             <MessageSquare size={24} className="mx-auto mb-2 opacity-50" />

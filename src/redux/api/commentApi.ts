@@ -23,6 +23,36 @@ export const commentApi = baseApi.injectEndpoints({
           ? result.map(({ id }) => ({ type: 'Comment', id: id }))
           : [{ type: 'Comment' }],
     }),
+    getPaginatedStoryComments: builder.query<{
+      comments: AllCommentResponse;
+      total: number;
+      hasMore: boolean;
+      currentPage: number;
+    }, { storyId: string; page?: number; limit?: number }>({
+      query: ({ storyId, page = 1, limit = 10 }) => ({
+        url: COMMENT_API + `/${storyId}/paginated?page=${page}&limit=${limit}`,
+        method: "GET",
+      }),
+      providesTags: (result) =>
+        result?.comments
+          ? result.comments.map(({ id }) => ({ type: 'Comment', id: id }))
+          : [{ type: 'Comment' }],
+    }),
+    getPaginatedChapterComments: builder.query<{
+      comments: AllCommentResponse;
+      total: number;
+      hasMore: boolean;
+      currentPage: number;
+    }, { storyId: string; chapterId: string; page?: number; limit?: number }>({
+      query: ({ storyId, chapterId, page = 1, limit = 10 }) => ({
+        url: COMMENT_API + `/${storyId}/${chapterId}/paginated?page=${page}&limit=${limit}`,
+        method: "GET",
+      }),
+      providesTags: (result) =>
+        result?.comments
+          ? result.comments.map(({ id }) => ({ type: 'Comment', id: id }))
+          : [{ type: 'Comment' }],
+    }),
     createComment: builder.mutation<CommentResponse, {data: CommentRequest, storyId: string}>({
       query: ({data, storyId}) => ({
         url: COMMENT_API + `/${storyId}`,
@@ -59,6 +89,8 @@ export const commentApi = baseApi.injectEndpoints({
 
 export const {
   useGetAllCommentsQuery,
+  useGetPaginatedStoryCommentsQuery,
+  useGetPaginatedChapterCommentsQuery,
   useCreateCommentMutation,
   useDeleteCommentMutation,
   useGetSpecificCommentQuery,
