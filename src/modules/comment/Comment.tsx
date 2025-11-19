@@ -311,17 +311,27 @@ export const CommentsList: React.FC<Story> = ({ story }) => {
     limit: 10
   })
 
+  // Reset state when storyId changes
+  useEffect(() => {
+    setPage(1)
+    setAllLoadedComments([])
+  }, [storyId])
+
   // Accumulate comments as pages are loaded
   useEffect(() => {
     if (data?.comments) {
       setAllLoadedComments(prev => {
-        // Avoid duplicates
+        // If page is 1, replace all comments (this handles refetch after mutations)
+        if (page === 1) {
+          return data.comments
+        }
+        // Otherwise, accumulate and avoid duplicates
         const existingIds = new Set(prev.map(c => c.id))
         const newComments = data.comments.filter(c => !existingIds.has(c.id))
         return [...prev, ...newComments]
       })
     }
-  }, [data])
+  }, [data, page])
 
   const handleLoadMore = () => {
     setPage(prev => prev + 1)
@@ -402,17 +412,27 @@ export const ChapterCommentsList: React.FC<ChapterComment> = ({ chapter }) => {
     limit: 10
   })
 
+  // Reset state when chapterId changes
+  useEffect(() => {
+    setPage(1)
+    setAllLoadedComments([])
+  }, [storyId, chapterId])
+
   // Accumulate comments as pages are loaded
   useEffect(() => {
     if (data?.comments) {
       setAllLoadedComments(prev => {
-        // Avoid duplicates
+        // If page is 1, replace all comments (this handles refetch after mutations)
+        if (page === 1) {
+          return data.comments
+        }
+        // Otherwise, accumulate and avoid duplicates
         const existingIds = new Set(prev.map(c => c.id))
         const newComments = data.comments.filter(c => !existingIds.has(c.id))
         return [...prev, ...newComments]
       })
     }
-  }, [data])
+  }, [data, page])
 
   const handleLoadMore = () => {
     setPage(prev => prev + 1)
@@ -498,6 +518,7 @@ const AddComment: React.FC<AddComment> = ({ parentId, storyId, onCancel }) => {
       toast.success("Comment added successfully")
       setNewComment("")
       if (onCancel) onCancel()
+      // The cache invalidation will trigger a refetch automatically
     } catch (error: any) {
       toast.error(error?.data?.message || "Failed to add comment")
     }
@@ -571,6 +592,7 @@ const AddChapterComment: React.FC<AddChapterComment> = ({ parentId, storyId, cha
       toast.success("Comment added successfully")
       setNewComment("")
       if (onCancel) onCancel()
+      // The cache invalidation will trigger a refetch automatically
     } catch (error: any) {
       toast.error(error?.data?.message || "Failed to add comment")
     }
