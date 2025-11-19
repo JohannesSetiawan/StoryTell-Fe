@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { useNavigate, useParams } from "react-router-dom"
-import { type SetStateAction, useState, useEffect } from "react"
+import { type SetStateAction, useState, useEffect, useMemo } from "react"
 import { useGetStoryDetailsQuery, useDeleteStoryMutation } from "../../redux/api/storyApi"
 import { type RootState, useAppSelector } from "../../redux/store"
 import toast from "react-hot-toast"
@@ -72,21 +72,23 @@ export function ReadStoryPage() {
     }
   }, [isManageTagsOpen, storyTags])
 
-  const filteredChapter = story?.chapters
-    ?.filter((chapter: any) => {
-      if (selectedOption === "title") {
-        return chapter.title.toLowerCase().includes(searchQuery.toLowerCase())
-      } else if (selectedOption === "number") {
-        return chapter.order >= Number(searchQuery.toLowerCase())
-      } else if (selectedOption === "content") {
-        return chapter.content.toLowerCase().includes(searchQuery.toLowerCase())
-      } else {
-        return chapter.title.toLowerCase().includes(searchQuery.toLowerCase())
-      }
-    })
-    .sort((a: any, b: any) => {
-      return chapterSortOrder === "asc" ? a.order - b.order : b.order - a.order
-    })
+  const filteredChapter = useMemo(() => {
+    return story?.chapters
+      ?.filter((chapter: any) => {
+        if (selectedOption === "title") {
+          return chapter.title.toLowerCase().includes(searchQuery.toLowerCase())
+        } else if (selectedOption === "number") {
+          return chapter.order >= Number(searchQuery.toLowerCase())
+        } else if (selectedOption === "content") {
+          return chapter.content.toLowerCase().includes(searchQuery.toLowerCase())
+        } else {
+          return chapter.title.toLowerCase().includes(searchQuery.toLowerCase())
+        }
+      })
+      .sort((a: any, b: any) => {
+        return chapterSortOrder === "asc" ? a.order - b.order : b.order - a.order
+      })
+  }, [story?.chapters, searchQuery, selectedOption, chapterSortOrder])
 
   const handleBack = () => {
     navigate(`/read`)
