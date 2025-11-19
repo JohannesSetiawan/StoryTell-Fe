@@ -34,7 +34,7 @@ export function ActivityFeedItem({ activity }: Readonly<ActivityFeedItemProps>) 
             </span>
             <span className="text-gray-700 dark:text-gray-300"> published a new story: </span>
             <Link
-              to={`/story/${activity.storyId}`}
+              to={`/read-story/${activity.storyId}`}
               className="font-semibold text-blue-600 dark:text-blue-400 hover:underline"
             >
               {activity.story?.title || activity.metadata?.title}
@@ -49,7 +49,7 @@ export function ActivityFeedItem({ activity }: Readonly<ActivityFeedItemProps>) 
             </span>
             <span className="text-gray-700 dark:text-gray-300"> added a new chapter to </span>
             <Link
-              to={`/story/${activity.storyId}`}
+              to={`/read-story/${activity.storyId}`}
               className="font-semibold text-blue-600 dark:text-blue-400 hover:underline"
             >
               {activity.story?.title}
@@ -70,7 +70,7 @@ export function ActivityFeedItem({ activity }: Readonly<ActivityFeedItemProps>) 
             </span>
             <span className="text-gray-700 dark:text-gray-300"> updated the status of </span>
             <Link
-              to={`/story/${activity.storyId}`}
+              to={`/read-story/${activity.storyId}`}
               className="font-semibold text-blue-600 dark:text-blue-400 hover:underline"
             >
               {activity.story?.title || activity.metadata?.title}

@@ -797,7 +797,7 @@ export function AdminPage() {
                                   onClick={() => {
                                     const commentUrl = comment.chapterId 
                                       ? `/read-chapter/${comment.chapterId}#comment-${comment.id}`
-                                      : `/story/${comment.storyId}#comment-${comment.id}`;
+                                      : `/read-story/${comment.storyId}#comment-${comment.id}`;
                                     navigate(commentUrl);
                                   }}
                                   className="p-2 rounded-md hover:bg-muted transition-colors"
