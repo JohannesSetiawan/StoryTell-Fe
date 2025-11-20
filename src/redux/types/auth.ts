@@ -21,3 +21,18 @@ export type UserInfoResponse = {
     dateCreated: Date
     isAdmin: boolean
 }
+
+export type UserListItem = {
+    id: string
+    username: string
+    description?: string
+    dateCreated: Date
+}
+
+export type UserListResponse = {
+    data: UserListItem[]
+    total: number
+    page: number
+    perPage: number
+    totalPages: number
+}

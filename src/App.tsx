@@ -27,6 +27,7 @@ const FollowListPage = lazy(() => import("./modules/follow/FollowListPage").then
 const CollectionList = lazy(() => import("./modules/collection").then(m => ({ default: m.CollectionList })));
 const CollectionDetail = lazy(() => import("./modules/collection").then(m => ({ default: m.CollectionDetail })));
 const DiscoverCollections = lazy(() => import("./modules/collection").then(m => ({ default: m.DiscoverCollections })));
+const UserListPage = lazy(() => import("./modules/user").then(m => ({ default: m.UserListPage })));
 
 // Loading fallback component
 const PageLoader = () => (
@@ -224,6 +225,14 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<PageLoader />}>
             <DiscoverCollections />
+          </Suspense>
+        ),
+      },
+      {
+        path: "/users",
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <UserListPage />
           </Suspense>
         ),
       },

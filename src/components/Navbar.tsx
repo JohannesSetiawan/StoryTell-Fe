@@ -14,7 +14,9 @@ export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [isCollectionsDropdownOpen, setIsCollectionsDropdownOpen] = useState(false)
+  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false)
   const collectionsDropdownRef = useRef<HTMLDivElement>(null)
+  const profileDropdownRef = useRef<HTMLDivElement>(null)
 
   const dispatch = useDispatch()
   const navigate = useNavigate()
@@ -34,6 +36,7 @@ export function Navbar() {
   useEffect(() => {
     setIsMenuOpen(false)
     setIsCollectionsDropdownOpen(false)
+    setIsProfileDropdownOpen(false)
   }, [location.pathname])
 
   // Close dropdown when clicking outside
@@ -41,6 +44,9 @@ export function Navbar() {
     const handleClickOutside = (event: MouseEvent) => {
       if (collectionsDropdownRef.current && !collectionsDropdownRef.current.contains(event.target as Node)) {
         setIsCollectionsDropdownOpen(false)
+      }
+      if (profileDropdownRef.current && !profileDropdownRef.current.contains(event.target as Node)) {
+        setIsProfileDropdownOpen(false)
       }
     }
 
@@ -272,12 +278,31 @@ export function Navbar() {
                 </div>
               )}
             </div>
-            <button
-              onClick={handleProfile}
-              className={`${navLinkClasses} ${location.pathname.startsWith("/profile") ? activeNavLinkClasses : ""}`}
-            >
-              Profile
-            </button>
+            <div className="relative" ref={profileDropdownRef}>
+              <button
+                onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
+                className={`${navLinkClasses} ${location.pathname.startsWith("/profile") || location.pathname === "/users" ? activeNavLinkClasses : ""} inline-flex items-center gap-1`}
+              >
+                Profile
+                <ChevronDown size={16} className={`transition-transform ${isProfileDropdownOpen ? "rotate-180" : ""}`} />
+              </button>
+              {isProfileDropdownOpen && (
+                <div className="absolute top-full right-0 mt-2 w-48 bg-background border border-border rounded-lg shadow-lg py-2 z-50">
+                  <button
+                    onClick={handleProfile}
+                    className="w-full text-left px-4 py-2 hover:bg-muted transition-colors text-foreground"
+                  >
+                    My Profile
+                  </button>
+                  <button
+                    onClick={() => navigate("/users")}
+                    className="w-full text-left px-4 py-2 hover:bg-muted transition-colors text-foreground"
+                  >
+                    User Directory
+                  </button>
+                </div>
+              )}
+            </div>
             {user?.isAdmin && (
               <button
                 onClick={handleAdmin}
@@ -358,9 +383,15 @@ export function Navbar() {
               </button>
               <button
                 onClick={handleProfile}
-                className={`${navLinkClasses} ${location.pathname.startsWith("/profile") ? activeNavLinkClasses : ""} py-2`}
+                className={`${navLinkClasses} ${location.pathname.startsWith("/profile") && !location.pathname.includes("/profile/") ? activeNavLinkClasses : ""} py-2`}
               >
-                Profile
+                My Profile
+              </button>
+              <button
+                onClick={() => navigate("/users")}
+                className={`${navLinkClasses} ${isActive("/users") ? activeNavLinkClasses : ""} py-2`}
+              >
+                User Directory
               </button>
               <button onClick={handleLogout} className="text-destructive font-medium py-2">
                 Logout
