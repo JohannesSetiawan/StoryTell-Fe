@@ -7,6 +7,7 @@ import { logout } from "../redux/slice"
 import { useNavigate, useLocation } from "react-router-dom"
 import ToggleTheme from "./common/ToggleTheme"
 import { Menu, X, Shield, ChevronDown } from "lucide-react"
+import { useGetUnreadCountQuery } from "../redux/api/messageApi"
 
 export function Navbar() {
   const user_token = useAppSelector((state: RootState) => state.user).token
@@ -17,6 +18,12 @@ export function Navbar() {
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false)
   const collectionsDropdownRef = useRef<HTMLDivElement>(null)
   const profileDropdownRef = useRef<HTMLDivElement>(null)
+  
+  // Fetch unread message count only when user is logged in
+  const { data: unreadData } = useGetUnreadCountQuery(undefined, {
+    skip: !user_token,
+    pollingInterval: 30000, // Poll every 30 seconds
+  })
 
   const dispatch = useDispatch()
   const navigate = useNavigate()
@@ -281,10 +288,13 @@ export function Navbar() {
             <div className="relative" ref={profileDropdownRef}>
               <button
                 onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
-                className={`${navLinkClasses} ${location.pathname.startsWith("/profile") || location.pathname === "/users" ? activeNavLinkClasses : ""} inline-flex items-center gap-1`}
+                className={`${navLinkClasses} ${location.pathname.startsWith("/profile") || location.pathname === "/users" || location.pathname.startsWith("/message") ? activeNavLinkClasses : ""} inline-flex items-center gap-1 relative`}
               >
                 Profile
                 <ChevronDown size={16} className={`transition-transform ${isProfileDropdownOpen ? "rotate-180" : ""}`} />
+                {unreadData?.hasUnread && (
+                  <span className="absolute -top-1 -right-1 h-2 w-2 bg-destructive rounded-full"></span>
+                )}
               </button>
               {isProfileDropdownOpen && (
                 <div className="absolute top-full right-0 mt-2 w-48 bg-background border border-border rounded-lg shadow-lg py-2 z-50">
@@ -299,6 +309,15 @@ export function Navbar() {
                     className="w-full text-left px-4 py-2 hover:bg-muted transition-colors text-foreground"
                   >
                     User Directory
+                  </button>
+                  <button
+                    onClick={() => navigate("/messages")}
+                    className="w-full text-left px-4 py-2 hover:bg-muted transition-colors text-foreground relative"
+                  >
+                    Messages
+                    {unreadData?.hasUnread && (
+                      <span className="absolute right-4 top-1/2 -translate-y-1/2 h-2 w-2 bg-destructive rounded-full"></span>
+                    )}
                   </button>
                 </div>
               )}
@@ -392,6 +411,15 @@ export function Navbar() {
                 className={`${navLinkClasses} ${isActive("/users") ? activeNavLinkClasses : ""} py-2`}
               >
                 User Directory
+              </button>
+              <button
+                onClick={() => navigate("/messages")}
+                className={`${navLinkClasses} ${isActive("/messages") || location.pathname.startsWith("/message/") ? activeNavLinkClasses : ""} py-2 relative inline-flex items-center`}
+              >
+                Messages
+                {unreadData?.hasUnread && (
+                  <span className="ml-2 h-2 w-2 bg-destructive rounded-full"></span>
+                )}
               </button>
               <button onClick={handleLogout} className="text-destructive font-medium py-2">
                 Logout

@@ -241,6 +241,17 @@ export function UserProfilePage() {
                     View Stories
                   </button>
                 </div>
+                {!isOwnProfile && currentUser?.username && (
+                  <div className="mt-3">
+                    <button
+                      onClick={() => navigate(`/message/${currentUser.username}/${username}`)}
+                      className="w-full h-10 rounded-md border border-input bg-background hover:bg-muted transition-colors inline-flex items-center justify-center gap-2"
+                    >
+                      <User size={16} />
+                      Send Message
+                    </button>
+                  </div>
+                )}
                 {isOwnProfile && (
                   <div className="mt-3">
                     <button

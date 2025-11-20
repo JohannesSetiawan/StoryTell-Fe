@@ -28,6 +28,8 @@ const CollectionList = lazy(() => import("./modules/collection").then(m => ({ de
 const CollectionDetail = lazy(() => import("./modules/collection").then(m => ({ default: m.CollectionDetail })));
 const DiscoverCollections = lazy(() => import("./modules/collection").then(m => ({ default: m.DiscoverCollections })));
 const UserListPage = lazy(() => import("./modules/user").then(m => ({ default: m.UserListPage })));
+const MessageListPage = lazy(() => import("./modules/message").then(m => ({ default: m.MessageListPage })));
+const ConversationPage = lazy(() => import("./modules/message").then(m => ({ default: m.ConversationPage })));
 
 // Loading fallback component
 const PageLoader = () => (
@@ -233,6 +235,22 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<PageLoader />}>
             <UserListPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: "/messages",
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <MessageListPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: "/message/:selfUsername/:otherUsername",
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <ConversationPage />
           </Suspense>
         ),
       },
