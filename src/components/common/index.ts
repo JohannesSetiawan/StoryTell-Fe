@@ -9,3 +9,4 @@ export * from "./StoryStatusBadge";
 export * from "./FollowButton";
 export * from "./FollowStats";
 export * from "./ActivityFeedItem";
+export * from "./PrivateStoryError";

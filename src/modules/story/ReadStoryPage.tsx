@@ -8,7 +8,7 @@ import { useGetStoryDetailsQuery, useDeleteStoryMutation } from "../../redux/api
 import { type RootState, useAppSelector } from "../../redux/store"
 import toast from "react-hot-toast"
 import { CommentsList } from "../comment/Comment"
-import { MarkdownRenderer, TagBadge, TagSelector, StoryStatusBadge, FollowButton } from "../../components/common"
+import { MarkdownRenderer, TagBadge, TagSelector, StoryStatusBadge, FollowButton, PrivateStoryError } from "../../components/common"
 import { useAssignTagsToStoryMutation } from "../../redux/api/tagApi"
 import RatingModal from "../rating/RatingModal"
 import useToggle from "../../components/hooks/useToggle"
@@ -180,6 +180,14 @@ export function ReadStoryPage() {
   }
 
   if (error) {
+    // Check if it's a 403 Forbidden error (private story)
+    const errorData = error as any;
+    if (errorData?.status === 403) {
+      // Try to get author username from error or story data if available
+      const authorUsername = errorData?.data?.authorUsername || story?.author?.username;
+      return <PrivateStoryError authorUsername={authorUsername} />;
+    }
+    
     return (
       <div className="min-h-screen pt-20 pb-12">
         <div className="max-w-3xl mx-auto px-4">
@@ -187,8 +195,8 @@ export function ReadStoryPage() {
             <div className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-muted mb-4">
               <Book size={24} className="text-muted-foreground" />
             </div>
-            <h3 className="text-xl font-medium mb-2">Access Denied</h3>
-            <p className="text-muted-foreground mb-6">You don't have permission to access this story.</p>
+            <h3 className="text-xl font-medium mb-2">Error Loading Story</h3>
+            <p className="text-muted-foreground mb-6">Unable to load this story. Please try again later.</p>
             <button
               onClick={handleBack}
               className="px-4 py-2 rounded-md bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors inline-flex items-center gap-2"

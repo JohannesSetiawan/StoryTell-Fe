@@ -14,6 +14,7 @@ const CreateCollectionModal: React.FC<CreateCollectionModalProps> = ({ isOpen, o
   const [description, setDescription] = useState('');
   const [isPublic, setIsPublic] = useState(false);
   const [isCollaborative, setIsCollaborative] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const [createCollection, { isLoading: isCreating }] = useCreateCollectionMutation();
   const [updateCollection, { isLoading: isUpdating }] = useUpdateCollectionMutation();
@@ -30,10 +31,12 @@ const CreateCollectionModal: React.FC<CreateCollectionModalProps> = ({ isOpen, o
       setIsPublic(false);
       setIsCollaborative(false);
     }
+    setErrorMessage(null);
   }, [collection, isOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMessage(null);
     try {
       if (collection) {
         await updateCollection({
@@ -44,8 +47,10 @@ const CreateCollectionModal: React.FC<CreateCollectionModalProps> = ({ isOpen, o
         await createCollection({ name, description, isPublic, isCollaborative }).unwrap();
       }
       onClose();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to save collection:', error);
+      const message = error?.data?.message || 'Failed to save collection. Please try again.';
+      setErrorMessage(message);
     }
   };
 
@@ -57,6 +62,11 @@ const CreateCollectionModal: React.FC<CreateCollectionModalProps> = ({ isOpen, o
         <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">
           {collection ? 'Edit Collection' : 'Create New Collection'}
         </h2>
+        {errorMessage && (
+          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded dark:bg-red-900 dark:border-red-700 dark:text-red-200">
+            {errorMessage}
+          </div>
+        )}
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
