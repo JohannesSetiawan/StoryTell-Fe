@@ -66,14 +66,20 @@ export const collectionApi = baseApi.injectEndpoints({
         url: COLLECTION_API + `/${collectionId}/story/${storyId}`,
         method: "POST",
       }),
-      invalidatesTags: (result, error, { collectionId }) => [{ type: 'Collection', id: collectionId }],
+      invalidatesTags: (..._args: any[]) => {
+        const { collectionId } = _args[2] || {};
+        return [{ type: 'Collection', id: collectionId }];
+      },
     }),
     removeStoryFromCollection: builder.mutation<void, { collectionId: string; storyId: string }>({
       query: ({ collectionId, storyId }) => ({
         url: COLLECTION_API + `/${collectionId}/story/${storyId}`,
         method: "DELETE",
       }),
-      invalidatesTags: (result, error, { collectionId }) => [{ type: 'Collection', id: collectionId }],
+      invalidatesTags: (..._args: any[]) => {
+        const { collectionId } = _args[2] || {};
+        return [{ type: 'Collection', id: collectionId }];
+      },
     }),
   }),
 });
