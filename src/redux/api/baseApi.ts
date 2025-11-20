@@ -11,7 +11,8 @@ export const baseApi = createApi({
     'UserProfile',
     'Tag',
     'Bookmark',
-    'Follow'
+    'Follow',
+    'Collection'
   ],
   baseQuery: fetchBaseQuery({
     prepareHeaders: (headers, { getState }) => {

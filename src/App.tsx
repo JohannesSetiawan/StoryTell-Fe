@@ -24,6 +24,9 @@ const UserStoriesPage = lazy(() => import("./modules/profile/UserStoriesPage").t
 const BookmarkPage = lazy(() => import("./modules/bookmark/BookmarkPage").then(m => ({ default: m.BookmarkPage })));
 const FeedPage = lazy(() => import("./modules/follow/FeedPage").then(m => ({ default: m.FeedPage })));
 const FollowListPage = lazy(() => import("./modules/follow/FollowListPage").then(m => ({ default: m.FollowListPage })));
+const CollectionList = lazy(() => import("./modules/collection").then(m => ({ default: m.CollectionList })));
+const CollectionDetail = lazy(() => import("./modules/collection").then(m => ({ default: m.CollectionDetail })));
+const DiscoverCollections = lazy(() => import("./modules/collection").then(m => ({ default: m.DiscoverCollections })));
 
 // Loading fallback component
 const PageLoader = () => (
@@ -197,6 +200,30 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<PageLoader />}>
             <FollowListPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: "/collections",
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <CollectionList />
+          </Suspense>
+        ),
+      },
+      {
+        path: "/collection/:id",
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <CollectionDetail />
+          </Suspense>
+        ),
+      },
+      {
+        path: "/discover-collections",
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <DiscoverCollections />
           </Suspense>
         ),
       },

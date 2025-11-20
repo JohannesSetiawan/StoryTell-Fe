@@ -1,18 +1,20 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { type RootState, useAppSelector } from "../redux/store"
 import { useDispatch } from "react-redux"
 import { logout } from "../redux/slice"
 import { useNavigate, useLocation } from "react-router-dom"
 import ToggleTheme from "./common/ToggleTheme"
-import { Menu, X, Shield } from "lucide-react"
+import { Menu, X, Shield, ChevronDown } from "lucide-react"
 
 export function Navbar() {
   const user_token = useAppSelector((state: RootState) => state.user).token
   const user = useAppSelector((state: RootState) => state.user).user
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [isCollectionsDropdownOpen, setIsCollectionsDropdownOpen] = useState(false)
+  const collectionsDropdownRef = useRef<HTMLDivElement>(null)
 
   const dispatch = useDispatch()
   const navigate = useNavigate()
@@ -31,7 +33,20 @@ export function Navbar() {
   // Close mobile menu when route changes
   useEffect(() => {
     setIsMenuOpen(false)
+    setIsCollectionsDropdownOpen(false)
   }, [location.pathname])
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (collectionsDropdownRef.current && !collectionsDropdownRef.current.contains(event.target as Node)) {
+        setIsCollectionsDropdownOpen(false)
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [])
 
   const handleLogout = () => {
     dispatch(logout())
@@ -108,6 +123,31 @@ export function Navbar() {
           <div className="hidden md:flex items-center space-x-6">
             <ToggleTheme />
             <button
+              onClick={() => navigate("/read")}
+              className={`${navLinkClasses} ${isActive("/read") ? activeNavLinkClasses : ""}`}
+            >
+              Browse Stories
+            </button>
+            <div className="relative" ref={collectionsDropdownRef}>
+              <button
+                onClick={() => setIsCollectionsDropdownOpen(!isCollectionsDropdownOpen)}
+                className={`${navLinkClasses} ${location.pathname.includes("/collection") ? activeNavLinkClasses : ""} inline-flex items-center gap-1`}
+              >
+                Collections
+                <ChevronDown size={16} className={`transition-transform ${isCollectionsDropdownOpen ? "rotate-180" : ""}`} />
+              </button>
+              {isCollectionsDropdownOpen && (
+                <div className="absolute top-full right-0 mt-2 w-48 bg-background border border-border rounded-lg shadow-lg py-2 z-50">
+                  <button
+                    onClick={() => navigate("/discover-collections")}
+                    className="w-full text-left px-4 py-2 hover:bg-muted transition-colors text-foreground"
+                  >
+                    Discover Collections
+                  </button>
+                </div>
+              )}
+            </div>
+            <button
               onClick={handleRegister}
               className={`${navLinkClasses} ${isActive("/register") ? activeNavLinkClasses : ""}`}
             >
@@ -134,6 +174,18 @@ export function Navbar() {
         {isMenuOpen && (
           <div className="md:hidden absolute top-full left-0 right-0 bg-background border-b border-border shadow-lg animate-in slide-in-from-top">
             <div className="flex flex-col space-y-4 p-4">
+              <button
+                onClick={() => navigate("/read")}
+                className={`${navLinkClasses} ${isActive("/read") ? activeNavLinkClasses : ""} py-2`}
+              >
+                Browse Stories
+              </button>
+              <button
+                onClick={() => navigate("/discover-collections")}
+                className={`${navLinkClasses} ${isActive("/discover-collections") ? activeNavLinkClasses : ""} py-2`}
+              >
+                Discover Collections
+              </button>
               <button
                 onClick={handleRegister}
                 className={`${navLinkClasses} ${isActive("/register") ? activeNavLinkClasses : ""} py-2`}
@@ -195,6 +247,31 @@ export function Navbar() {
             >
               Feed
             </button>
+            <div className="relative" ref={collectionsDropdownRef}>
+              <button
+                onClick={() => setIsCollectionsDropdownOpen(!isCollectionsDropdownOpen)}
+                className={`${navLinkClasses} ${location.pathname.includes("/collection") ? activeNavLinkClasses : ""} inline-flex items-center gap-1`}
+              >
+                Collections
+                <ChevronDown size={16} className={`transition-transform ${isCollectionsDropdownOpen ? "rotate-180" : ""}`} />
+              </button>
+              {isCollectionsDropdownOpen && (
+                <div className="absolute top-full right-0 mt-2 w-48 bg-background border border-border rounded-lg shadow-lg py-2 z-50">
+                  <button
+                    onClick={() => navigate("/collections")}
+                    className="w-full text-left px-4 py-2 hover:bg-muted transition-colors text-foreground"
+                  >
+                    My Collections
+                  </button>
+                  <button
+                    onClick={() => navigate("/discover-collections")}
+                    className="w-full text-left px-4 py-2 hover:bg-muted transition-colors text-foreground"
+                  >
+                    Discover Collections
+                  </button>
+                </div>
+              )}
+            </div>
             <button
               onClick={handleProfile}
               className={`${navLinkClasses} ${location.pathname.startsWith("/profile") ? activeNavLinkClasses : ""}`}
@@ -266,6 +343,18 @@ export function Navbar() {
                 className={`${navLinkClasses} ${isActive("/feed") ? activeNavLinkClasses : ""} py-2`}
               >
                 Feed
+              </button>
+              <button
+                onClick={() => navigate("/collections")}
+                className={`${navLinkClasses} ${isActive("/collections") ? activeNavLinkClasses : ""} py-2`}
+              >
+                My Collections
+              </button>
+              <button
+                onClick={() => navigate("/discover-collections")}
+                className={`${navLinkClasses} ${isActive("/discover-collections") ? activeNavLinkClasses : ""} py-2`}
+              >
+                Discover
               </button>
               <button
                 onClick={handleProfile}

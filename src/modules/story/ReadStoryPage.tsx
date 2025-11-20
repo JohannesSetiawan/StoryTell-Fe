@@ -16,6 +16,7 @@ import {
   useCreateBookmarkMutation, 
   useDeleteBookmarkMutation 
 } from "../../redux/api/bookmarkApi"
+import { AddToCollectionModal } from "../collection"
 import { dateToString } from "../../utils/utils"
 import {
   Book,
@@ -32,6 +33,7 @@ import {
   Filter,
   Tag as TagIcon,
   Bookmark,
+  FolderPlus,
 } from "lucide-react"
 
 export function ReadStoryPage() {
@@ -60,6 +62,7 @@ export function ReadStoryPage() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [isManageTagsOpen, setIsManageTagsOpen] = useState(false)
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([])
+  const [isAddToCollectionOpen, setIsAddToCollectionOpen] = useState(false)
 
   const [assignTags, { isLoading: isAssigningTags }] = useAssignTagsToStoryMutation()
 
@@ -291,6 +294,30 @@ export function ReadStoryPage() {
                       {isBookmarked ? "Remove Bookmark" : "Add Bookmark"}
                     </>
                   )}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Collection Section */}
+          {(
+            <div className="bg-card border border-border rounded-xl p-5">
+              <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                <FolderPlus className="text-primary" size={18} />
+                Collections
+              </h3>
+
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground mb-3">
+                  Add this story to your reading lists
+                </p>
+
+                <button
+                  className="w-full px-3 py-2 rounded-md text-sm font-medium transition-colors inline-flex items-center justify-center gap-1 bg-primary text-primary-foreground hover:bg-primary/90"
+                  onClick={() => setIsAddToCollectionOpen(true)}
+                >
+                  <FolderPlus size={16} />
+                  Add to Collection
                 </button>
               </div>
             </div>
@@ -640,6 +667,15 @@ export function ReadStoryPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Add to Collection Modal */}
+      {storyId && (
+        <AddToCollectionModal
+          isOpen={isAddToCollectionOpen}
+          onClose={() => setIsAddToCollectionOpen(false)}
+          storyId={storyId}
+        />
       )}
     </div>
   )

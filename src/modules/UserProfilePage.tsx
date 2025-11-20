@@ -241,6 +241,17 @@ export function UserProfilePage() {
                     View Stories
                   </button>
                 </div>
+                {isOwnProfile && (
+                  <div className="mt-3">
+                    <button
+                      onClick={() => navigate('/collections')}
+                      className="w-full h-10 rounded-md border border-input bg-background hover:bg-muted transition-colors inline-flex items-center justify-center gap-2"
+                    >
+                      <Users size={16} />
+                      My Collections
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
               // Edit Mode
