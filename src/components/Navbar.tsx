@@ -185,7 +185,7 @@ export function Navbar() {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden absolute top-full left-0 right-0 bg-background border-b border-border shadow-lg animate-in slide-in-from-top">
+          <div className="md:hidden absolute top-full left-0 right-0 bg-background border-b border-border shadow-lg animate-in slide-in-from-top max-h-[calc(100vh-64px)] overflow-y-auto">
             <div className="flex flex-col space-y-4 p-4">
               <button
                 onClick={() => navigate("/read")}
@@ -350,7 +350,7 @@ export function Navbar() {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden absolute top-full left-0 right-0 bg-background border-b border-border shadow-lg animate-in slide-in-from-top">
+          <div className="md:hidden absolute top-full left-0 right-0 bg-background border-b border-border shadow-lg animate-in slide-in-from-top max-h-[calc(100vh-64px)] overflow-y-auto">
             <div className="flex flex-col space-y-4 p-4">
               <button
                 onClick={handleHome}
@@ -414,12 +414,14 @@ export function Navbar() {
               </button>
               <button
                 onClick={() => navigate("/messages")}
-                className={`${navLinkClasses} ${isActive("/messages") || location.pathname.startsWith("/message/") ? activeNavLinkClasses : ""} py-2 relative inline-flex items-center`}
+                className={`${navLinkClasses} ${isActive("/messages") || location.pathname.startsWith("/message/") ? activeNavLinkClasses : ""} py-2 relative`}
               >
-                Messages
-                {unreadData?.hasUnread && (
-                  <span className="ml-2 h-2 w-2 bg-destructive rounded-full"></span>
-                )}
+                <span className="inline-flex items-center justify-center w-full">
+                  Messages
+                  {unreadData?.hasUnread && (
+                    <span className="ml-2 h-2 w-2 bg-destructive rounded-full"></span>
+                  )}
+                </span>
               </button>
               <button onClick={handleLogout} className="text-destructive font-medium py-2">
                 Logout
