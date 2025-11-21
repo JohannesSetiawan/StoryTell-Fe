@@ -16,6 +16,9 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [isCollectionsDropdownOpen, setIsCollectionsDropdownOpen] = useState(false)
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false)
+  const [mobileStoryDropdownOpen, setMobileStoryDropdownOpen] = useState(false)
+  const [mobileCollectionsDropdownOpen, setMobileCollectionsDropdownOpen] = useState(false)
+  const [mobileUserDropdownOpen, setMobileUserDropdownOpen] = useState(false)
   const collectionsDropdownRef = useRef<HTMLDivElement>(null)
   const profileDropdownRef = useRef<HTMLDivElement>(null)
   
@@ -88,6 +91,9 @@ export function Navbar() {
     setIsMenuOpen(false)
     setIsCollectionsDropdownOpen(false)
     setIsProfileDropdownOpen(false)
+    setMobileStoryDropdownOpen(false)
+    setMobileCollectionsDropdownOpen(false)
+    setMobileUserDropdownOpen(false)
   }, [location.pathname])
 
   // Close dropdown when clicking outside
@@ -409,81 +415,144 @@ export function Navbar() {
               WebkitOverflowScrolling: 'touch'
             }}
           >
-            <div className="flex flex-col space-y-4 p-4">
+            <div className="flex flex-col p-4">
+              {/* 1. Home */}
               <button
                 onClick={handleHome}
-                className={`${navLinkClasses} ${isActive("/") ? activeNavLinkClasses : ""} py-2`}
+                className={`${navLinkClasses} ${isActive("/") ? activeNavLinkClasses : ""} py-3 text-left`}
               >
                 Home
               </button>
-              <button
-                onClick={handleRead}
-                className={`${navLinkClasses} ${isActive("/read") ? activeNavLinkClasses : ""} py-2`}
-              >
-                Read
-              </button>
-              <button
-                onClick={handleYourStory}
-                className={`${navLinkClasses} ${isActive("/your-story") ? activeNavLinkClasses : ""} py-2`}
-              >
-                Your Story
-              </button>
-              <button
-                onClick={handleHistory}
-                className={`${navLinkClasses} ${isActive("/history") ? activeNavLinkClasses : ""} py-2`}
-              >
-                History
-              </button>
-              <button
-                onClick={handleBookmark}
-                className={`${navLinkClasses} ${isActive("/bookmark") ? activeNavLinkClasses : ""} py-2`}
-              >
-                Bookmark
-              </button>
+              
+              <div className="h-px bg-border my-2"></div>
+
+              {/* 2. Story Dropdown */}
+              <div>
+                <button
+                  onClick={() => setMobileStoryDropdownOpen(!mobileStoryDropdownOpen)}
+                  className={`${navLinkClasses} ${["/read", "/your-story", "/history", "/bookmark"].some(path => isActive(path)) ? activeNavLinkClasses : ""} py-3 text-left w-full flex items-center justify-between`}
+                >
+                  <span>Story</span>
+                  <ChevronDown size={16} className={`transition-transform ${mobileStoryDropdownOpen ? "rotate-180" : ""}`} />
+                </button>
+                {mobileStoryDropdownOpen && (
+                  <div className="pl-4 space-y-1 mt-2 mb-2">
+                    <button
+                      onClick={handleRead}
+                      className={`${navLinkClasses} ${isActive("/read") ? activeNavLinkClasses : ""} py-2 text-left w-full text-sm`}
+                    >
+                      Read Story
+                    </button>
+                    <button
+                      onClick={handleYourStory}
+                      className={`${navLinkClasses} ${isActive("/your-story") ? activeNavLinkClasses : ""} py-2 text-left w-full text-sm`}
+                    >
+                      Your Story
+                    </button>
+                    <button
+                      onClick={handleHistory}
+                      className={`${navLinkClasses} ${isActive("/history") ? activeNavLinkClasses : ""} py-2 text-left w-full text-sm`}
+                    >
+                      History
+                    </button>
+                    <button
+                      onClick={handleBookmark}
+                      className={`${navLinkClasses} ${isActive("/bookmark") ? activeNavLinkClasses : ""} py-2 text-left w-full text-sm`}
+                    >
+                      Bookmark
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              <div className="h-px bg-border my-2"></div>
+
+              {/* 3. Feed */}
               <button
                 onClick={handleFeed}
-                className={`${navLinkClasses} ${isActive("/feed") ? activeNavLinkClasses : ""} py-2`}
+                className={`${navLinkClasses} ${isActive("/feed") ? activeNavLinkClasses : ""} py-3 text-left`}
               >
                 Feed
               </button>
-              <button
-                onClick={() => navigate("/collections")}
-                className={`${navLinkClasses} ${isActive("/collections") ? activeNavLinkClasses : ""} py-2`}
-              >
-                My Collections
-              </button>
-              <button
-                onClick={() => navigate("/discover-collections")}
-                className={`${navLinkClasses} ${isActive("/discover-collections") ? activeNavLinkClasses : ""} py-2`}
-              >
-                Discover
-              </button>
-              <button
-                onClick={handleProfile}
-                className={`${navLinkClasses} ${location.pathname.startsWith("/profile") && !location.pathname.includes("/profile/") ? activeNavLinkClasses : ""} py-2`}
-              >
-                My Profile
-              </button>
-              <button
-                onClick={() => navigate("/users")}
-                className={`${navLinkClasses} ${isActive("/users") ? activeNavLinkClasses : ""} py-2`}
-              >
-                User Directory
-              </button>
-              <button
-                onClick={() => navigate("/messages")}
-                className={`${navLinkClasses} ${isActive("/messages") || location.pathname.startsWith("/message/") ? activeNavLinkClasses : ""} py-2 relative`}
-              >
-                <span className="inline-flex items-center justify-center w-full">
-                  Messages
-                  {unreadData?.hasUnread && (
-                    <span className="ml-2 h-2 w-2 bg-destructive rounded-full"></span>
-                  )}
-                </span>
-              </button>
-              <button onClick={handleLogout} className="text-destructive font-medium py-2">
-                Logout
-              </button>
+
+              <div className="h-px bg-border my-2"></div>
+
+              {/* 4. Collections Dropdown */}
+              <div>
+                <button
+                  onClick={() => setMobileCollectionsDropdownOpen(!mobileCollectionsDropdownOpen)}
+                  className={`${navLinkClasses} ${["/collections", "/discover-collections"].some(path => location.pathname.includes(path.split("/")[1])) ? activeNavLinkClasses : ""} py-3 text-left w-full flex items-center justify-between`}
+                >
+                  <span>Collections</span>
+                  <ChevronDown size={16} className={`transition-transform ${mobileCollectionsDropdownOpen ? "rotate-180" : ""}`} />
+                </button>
+                {mobileCollectionsDropdownOpen && (
+                  <div className="pl-4 space-y-1 mt-2 mb-2">
+                    <button
+                      onClick={() => navigate("/collections")}
+                      className={`${navLinkClasses} ${isActive("/collections") ? activeNavLinkClasses : ""} py-2 text-left w-full text-sm`}
+                    >
+                      My Collections
+                    </button>
+                    <button
+                      onClick={() => navigate("/discover-collections")}
+                      className={`${navLinkClasses} ${isActive("/discover-collections") ? activeNavLinkClasses : ""} py-2 text-left w-full text-sm`}
+                    >
+                      Discover
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              <div className="h-px bg-border my-2"></div>
+
+              {/* 5. User Dropdown */}
+              <div>
+                <button
+                  onClick={() => setMobileUserDropdownOpen(!mobileUserDropdownOpen)}
+                  className={`${navLinkClasses} ${["/profile", "/users", "/messages", "/message/"].some(path => location.pathname.includes(path.split("/")[1])) ? activeNavLinkClasses : ""} py-3 text-left w-full flex items-center justify-between relative`}
+                >
+                  <span>User</span>
+                  <div className="flex items-center gap-2">
+                    {unreadData?.hasUnread && (
+                      <span className="h-2 w-2 bg-destructive rounded-full"></span>
+                    )}
+                    <ChevronDown size={16} className={`transition-transform ${mobileUserDropdownOpen ? "rotate-180" : ""}`} />
+                  </div>
+                </button>
+                {mobileUserDropdownOpen && (
+                  <div className="pl-4 space-y-1 mt-2 mb-2">
+                    <button
+                      onClick={handleProfile}
+                      className={`${navLinkClasses} ${location.pathname.startsWith("/profile") ? activeNavLinkClasses : ""} py-2 text-left w-full text-sm`}
+                    >
+                      My Profile
+                    </button>
+                    <button
+                      onClick={() => navigate("/users")}
+                      className={`${navLinkClasses} ${isActive("/users") ? activeNavLinkClasses : ""} py-2 text-left w-full text-sm`}
+                    >
+                      User Directory
+                    </button>
+                    <button
+                      onClick={() => navigate("/messages")}
+                      className={`${navLinkClasses} ${isActive("/messages") || location.pathname.startsWith("/message/") ? activeNavLinkClasses : ""} py-2 text-left w-full text-sm relative inline-flex items-center gap-2`}
+                    >
+                      <span>Messages</span>
+                      {unreadData?.hasUnread && (
+                        <span className="h-2 w-2 bg-destructive rounded-full"></span>
+                      )}
+                    </button>
+                    <div className="h-px bg-border my-2"></div>
+                    <button 
+                      onClick={handleLogout} 
+                      className="text-destructive font-medium py-2 text-left w-full text-sm"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         )}
