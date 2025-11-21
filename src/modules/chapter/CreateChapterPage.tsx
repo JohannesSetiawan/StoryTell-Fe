@@ -81,7 +81,7 @@ export function CreateChapterPage() {
   useEffect(() => {
     if (story) {
       // Set the order to be the next chapter number
-      setOrder(story.chapters.length > 0 ? story.chapters[story.chapters.length - 1].order + 1 : 1)
+      setOrder(story.chapters.length > 0 ? story.chapters[0].order + 1 : 1)
     }
   }, [story])
 
@@ -156,7 +156,7 @@ export function CreateChapterPage() {
                   <div className="text-xs text-muted-foreground flex items-center gap-1">
                     <Info size={12} />
                     {story.chapters.length > 0
-                      ? `Latest chapter is #${story.chapters[story.chapters.length - 1].order}`
+                      ? `Latest chapter is #${story.chapters[0].order}`
                       : "No chapters yet"}
                   </div>
                 </div>

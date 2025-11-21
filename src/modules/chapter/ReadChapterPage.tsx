@@ -138,8 +138,8 @@ export function ReadChapterPage() {
 
         {/* Chapter Content */}
         <div className="bg-card border border-border rounded-xl overflow-hidden mb-8">
-          <div className="p-6 md:p-8">
-            <h1 className="text-2xl md:text-3xl font-bold mb-2">
+          <div className="p-4 sm:p-6 md:p-8">
+            <h1 className="text-2xl md:text-3xl font-bold mb-2 break-words">
               Chapter {chapter.order}: {chapter.title}
             </h1>
 
@@ -148,12 +148,14 @@ export function ReadChapterPage() {
             </div>
 
             <div 
-              className="select-none"
+              className="select-none overflow-x-hidden"
               style={{
                 userSelect: 'none',
                 WebkitUserSelect: 'none',
                 MozUserSelect: 'none',
-                msUserSelect: 'none'
+                msUserSelect: 'none',
+                wordWrap: 'break-word',
+                overflowWrap: 'break-word'
               }}
               onContextMenu={(e) => e.preventDefault()}
               onCopy={(e) => e.preventDefault()}
