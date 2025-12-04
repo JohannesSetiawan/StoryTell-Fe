@@ -206,10 +206,10 @@ export function ReadChapterPage() {
                 className="w-full px-4 py-3 rounded-md border border-input bg-card hover:bg-muted transition-colors inline-flex items-center gap-2 text-sm"
               >
                 <ArrowLeft size={16} />
-                <div className="flex flex-col text-left">
+                <div className="flex flex-col text-left min-w-0">
                   <span className="text-xs text-muted-foreground">Previous</span>
-                  <span className="font-medium truncate">
-                    Chapter {prevChap.order}: {prevChap.title}
+                  <span className="font-medium break-words">
+                    Chapter {prevChap.order} : {prevChap.title}
                   </span>
                 </div>
               </button>
@@ -233,10 +233,10 @@ export function ReadChapterPage() {
                 onClick={() => handleNextChapter(nextChap)}
                 className="w-full px-4 py-3 rounded-md border border-input bg-card hover:bg-muted transition-colors inline-flex items-center justify-end gap-2 text-sm"
               >
-                <div className="flex flex-col text-right">
-                  <span className="text-xs text-muted-foreground">Next</span>
-                  <span className="font-medium truncate">
-                    Chapter {nextChap.order}: {nextChap.title}
+                <div className="flex flex-col text-left min-w-0">
+                  <span className="text-xs text-muted-foreground">Previous</span>
+                  <span className="font-medium break-words">
+                    Chapter {nextChap.order} : {nextChap.title}
                   </span>
                 </div>
                 <ArrowRight size={16} />
